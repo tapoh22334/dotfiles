@@ -6,5 +6,6 @@ curr_dir=`pwd`
 for file in "${curr_dir}"/setting_files/*
 do
   echo "$file"
+  rm -rf ~/"$file"
   ln -sf "$file" ~/
 done
