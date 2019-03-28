@@ -26,7 +26,6 @@ set laststatus=2
 " command completion
 set wildmode=list:longest
 
-
 " Tab space
 set list listchars=tab:\▸\-
 set expandtab
