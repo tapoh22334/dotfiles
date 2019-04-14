@@ -1,14 +1,20 @@
 " general
-set fenc=utf-8
-set nobackup
+"
+"set nobackup
 set noswapfile
 set autoread
 set hidden
+
+" Auto detecting encode. Jis type encoding must be specified head of encode list
+set encoding=utf-8
+set fileencodings=sjis,utf-8
+
 " show typing command
 set showcmd
 
 nnoremap j gj
 nnoremap k gk
+set whichwrap=b,s,h,l,<,>,[,]
 
 " looking
 " show column no.
@@ -27,10 +33,11 @@ set laststatus=2
 set wildmode=list:longest
 
 " Tab space
-set list listchars=tab:\▸\-
+set list
+set listchars=tab:»-,trail:-,eol:↲,extends:»,precedes:«,nbsp:%
 set expandtab
-set tabstop=2
-set shiftwidth=2
+set tabstop=4
+set shiftwidth=4
 
 " Search
 " Search regardless case
@@ -47,13 +54,19 @@ set hlsearch
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
 
 " color
-syntax enable
 set background=dark
 
 "colorscheme solarized
 colorscheme codedark
 
-""""""""""""""""""""""""""""""""""""""""""""
+"shortcut
+nmap <C-n> :NERDTreeToggle<CR>
+
+" Plugin python
+autocmd BufRead,BufNewFile *.py setfiletype python
+autocmd FileType python setlocal completeopt-=preview
+
+"""""""""""" Dein """"""""""""""""""""""""""
 let s:dein_dir = expand('~/.cache/dein')
 let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 
@@ -81,4 +94,6 @@ endif
 if dein#check_install()
   call dein#install()
 endif
+""""""""""""""""""""""""""""""""""""""""""""
 
+syntax on
