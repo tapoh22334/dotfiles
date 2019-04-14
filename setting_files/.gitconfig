@@ -10,3 +10,6 @@
 	ch = checkout
 	di = diff
 	dic = diff --cached
+
+[commit]
+	tamplate = ~/.gitmessage
