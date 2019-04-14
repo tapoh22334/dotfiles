@@ -12,4 +12,5 @@
 	dic = diff --cached
 
 [commit]
-	tamplate = ~/.gitmessage
+	tamplate = ~/.gitmessage.txt
+	template = /home/iwase/.gitmessage.txt

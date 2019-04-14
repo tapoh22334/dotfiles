@@ -1,3 +1,4 @@
+
 # Type of commit messages
 # -----------------------
 # Initial Commit
