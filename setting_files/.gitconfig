@@ -1,0 +1,12 @@
+[user]
+	email = iwase22334@gmail.com
+	name = iwase22334
+
+[alias]
+	st = status
+	co = commit
+	com = commit -m
+	ad = add
+	ch = checkout
+	di = diff
+	dic = diff --cached
