@@ -1,8 +1,13 @@
 # zeshrc
+autoload -Uz promptinit
+promptinit
+prompt fade green
+
 autoload -U compinit
 compinit
 
-export LANG=ja_JP.UTF-8
+#export LANG=ja_JP.UTF-8
+export LANG=en_US.UTF-8
 export LSCOLORS=gxfxxxxxcxxxxxxxxxgxgx
 
 #function
@@ -15,15 +20,17 @@ function mkcd(){
   fi
 }
 
-function vscode(){
-  VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;
-}
-
 # alias
 alias l='ls -G'
 alias ll='ls -l -G'
 alias la='ls -a -G'
 
+# vi keymap
 bindkey -v
 
-tmux
+if [[ ! -n $TMUX ]]; then
+  tmux new-session
+fi
+
+eval `ssh-agent`
+ssh-add
