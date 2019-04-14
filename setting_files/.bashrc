@@ -7,6 +7,4 @@ alias la='ls -A'                              # all but . and ..
 alias l='ls -CF'                              #
 
 # others
-
-export DISPLAY=:0.0
 set -o vi
