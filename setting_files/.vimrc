@@ -7,7 +7,7 @@ set hidden
 
 " Auto detecting encode. Jis type encoding must be specified head of encode list
 set encoding=utf-8
-set fileencodings=sjis,utf-8
+set fileencodings=utf-8,cp932,euc-jp,sjis
 
 " show typing command
 set showcmd
@@ -61,6 +61,7 @@ colorscheme codedark
 
 "shortcut
 nmap <C-n> :NERDTreeToggle<CR>
+let NERDTreeShowHidden=1
 
 " Plugin python
 autocmd BufRead,BufNewFile *.py setfiletype python
