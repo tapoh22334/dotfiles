@@ -97,4 +97,4 @@ if dein#check_install()
 endif
 """"""""""""""""""""""""""""""""""""""""""""
 
-syntax on
+syntax enable

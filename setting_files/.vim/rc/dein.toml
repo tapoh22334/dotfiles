@@ -6,3 +6,9 @@ repo = 'Shougo/vimproc.vim'
 
 [[plugins]]
 repo = 'scrooloose/nerdtree'
+
+[[plugins]]
+repo = 'vim-scripts/DoxygenToolkit.vim'
+
+[[plugins]]
+repo = 'Shougo/neosnippet-snippets'
