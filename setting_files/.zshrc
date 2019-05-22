@@ -25,12 +25,11 @@ alias l='ls -G'
 alias ll='ls -l -G'
 alias la='ls -a -G'
 
-# vi keymap
-bindkey -v
-
 if [[ ! -n $TMUX ]]; then
   tmux new-session
 fi
 
-eval `ssh-agent`
-ssh-add
+# vi keymap
+bindkey -v
+
+bindkey '^R' history-incremental-search-backward
