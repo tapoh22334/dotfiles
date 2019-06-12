@@ -29,6 +29,9 @@ if [[ ! -n $TMUX ]]; then
   tmux new-session
 fi
 
+export PATH=$PATH:$HOME/.fasd/bin
+eval "$(fasd --init auto)"
+
 # vi keymap
 bindkey -v
 
