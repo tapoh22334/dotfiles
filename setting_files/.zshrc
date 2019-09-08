@@ -6,6 +6,8 @@ prompt fade green
 autoload -U compinit
 compinit
 
+setopt no_beep
+
 #export LANG=ja_JP.UTF-8
 export LANG=en_US.UTF-8
 export LSCOLORS=gxfxxxxxcxxxxxxxxxgxgx
