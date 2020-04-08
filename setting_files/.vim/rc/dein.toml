@@ -28,3 +28,12 @@ repo = 'Shougo/denite.nvim'
 
 [[plugins]]
 repo = 'dhruvasagar/vim-table-mode'
+
+[[plugins]]
+repo = 'junegunn/fzf'
+build = './install --bin'
+merged = '0'
+
+[[plugins]]
+repo = 'junegunn/fzf.vim'
+depends = 'fzf'
