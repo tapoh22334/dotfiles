@@ -11,6 +11,7 @@ do
   ln -sf "${curr_dir}/setting_files/${filename}" "${HOME}/${filename}"
 done
 
+mkdir -p ${HOME}/.config
 for file in "${curr_dir}"/.config/*
 do
   filename=$(basename $file)
