@@ -10,3 +10,11 @@ do
   rm -rf "${HOME}/${filename}"
   ln -sf "${curr_dir}/setting_files/${filename}" "${HOME}/${filename}"
 done
+
+for file in "${curr_dir}"/.config/*
+do
+  filename=$(basename $file)
+  echo "$filename"
+  rm -rf "${HOME}/.config/${filename}"
+  ln -sf "${curr_dir}/.config/${filename}" "${HOME}/.config/${filename}"
+done

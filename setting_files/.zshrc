@@ -75,6 +75,7 @@ function cd {
 alias l='ls -G'
 alias ll='ls -l -G'
 alias la='ls -a -G'
+alias vim='nvim'
 
 export PATH=$PATH:$HOME/.fasd/bin
 eval "$(fasd --init auto)"
@@ -92,4 +93,5 @@ local FILE=~/uma_gen10/startenv.sh;   [ -f $FILE ] && source $FILE || echo "$FIL
 alias uma='source ~/uma/startenv.sh'
 alias vim='nvim'
 
+export PATH="/usr/local/opt/postgresql@11/bin:$PATH"
 
