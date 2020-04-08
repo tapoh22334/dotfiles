@@ -9,6 +9,28 @@ if [[ -f ${ANTIGEN_PATH} ]]; then
     source ${ANTIGEN_PATH}
 fi
 
+## vcxserv
+if [[ -z $DISPLAY ]]; then
+  export DISPLAY=:0.0
+fi
+
+## settings for  WSL
+if uname -r | grep -i 'microsoft' >/dev/null ; then
+  echo "wsl"
+  alias chrome='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe "$@"'
+
+  # vcxserv
+  if ! xset q &>/dev/null; then
+    /mnt/c/Program\ Files/VcXsrv/xlaunch.exe
+  else;
+    echo "X server working"
+  fi
+
+else;
+  echo "not wsl"
+fi
+
+
 # tmux 
 if [[ $SHLVL -eq 1 ]]; then
   tmux attach || tmux new
@@ -65,7 +87,7 @@ bindkey '^R' history-incremental-search-backward
 local FILE=~/.fzf.zsh;                [ -f $FILE ] && source $FILE || echo "$FILE not found"
 local FILE=~/.line;                   [ -f $FILE ] && source $FILE || echo "$FILE not found"
 local FILE=~/.uma_aws;                [ -f $FILE ] && source $FILE || echo "$FILE not found"
-local FILE=~/uma_gen03/startenv.sh;   [ -f $FILE ] && source $FILE || echo "$FILE not found"
+local FILE=~/uma_gen10/startenv.sh;   [ -f $FILE ] && source $FILE || echo "$FILE not found"
 
 alias uma='source ~/uma/startenv.sh'
 
