@@ -1,17 +1,20 @@
 [[plugins]]
+repo = 'tomasiser/vim-code-dark'
+
+[[plugins]]
 repo = 'Shougo/dein.vim'
 
 [[plugins]]
 repo = 'Shougo/vimproc.vim'
 
 [[plugins]]
+repo = 'Shougo/neosnippet-snippets'
+
+[[plugins]]
 repo = 'scrooloose/nerdtree'
 
 [[plugins]]
 repo = 'vim-scripts/DoxygenToolkit.vim'
-
-[[plugins]]
-repo = 'Shougo/neosnippet-snippets'
 
 [[plugins]]
 repo = 'Valloric/YouCompleteMe'

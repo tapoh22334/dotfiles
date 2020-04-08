@@ -2,6 +2,15 @@
 	email = iwase22334@gmail.com
 	name = iwase22334
 
+[diff]
+	tool=vimdiff
+[difftool]
+	prompt=false
+[merge]
+	tool=vimdiff
+[mergetool]
+	prompt=false
+
 [alias]
 	st = status
 	co = commit
@@ -16,3 +25,4 @@
 	template = /home/iwase/.gitmessage.txt
 [core]
 	excludesfile = /home/iwase/.gitignore_global
+	editor = vim

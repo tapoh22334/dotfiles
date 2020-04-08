@@ -90,5 +90,6 @@ local FILE=~/.uma_aws;                [ -f $FILE ] && source $FILE || echo "$FIL
 local FILE=~/uma_gen10/startenv.sh;   [ -f $FILE ] && source $FILE || echo "$FILE not found"
 
 alias uma='source ~/uma/startenv.sh'
+alias vim='nvim'
 
 
