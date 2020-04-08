@@ -41,7 +41,7 @@ set shiftwidth=4
 
 " Search
 " Search regardless case
-set ignorecase
+" set ignorecase
 " Search with case sensitivity
 set smartcase
 " Search while typing
@@ -52,9 +52,6 @@ set wrapscan
 set hlsearch
 " esc to no hilight 
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
-
-" color
-set background=dark
 
 "colorscheme solarized
 colorscheme codedark
@@ -91,8 +88,9 @@ function! s:denite_my_settings() abort
   \ denite#do_map('toggle_select').'j'
 endfunction
 
-nnoremap <space-g> :Denite grep<CR>
-nnoremap <space-f> :Denite file<CR>
+nnoremap <space>g :Denite grep<CR>
+nnoremap <space>f :Denite file/rec<CR>
+nnoremap <space>b :Denite buffer<CR>
 
 """""""""""" Dein """"""""""""""""""""""""""
 let s:dein_dir = expand('~/.cache/dein')
