@@ -16,5 +16,5 @@ do
   filename=$(basename $file)
   echo "$filename"
   rm -rf "${HOME}/.config/${filename}"
-  ln -sf "${curr_dir}/.config/${filename}" "${HOME}/.config/${filename}"
+  ln -sf "${curr_dir}/.config/${filename}" "${HOME}/.config/"
 done
