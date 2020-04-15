@@ -56,19 +56,21 @@ nmap <Esc><Esc> :nohlsearch<CR><Esc>
 "colorscheme solarized
 colorscheme codedark
 
-"shortcut
-nmap <C-n> :NERDTreeToggle<CR>
-let NERDTreeShowHidden=1
-
 " Plugin python
 autocmd BufRead,BufNewFile *.py setfiletype python
 autocmd FileType python setlocal completeopt-=preview
 
-" YCM Plugin
-let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
-let g:ycm_auto_trigger = 1
-let g:ycm_min_num_of_chars_for_completion = 2
-let g:ycm_autoclose_preview_window_after_insertion = 1
+"" remaps 
+nnoremap <space>g :Denite grep<CR>
+nnoremap <space>f :Denite file/rec<CR>
+nnoremap <space>b :Denite buffer<CR>
+nmap <C-n> :NERDTreeToggle<CR>
+
+"""""""""""" OpenBrowset """""""""""""""
+let g:openbrowser_browser_commands = [
+       \ {'name': '/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+       \  'args': ['{browser}', '{uri}']} ]
+" command! OpenBrowserCurrent execute "OpenBrowser" expand("%")
 
 """""""""""" Denite """"""""""""""""""""""
 " Define mappings
@@ -87,10 +89,6 @@ function! s:denite_my_settings() abort
   nnoremap <silent><buffer><expr> <Space>
   \ denite#do_map('toggle_select').'j'
 endfunction
-
-nnoremap <space>g :Denite grep<CR>
-nnoremap <space>f :Denite file/rec<CR>
-nnoremap <space>b :Denite buffer<CR>
 
 """""""""""" Dein """"""""""""""""""""""""""
 let s:dein_dir = expand('~/.cache/dein')
