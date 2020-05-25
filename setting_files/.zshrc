@@ -9,7 +9,7 @@ if [[ -f ${ANTIGEN_PATH} ]]; then
     source ${ANTIGEN_PATH}
 fi
 
-## vcxserv
+## xserver
 if [[ -z $DISPLAY ]]; then
   export DISPLAY=:0.0
 fi
@@ -17,7 +17,10 @@ fi
 ## settings for  WSL
 if uname -r | grep -i 'microsoft' >/dev/null ; then
   echo "wsl"
+  export BROWSER='/mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe'
   alias chrome='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe "$@"'
+  alias chromecors='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe --disable-web-security --user-data-dir "$@"'
+
 
   # vcxserv
   if ! xset q &>/dev/null; then
@@ -51,6 +54,11 @@ export LSCOLORS=gxfxxxxxcxxxxxxxxxgxgx
 export DISPLAY=:0.0
 
 #function
+
+function c() {
+  builtin cd "$@" && ls -F
+}
+
 function mkcd(){
   if [[ -d $1 ]]; then
     echo "$1 already exists!"
@@ -60,15 +68,15 @@ function mkcd(){
   fi
 }
 
+function fcat() {
+  fzf --preview 'cat {}'
+}
+
 function fcd() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune \
           -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
-}
-
-function cd {
-  builtin cd "$@" && ls -F
 }
 
 # alias

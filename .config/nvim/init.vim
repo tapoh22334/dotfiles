@@ -12,18 +12,12 @@ set fileencodings=utf-8,cp932,euc-jp,sjis
 " show typing command
 set showcmd
 
-nnoremap j gj
-nnoremap k gk
 set whichwrap=b,s,h,l,<,>,[,]
 
 " looking
-" show column no.
 set number
-" show cursor line
 set cursorline
-
 set virtualedit=onemore
-
 set smartindent
 " show pair brackets
 set showmatch
@@ -40,37 +34,73 @@ set tabstop=4
 set shiftwidth=4
 
 " Search
-" Search regardless case
-" set ignorecase
 " Search with case sensitivity
 set smartcase
+set ignorecase
 " Search while typing
 set incsearch
 " Return to the biginning after the last result 
 set wrapscan
 " hilight search word
 set hlsearch
-" esc to no hilight 
-nmap <Esc><Esc> :nohlsearch<CR><Esc>
 
 "colorscheme solarized
+set t_Co=256
+set t_ut=
 colorscheme codedark
 
-" Plugin python
-autocmd BufRead,BufNewFile *.py setfiletype python
-autocmd FileType python setlocal completeopt-=preview
+" tag
+set tags
+au BufWritePost *.py,*.c,*.cpp,*.h silent! !eval 'ctags -R -o newtags; mv newtags tags' &
 
 "" remaps 
+
+""" plugin shortcut
 nnoremap <space>g :Denite grep<CR>
-nnoremap <space>f :Denite file/rec<CR>
+nnoremap <space>f :Files ./<CR>
+nnoremap <space>F :Files ~/<CR>
 nnoremap <space>b :Denite buffer<CR>
 nmap <C-n> :NERDTreeToggle<CR>
+
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+
+nnoremap <Space><Space> :call deoplete#toggle()<CR>
+
+""" 
+nmap <Esc><Esc> :nohlsearch<CR><Esc>
+nnoremap j gj
+nnoremap k gk
+inoremap <C-l> <Up><End><CR>
+inoremap " ""<left>
+inoremap ' ''<left>
+inoremap ( ()<left>
+inoremap [ []<left>
+inoremap { {}<left>
+inoremap {<CR> {<CR>}<ESC>O
+inoremap {;<CR> {<CR>};<ESC>O
+
+""" terminal settin """
+if has('nvim')
+  " Neovim 用
+  autocmd WinEnter * if &buftype ==# 'terminal' | startinsert | endif
+else
+  " Vim 用
+  autocmd WinEnter * if &buftype ==# 'terminal' | normal i | endif
+endif
+
+"""" move window in order
+tnoremap <C-o> <C-\><C-n><C-w>W
 
 """""""""""" OpenBrowset """""""""""""""
 let g:openbrowser_browser_commands = [
        \ {'name': '/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe',
        \  'args': ['{browser}', '{uri}']} ]
 " command! OpenBrowserCurrent execute "OpenBrowser" expand("%")
+
+"""""""""""" Plugin python """""""""""""
+autocmd BufRead,BufNewFile *.py setfiletype python
+autocmd FileType python setlocal completeopt-=preview
 
 """""""""""" Denite """"""""""""""""""""""
 " Define mappings

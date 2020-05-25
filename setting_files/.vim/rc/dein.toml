@@ -26,6 +26,9 @@ merged = '0'
 [[plugins]]
 repo = 'junegunn/fzf.vim'
 depends = 'fzf'
+hook_source = '''
+let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -l -g ""'
+'''
 
 
 ## auto completion
@@ -35,6 +38,11 @@ repo = 'Shougo/neosnippet-snippets'
 [[plugins]]
 repo = 'dhruvasagar/vim-table-mode'
 
+[[plugins]]
+repo = 'vim-scripts/DoxygenToolkit.vim'
+
+[[plugins]]
+repo = 'junegunn/vim-easy-align'
 
 ## Git
 [[plugins]]
@@ -51,10 +59,6 @@ let g:ycm_auto_trigger = 1
 let g:ycm_min_num_of_chars_for_completion = 2
 let g:ycm_autoclose_preview_window_after_insertion = 1
 '''
-
-[[plugins]]
-repo = 'vim-scripts/DoxygenToolkit.vim'
-
 
 ## denite
 [[plugins]]
