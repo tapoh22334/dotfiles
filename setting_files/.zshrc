@@ -72,12 +72,14 @@ function fcat() {
   fzf --preview 'cat {}'
 }
 
-function fcd() {
+function fd() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune \
           -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
 }
+
+alias fv='vim $(fzf --height 40% --reverse)'
 
 # alias
 alias l='ls -G'
