@@ -21,16 +21,21 @@ if uname -r | grep -i 'microsoft' >/dev/null ; then
   alias chrome='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe "$@"'
   alias chromecors='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe --disable-web-security --user-data-dir "$@"'
 
-
   # vcxserv
-  if ! xset q &>/dev/null; then
+  if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
     /mnt/c/Program\ Files/VcXsrv/xlaunch.exe
   else;
     echo "X server working"
   fi
 
+  if [[ $SHLVL -eq 1 ]] && ! pgrep -f docker > /dev/null; then
+    sudo cgroupfs-mount && sudo service docker start
+  else;
+    echo "docker daemon working"
+  fi
+
 else;
-  echo "not wsl"
+  echo "linux"
 fi
 
 
@@ -75,7 +80,7 @@ function fcat() {
 function fd() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune \
-          -o -type d -print 2> /dev/null | fzf +m) &&
+          -o -type d -print 2> /dev/null | fzf --height 40% --reverse) &&
   cd "$dir"
 }
 
@@ -98,7 +103,7 @@ bindkey '^R' history-incremental-search-backward
 local FILE=~/.fzf.zsh;                [ -f $FILE ] && source $FILE || echo "$FILE not found"
 local FILE=~/.line;                   [ -f $FILE ] && source $FILE || echo "$FILE not found"
 local FILE=~/.uma_aws;                [ -f $FILE ] && source $FILE || echo "$FILE not found"
-local FILE=~/uma_gen10/startenv.sh;   [ -f $FILE ] && source $FILE || echo "$FILE not found"
+local FILE=~/uma2/startenv.sh;        [ -f $FILE ] && source $FILE || echo "$FILE not found"
 
 alias uma='source ~/uma/startenv.sh'
 alias vim='nvim'
