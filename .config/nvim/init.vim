@@ -72,11 +72,11 @@ nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap j gj
 nnoremap k gk
 inoremap <C-l> <Up><End><CR>
-inoremap " ""<left>
-inoremap ' ''<left>
-inoremap ( ()<left>
-inoremap [ []<left>
-inoremap { {}<left>
+inoremap " ""<`0`><C-o>6<left>
+inoremap ' ''<`0`><C-o>6<left>
+inoremap ( ()<`0`><C-o>6<left>
+inoremap [ []<`0`><C-o>6<left>
+inoremap { {}<`0`><C-o>6<left>
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
 
@@ -90,7 +90,7 @@ else
 endif
 
 """" move window in order
-tnoremap <C-o> <C-\><C-n><C-w>W
+tnoremap <C-o> <C-\><C-n><C-w>
 
 """""""""""" OpenBrowset """""""""""""""
 let g:openbrowser_browser_commands = [
