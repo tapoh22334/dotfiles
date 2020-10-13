@@ -25,7 +25,9 @@ on_i  = 1
 on_ft = ['snippet']
 depends = ['neosnippet-snippets']
 
+
 ## for python
+##-----------
 [[plugins]]
 repo = 'davidhalter/jedi-vim'
 on_ft = ['python']
@@ -34,6 +36,13 @@ on_ft = ['python']
 repo = 'vim-syntastic/syntastic'
 on_ft = ['python']
 hook_post_source = 'let g:syntastic_python_checkers = ["flake8"]'
+
+### auto format
+[[plugins]]
+repo  = 'google/yapf'
+rtp   = 'plugins/vim'
+on_ft = ['python']
+
 
 ## for HTML, CSS, JavaScript
 [[plugins]]

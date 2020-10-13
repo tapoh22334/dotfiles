@@ -23,13 +23,14 @@ if uname -r | grep -i 'microsoft' >/dev/null ; then
 
   # vcxserv
   if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
-    /mnt/c/Program\ Files/VcXsrv/xlaunch.exe
+    /mnt/c/Program\ Files/VcXsrv/xlaunch.exe -run ~/.config.xlaunch
   else;
     echo "X server working"
   fi
 
   if [[ $SHLVL -eq 1 ]] && ! pgrep -f docker > /dev/null; then
-    sudo cgroupfs-mount && sudo service docker start
+    #sudo cgroupfs-mount && sudo service docker start
+    :
   else;
     echo "docker daemon working"
   fi
@@ -52,6 +53,8 @@ autoload -U compinit
 compinit
 
 setopt no_beep
+setopt auto_cd
+setopt auto_pushd
 
 #export LANG=ja_JP.UTF-8
 export LANG=en_US.UTF-8
