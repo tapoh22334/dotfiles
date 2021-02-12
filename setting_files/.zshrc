@@ -101,6 +101,12 @@ eval "$(fasd --init auto)"
 # vi keymap
 bindkey -v
 
+export HISTFILE=${HOME}/.zsh_history
+export HISTSIZE=5000
+export SAVEHIST=100000
+setopt hist_ignore_dups
+setopt hist_save_no_dups
+setopt EXTENDED_HISTORY
 bindkey '^R' history-incremental-search-backward
 
 local FILE=~/.fzf.zsh;                [ -f $FILE ] && source $FILE || echo "$FILE not found"
