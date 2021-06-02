@@ -2,11 +2,16 @@
 
 ANTIGEN_PATH=~/.cache/antigen/antigen.zsh
 if [[ ! -f ${ANTIGEN_PATH} ]]; then
-    curl -L git.io/antigen > ${ANTIGEN_PATH}
+    mkdir -p $(dirname ${ANTIGEN_PATH})
+    wget git.io/antigen -O ${ANTIGEN_PATH}
 fi
 
 if [[ -f ${ANTIGEN_PATH} ]]; then
     source ${ANTIGEN_PATH}
+    # Load bundles from the default repo (oh-my-zsh)
+    antigen use oh-my-zsh
+    antigen bundle git
+    antigen bundle docker
 fi
 
 ## xserver
@@ -95,8 +100,8 @@ alias ll='ls -l -G'
 alias la='ls -a -G'
 alias vim='nvim'
 
-export PATH=$PATH:$HOME/.fasd/bin
-eval "$(fasd --init auto)"
+#export PATH=$PATH:$HOME/.fasd/bin
+#eval "$(fasd --init auto)"
 
 # vi keymap
 bindkey -v
