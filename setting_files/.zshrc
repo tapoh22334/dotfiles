@@ -12,6 +12,9 @@ if [[ -f ${ANTIGEN_PATH} ]]; then
     antigen use oh-my-zsh
     antigen bundle git
     antigen bundle docker
+    antigen bundle tmux
+
+    antigen apply
 fi
 
 ## xserver
