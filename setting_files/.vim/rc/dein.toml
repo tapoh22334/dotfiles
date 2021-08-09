@@ -19,6 +19,10 @@ let NERDTreeShowHidden=1
 '''
 
 [[plugins]]
+repo = 'junegunn/goyo.vim'
+
+
+[[plugins]]
 repo = 'junegunn/fzf'
 build = './install --bin'
 merged = '0'
@@ -44,6 +48,9 @@ repo = 'vim-scripts/DoxygenToolkit.vim'
 [[plugins]]
 repo = 'junegunn/vim-easy-align'
 
+[[plugins]]
+repo = 'tpope/vim-surround'
+
 ## Git
 [[plugins]]
 repo = 'tpope/vim-fugitive'
@@ -55,11 +62,11 @@ repo = 'Valloric/YouCompleteMe'
 merged = 0
 hook_source = '''
 let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
-let g:ycm_auto_trigger = 1
-let g:ycm_min_num_of_chars_for_completion = 2
+let g:ycm_auto_trigger = 0
 let g:ycm_autoclose_preview_window_after_insertion = 1
 '''
 build = './install.py'
+
 
 ## denite
 [[plugins]]

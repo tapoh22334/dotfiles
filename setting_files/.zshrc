@@ -43,6 +43,8 @@ if uname -r | grep -i 'microsoft' >/dev/null ; then
     echo "docker daemon working"
   fi
 
+  cd ~/
+
 else;
   echo "linux"
 fi
@@ -108,6 +110,7 @@ alias vim='nvim'
 
 # vi keymap
 bindkey -v
+bindkey '^R' history-incremental-search-backward
 
 export HISTFILE=${HOME}/.zsh_history
 export HISTSIZE=5000
@@ -115,7 +118,6 @@ export SAVEHIST=100000
 setopt hist_ignore_dups
 setopt hist_save_no_dups
 setopt EXTENDED_HISTORY
-bindkey '^R' history-incremental-search-backward
 
 local FILE=~/.fzf.zsh;                [ -f $FILE ] && source $FILE || echo "$FILE not found"
 local FILE=~/.line;                   [ -f $FILE ] && source $FILE || echo "$FILE not found"
