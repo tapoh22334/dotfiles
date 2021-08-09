@@ -69,7 +69,6 @@ setopt auto_pushd
 #export LANG=ja_JP.UTF-8
 export LANG=en_US.UTF-8
 export LSCOLORS=gxfxxxxxcxxxxxxxxxgxgx
-export DISPLAY=:0.0
 
 #function
 
@@ -119,10 +118,15 @@ setopt hist_ignore_dups
 setopt hist_save_no_dups
 setopt EXTENDED_HISTORY
 
-local FILE=~/.fzf.zsh;                [ -f $FILE ] && source $FILE || echo "$FILE not found"
-local FILE=~/.line;                   [ -f $FILE ] && source $FILE || echo "$FILE not found"
-local FILE=~/.uma_aws;                [ -f $FILE ] && source $FILE || echo "$FILE not found"
-local FILE=~/uma2/startenv.sh;        [ -f $FILE ] && source $FILE || echo "$FILE not found"
+source_if_exist() {
+    local FILE=$1
+    [ -f $FILE ] && source $FILE || echo "$FILE not found"
+}
+
+source_if_exist ~/.fzf.zsh
+source_if_exist ~/.line
+source_if_exist ~/.uma_aws
+source_if_exist ~/uma2/startenv.sh
 
 alias uma='source ~/uma/startenv.sh'
 alias vim='nvim'
