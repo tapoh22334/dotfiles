@@ -1,4 +1,8 @@
-export UMA_LINE_ACCESSTOKEN=
+if [[ -z ${UMA_LINE_ACCESSTOKEN} ]]
+then
+  echo "Line funtion is not available."
+  echo 'Please set UMA_LINE_ACCESSTOKEN variable'
+fi
 
 _notify() {
   msg=$(cat -)
