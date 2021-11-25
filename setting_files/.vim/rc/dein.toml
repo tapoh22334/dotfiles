@@ -55,27 +55,25 @@ repo = 'tpope/vim-surround'
 [[plugins]]
 repo = 'tpope/vim-fugitive'
 
-
-## C++
-[[plugins]]
-repo = 'Valloric/YouCompleteMe'
-merged = 0
-hook_source = '''
-let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
-let g:ycm_auto_trigger = 0
-let g:ycm_autoclose_preview_window_after_insertion = 1
-'''
-build = './install.py'
-
+### C++
+#[[plugins]]
+#repo = 'Valloric/YouCompleteMe'
+#merged = 0
+#hook_source = '''
+#let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
+#let g:ycm_auto_trigger = 0
+#let g:ycm_autoclose_preview_window_after_insertion = 1
+#'''
+#build = './install.py'
 
 ## denite
-[[plugins]]
-repo = 'roxma/nvim-yarp'
-
-[[plugins]]
-repo = 'roxma/vim-hug-neovim-rpc'
-
-[[plugins]]
-repo = 'Shougo/denite.nvim'
+#[[plugins]]
+#repo = 'roxma/nvim-yarp'
+#
+#[[plugins]]
+#repo = 'roxma/vim-hug-neovim-rpc'
+#
+#[[plugins]]
+#repo = 'Shougo/denite.nvim'
 
 
