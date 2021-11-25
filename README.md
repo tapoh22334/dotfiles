@@ -3,7 +3,7 @@ setup
 
 ```
 sudo apt update
-sudo apt install zsh neovim
+sudo apt install zsh neovim moreutils
 ```
 
 ```
