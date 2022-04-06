@@ -72,17 +72,19 @@ nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap j gj
 nnoremap k gk
 inoremap <C-l> <Up><End><CR>
-inoremap " ""<`0`><C-o>6<left>
-inoremap ' ''<`0`><C-o>6<left>
-inoremap ( ()<`0`><C-o>6<left>
-inoremap [ []<`0`><C-o>6<left>
-inoremap { {}<`0`><C-o>6<left>
-inoremap {<CR> {<CR>}<ESC>O
-inoremap {;<CR> {<CR>};<ESC>O
+"inoremap " ""<`0`><C-o>6<left>
+"inoremap ' ''<`0`><C-o>6<left>
+"inoremap ( ()<`0`><C-o>6<left>
+"inoremap [ []<`0`><C-o>6<left>
+"inoremap { {}<`0`><C-o>6<left>
+"inoremap {<CR> {<CR>}<ESC>O
+"inoremap {;<CR> {<CR>};<ESC>O
 
 """ terminal settin """
+" nvim not opens terminal in current dir
 if has('nvim')
   " Neovim 用
+  map <c-t> :let $VIM_DIR=expand('%:p:h')<CR>:ter zsh -c "cd $VIM_DIR;zsh"<CR>
   autocmd WinEnter * if &buftype ==# 'terminal' | startinsert | endif
 else
   " Vim 用
