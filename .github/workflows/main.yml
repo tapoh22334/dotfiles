@@ -24,5 +24,14 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
+        
+      - name: Run apt
+        run: ./install-command.sh pkglist-ubuntu-20.04
+        
+      - name: Run apt
+        run: |
+          ./install-bin.sh && ./install-dot.sh &&
+          find ${HOME} -type l
