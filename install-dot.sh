@@ -7,7 +7,7 @@ function overwrite_with_symlink () {
   short_dir=$(dirname "${src_path##*"${dot_root}"/}")
   filename=$(basename "${src_path}")
 
-  mkdir -p "${short_dir}"
+  mkdir -p "${HOME}/${short_dir}"
   ln -sf "$src_path" "${HOME}/${short_dir}/${filename}"
 }
 
