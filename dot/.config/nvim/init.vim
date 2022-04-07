@@ -56,10 +56,10 @@ au BufWritePost *.py,*.c,*.cpp,*.h silent! !eval 'ctags -R -o newtags; mv newtag
 "" remaps 
 
 """ plugin shortcut
-nnoremap <space>g :Denite grep<CR>
+nnoremap <space>g :Ag<CR>
 nnoremap <space>f :Files ./<CR>
 nnoremap <space>F :Files ~/<CR>
-nnoremap <space>b :Denite buffer<CR>
+nnoremap <space>b :Buffers<CR>
 nmap <C-n> :NERDTreeToggle<CR>
 
 xmap ga <Plug>(EasyAlign)
@@ -104,53 +104,52 @@ let g:openbrowser_browser_commands = [
 autocmd BufRead,BufNewFile *.py setfiletype python
 autocmd FileType python setlocal completeopt-=preview
 
-"""""""""""" Denite """"""""""""""""""""""
-" Define mappings
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR>
-  \ denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> d
-  \ denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p
-  \ denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> q
-  \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> i
-  \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space>
-  \ denite#do_map('toggle_select').'j'
-endfunction
-
-"""""""""""" Dein """"""""""""""""""""""""""
-let s:dein_dir = expand('~/.cache/dein')
-let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
-
-if &runtimepath !~# '/dein.vim'
-  if !isdirectory(s:dein_repo_dir)
-    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_repo_dir
-  endif
-  execute 'set runtimepath^=' . fnamemodify(s:dein_repo_dir, ':p')
-endif
-
-if dein#load_state('~/.cache/dein')
-  call dein#begin('~/.cache/dein')
-
-  let g:rc_dir    = '~/.vim/rc'
-  let s:toml      = g:rc_dir . '/dein.toml'
-  let s:lazy_toml = g:rc_dir . '/dein_lazy.toml'
-
-  call dein#load_toml(s:toml,       {'lazy': 0})
-  call dein#load_toml(s:lazy_toml,  {'lazy': 1})
-
-  call dein#end()
-  call dein#save_state()
-endif
-
-if dein#check_install()
-  call dein#install()
-endif
-""""""""""""""""""""""""""""""""""""""""""""
-
 syntax enable
 set visualbell t_vb=
+
+call plug#begin()
+Plug 'tomasiser/vim-code-dark', {'do':
+    \'mkdir -p ~/.config/nvim/colors/; rsync -a colors/ ~/.config/nvim/colors/' }
+Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'junegunn/goyo.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+Plug 'dhruvasagar/vim-table-mode'
+Plug 'vim-scripts/DoxygenToolkit.vim'
+Plug 'junegunn/vim-easy-align'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-fugitive'
+
+Plug 'vim-syntastic/syntastic'
+
+Plug 'davidhalter/jedi-vim'
+let g:syntastic_python_checkers = ["flake8"]
+Plug 'google/yapf', {'rtp': 'plugins/vim'}
+
+
+Plug 'othree/html5.vim', {'for': ['html','vue']}
+let g:html5_event_handler_attributes_complete = 1
+let g:html5_rdfa_attributes_complete = 1
+let g:html5_microdata_attributes_complete = 1
+let g:html5_aria_attributes_complete = 1
+
+Plug 'hail2u/vim-css3-syntax', {'for': ['css','scss','sass']}
+Plug 'jelera/vim-javascript-syntax', {'for': ['javascript']}
+Plug 'mattn/emmet-vim', {'for': ['html']}
+Plug 'rust-lang/rust.vim', {'for': ['rust']}
+
+"" Make sure you use single quotes
+"function! BuildYCM(info)
+"  " info is a dictionary with 3 fields
+"  " - name:   name of the plugin
+"  " - status: 'installed', 'updated', or 'unchanged'
+"  " - force:  set on PlugInstall! or PlugUpdate!
+"  if a:info.status == 'installed' || a:info.force
+"    "!./install.py
+"    !python3 install.py --clangd-completer --rust-complete
+"  endif
+"endfunction
+"Plug 'ycm-core/YouCompleteMe', { 'do': function('BuildYCM') }
+
+call plug#end()
