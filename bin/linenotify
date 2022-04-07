@@ -1,0 +1,23 @@
+#!/bin/bash
+
+_error() {
+  echo "Line funtion is not available."
+  echo 'Please set LINE_ACCESSTOKEN variable'
+  exit 1
+}
+
+_notify() {
+  msg=$(cat -)
+  echo "$msg"
+  curl -X POST -H "Authorization: Bearer $LINE_ACCESSTOKEN" -F "message=$msg" \
+  https://notify-api.line.me/api/notify
+}
+
+
+if [[ -z ${LINE_ACCESSTOKEN} ]]; then _error; fi
+
+if [ -p /dev/stdin ]; then
+  cat -
+else
+  echo "$@"
+fi | _notify

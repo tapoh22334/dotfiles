@@ -1,0 +1,25 @@
+## Utils
+zsh
+tmux
+git
+moreutils
+tree
+jq
+x11-apps
+
+## Search
+fzf
+silversearcher-ag
+
+## Editor
+neovim
+
+## Shell-script
+shellcheck
+
+## C/C++
+ctags
+cmake
+build-essential
+gdb
+clang-format
