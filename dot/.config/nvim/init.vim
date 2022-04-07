@@ -108,6 +108,8 @@ syntax enable
 set visualbell t_vb=
 
 call plug#begin()
+Plug 'tomasiser/vim-code-dark', {'do':
+    \'mkdir -p ~/.config/nvim/colors/; rsync -a colors/ ~/.config/nvim/colors/' }
 Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
