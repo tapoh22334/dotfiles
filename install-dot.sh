@@ -11,7 +11,7 @@ function overwrite_with_symlink () {
   ln -sf "$src_path" "${HOME}/${short_dir}/${filename}"
 }
 
-find "$dot_root" -type f -print0 |
+find "$dot_root" -type f,l -print0 |
     while IFS= read -r -d '' line; do
         overwrite_with_symlink "$line"
     done
