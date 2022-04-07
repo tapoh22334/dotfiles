@@ -27,10 +27,10 @@ jobs:
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
-        
+
       - name: Run apt
-        run: ./install-command.sh pkglist-ubuntu-20.04
-        
+        run: ./install-command.sh pkglist
+
       - name: Run apt
         run: |
           ./install-bin.sh && ./install-dot.sh &&
