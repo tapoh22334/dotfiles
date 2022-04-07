@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 dot_root="$( cd "$( dirname "$0" )" && pwd )/dot"
 
