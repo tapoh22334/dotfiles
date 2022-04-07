@@ -1,21 +1,20 @@
-# zeshrc
+#!/bin/bash
 
 function zshrc_echo () {
-    echo "[zshrc]:" $@
+    echo "[zshrc]:" "$@"
 }
 
 ANTIGEN_PATH=~/.cache/antigen/antigen.zsh
 if [[ ! -f ${ANTIGEN_PATH} ]]; then
-    mkdir -p $(dirname ${ANTIGEN_PATH})
+    mkdir -p "$(dirname ${ANTIGEN_PATH})"
     wget git.io/antigen -O ${ANTIGEN_PATH}
 fi
 
-if [[ -f ${ANTIGEN_PATH} ]]; then
-    source ${ANTIGEN_PATH}
-    # Load bundles from the default repo (oh-my-zsh)
-    antigen use oh-my-zsh
-    antigen apply
-fi
+#shellcheck disable=SC1090
+source "${ANTIGEN_PATH}"
+# Load bundles from the default repo (oh-my-zsh)
+antigen use oh-my-zsh
+antigen apply
 
 ## xserver
 if [[ -z $DISPLAY ]]; then
@@ -26,8 +25,8 @@ fi
 if uname -r | grep -i 'microsoft' >/dev/null ; then
   zshrc_echo "WSL"
   export BROWSER='/mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe'
-  alias chrome='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe "$@"'
-  alias chromecors='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe --disable-web-security --user-data-dir "$@"'
+  alias chrome='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe'
+  alias chromecors='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe --disable-web-security --user-data-dir'
 
   # vcxserv
   if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
@@ -82,7 +81,7 @@ function c() {
 }
 
 function mkcd(){
-  mkdir -p $1 && cd $1
+  mkdir -p "$1" && cd "$1" || return
 }
 
 # alias
