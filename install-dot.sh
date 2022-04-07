@@ -4,7 +4,7 @@ dot_root="$( cd "$( dirname "$0" )" && pwd )/dot"
 
 function overwrite_with_symlink () {
   src_path=$1
-  short_dir=$(dirname "${src_path##*${dot_root}/}")
+  short_dir=$(dirname "${src_path##*"${dot_root}"/}")
   filename=$(basename "${src_path}")
 
   mkdir -p "${short_dir}"
