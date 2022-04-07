@@ -29,7 +29,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
 
       - name: Run apt
-        run: ./install-command.sh pkglist
+        run: ./install-pkg.sh pkglist
 
       - name: Run apt
         run: |
