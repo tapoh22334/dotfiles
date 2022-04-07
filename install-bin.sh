@@ -4,7 +4,7 @@ bin_root="$( cd "$( dirname "$0" )" && pwd )/bin"
 
 function overwrite_with_symlink () {
   src_path=$1
-  short_dir=$(dirname "${src_path##*${bin_root}/}")
+  short_dir=$(dirname "${src_path##*"${bin_root}"/}")
   filename=$(basename "${src_path}")
 
   mkdir -p "${HOME}/bin/${short_dir}"
