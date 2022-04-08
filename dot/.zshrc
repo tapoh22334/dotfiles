@@ -115,7 +115,9 @@ alias fvim='fzfvim'
 export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -l -g ""'
 
 export PATH="/usr/local/opt/postgresql@11/bin:$PATH"
-export PATH="$HOME/bin:$PATH"
+export PATH="$PATH:/home/$USER/.local/bin"
+export PATH="$PATH:$HOME/bin"
+
 #export PATH=$PATH:$HOME/.fasd/bin
 #eval "$(fasd --init auto)"
 
