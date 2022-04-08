@@ -1,7 +1,13 @@
 #!/bin/bash
 
-function zshrc_echo () {
-    echo "[zshrc]:" "$@"
+function _zshrc_echo () {
+  echo "[zshrc]:" "$@"
+}
+
+function _zshrc_notice_if_not_exist () {
+  if [[ ! -f "$1" ]]; then
+    _zshrc_echo \" "$1" \" "is not found"
+  fi
 }
 
 ANTIGEN_PATH=~/.cache/antigen/antigen.zsh
@@ -16,33 +22,38 @@ source "${ANTIGEN_PATH}"
 antigen use oh-my-zsh
 antigen apply
 
-## xserver
-if [[ -z $DISPLAY ]]; then
-  export DISPLAY=:0.0
-fi
-
 ## settings for  WSL
 if uname -r | grep -i 'microsoft' >/dev/null ; then
-  zshrc_echo "WSL"
-  export BROWSER='/mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe'
-  alias chrome='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe'
-  alias chromecors='exec /mnt/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe --disable-web-security --user-data-dir'
+  _zshrc_echo "WSL"
 
-  # vcxserv
+  ## Browser
+  export BROWSER='/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'
+  function chrome () {
+    "$BROWSER" "$1"
+  }
+  function chromefile () {
+    chrome "$(wslpath -w "$(realpath "$1")")"
+  }
+  _zshrc_notice_if_not_exist "$BROWSER"
+
+  # X11 server
   if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
-    /mnt/c/Program\ Files/VcXsrv/xlaunch.exe -run ~/.config.xlaunch
+    '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch
+    _zshrc_echo "X server started"
   fi
-
-  zshrc_echo "X server working"
 
   #if [[ $SHLVL -eq 1 ]] && ! pgrep -f docker > /dev/null; then
   #  sudo cgroupfs-mount && sudo service docker start
   #  :
   #fi
-  #zshrc_echo "docker daemon working"
+  #_zshrc_echo "docker daemon working"
 
 else
-  zshrc_echo "Linux"
+  _zshrc_echo "Linux"
+fi
+
+if [[ -z $DISPLAY ]]; then
+  export DISPLAY=:0.0
 fi
 
 # tmux 
