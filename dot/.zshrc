@@ -5,7 +5,7 @@ function _zshrc_echo () {
 }
 
 function _zshrc_notice_if_not_exist () {
-  if [[ ! -f "$1" ]]; then
+  if [[ ! -e "$1" ]]; then
     _zshrc_echo \" "$1" \" "is not found"
   fi
 }
@@ -18,9 +18,17 @@ fi
 
 #shellcheck disable=SC1090
 source "${ANTIGEN_PATH}"
+
 # Load bundles from the default repo (oh-my-zsh)
 antigen use oh-my-zsh
 antigen apply
+
+if [[ -e "$HOME/.anyenv" ]]; then
+    export ANYENV_ROOT="$HOME/.anyenv"
+    export PATH="$ANYENV_ROOT/bin:$PATH"
+    eval "$(anyenv init -)"
+fi
+_zshrc_notice_if_not_exist "$HOME/.anyenv"
 
 ## settings for  WSL
 if uname -r | grep -i 'microsoft' >/dev/null ; then
