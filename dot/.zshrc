@@ -12,8 +12,14 @@ function _zshrc_notice_if_not_exist () {
 
 ANTIGEN_PATH=~/.cache/antigen/antigen.zsh
 if [[ ! -f ${ANTIGEN_PATH} ]]; then
-    mkdir -p "$(dirname ${ANTIGEN_PATH})"
-    wget git.io/antigen -O ${ANTIGEN_PATH}
+  mkdir -p "$(dirname ${ANTIGEN_PATH})"
+  wget git.io/antigen -O ${ANTIGEN_PATH}
+fi
+
+alias vim='nvim'
+if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim ]]; then
+  curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 
 #shellcheck disable=SC1090
@@ -107,7 +113,6 @@ function mkcd(){
 alias l='ls -G'
 alias ll='ls -l -G'
 alias la='ls -a -G'
-alias vim='nvim'
 alias fcat='fzfcat'
 alias fcd='fzfcd'
 alias fvim='fzfvim'
