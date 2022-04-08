@@ -1,0 +1,15 @@
+#!/bin/bash
+
+tmpdir=$(mktemp -d "/tmp/${0##*/}.tmp.XXXXXX")
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "$tmpdir/""awscliv2.zip"
+
+pushd "$tmpdir"
+
+unzip awscliv2.zip
+sudo ./aws/install
+
+popd
+
+rm -rf "$tmpfile"
+
