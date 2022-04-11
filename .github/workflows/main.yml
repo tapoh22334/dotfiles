@@ -27,6 +27,8 @@ jobs:
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
+        with:
+          ignore-names:.p10k.zsh
 
       - name: Run apt
         run: ./install-pkg.sh pkglist

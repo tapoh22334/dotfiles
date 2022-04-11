@@ -10,6 +10,7 @@ function _zshrc_notice_if_not_exist () {
   fi
 }
 
+# shellcheck source=/dev/null
 ANTIGEN_PATH=~/.cache/antigen/antigen.zsh
 if [[ ! -f ${ANTIGEN_PATH} ]]; then
   mkdir -p "$(dirname ${ANTIGEN_PATH})"
@@ -27,6 +28,7 @@ antigen theme romkatv/powerlevel10k
 antigen apply
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# shellcheck source=/dev/null
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Editor
@@ -121,6 +123,7 @@ alias fcat='fzfcat'
 alias fcd='fzfcd'
 alias fvim='fzfvim'
 
+# shellcheck source=/dev/null
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 _zshrc_notice_if_not_exist ~/.fzf.zsh
 
