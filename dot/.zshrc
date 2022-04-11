@@ -21,8 +21,6 @@ source "${ANTIGEN_PATH}"
 antigen use oh-my-zsh
 
 # Load bundles from the default repo (oh-my-zsh)
-# shellcheck source=/dev/null
-POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 antigen theme romkatv/powerlevel10k
 
 antigen apply
