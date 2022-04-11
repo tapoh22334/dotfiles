@@ -1,0 +1,11 @@
+*~
+*.swp
+*.bak
+*.old
+tmp
+old
+.git
+.svn
+zsh-completions
+lib
+libs

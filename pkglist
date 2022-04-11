@@ -4,6 +4,7 @@ tmux
 git
 moreutils
 tree
+figlet
 jq
 x11-apps
 

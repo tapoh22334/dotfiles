@@ -1,10 +1,3 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 #!/bin/bash
 
 function _zshrc_echo () {
@@ -25,10 +18,12 @@ fi
 
 #shellcheck disable=SC1090
 source "${ANTIGEN_PATH}"
+antigen use oh-my-zsh
 
 # Load bundles from the default repo (oh-my-zsh)
-antigen use oh-my-zsh
+POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 antigen theme romkatv/powerlevel10k
+
 antigen apply
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -63,10 +58,10 @@ if uname -r | grep -i 'microsoft' >/dev/null ; then
   _zshrc_notice_if_not_exist "$BROWSER"
 
   # X11 server
-  if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
-    '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch
-    _zshrc_echo "X server started"
-  fi
+  #if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
+  #  '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch
+  #  _zshrc_echo "X server started"
+  #fi
 
   #if [[ $SHLVL -eq 1 ]] && ! pgrep -f docker > /dev/null; then
   #  sudo cgroupfs-mount && sudo service docker start
@@ -87,12 +82,9 @@ if [[ $SHLVL -eq 1 ]]; then
   tmux attach || tmux new
 fi
 
-autoload -Uz promptinit
-promptinit
+autoload -Uz promptinit && promptinit
 prompt clint
-
-autoload -U compinit
-compinit
+autoload -U compinit && compinit
 
 # vi keymap
 bindkey -v
@@ -103,7 +95,7 @@ setopt auto_cd
 setopt auto_pushd
 
 export HISTFILE=${HOME}/.zsh_history
-export HISTSIZE=5000
+export HISTSIZE=100000
 export SAVEHIST=100000
 setopt hist_ignore_dups
 setopt hist_save_no_dups
@@ -129,7 +121,14 @@ alias fcat='fzfcat'
 alias fcd='fzfcd'
 alias fvim='fzfvim'
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+_zshrc_notice_if_not_exist ~/.fzf.zsh
+
 export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -l -g ""'
+export FZF_DEFAULT_OPTS='--no-height --no-reverse'
+# Using highlight (http://www.andre-simon.de/doku/highlight/en/highlight.html)
+export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
 export PATH="/usr/local/opt/postgresql@11/bin:$PATH"
 export PATH="$PATH:/home/$USER/.local/bin"
