@@ -10,18 +10,18 @@ function _zshrc_notice_if_not_exist () {
   fi
 }
 
-# shellcheck source=/dev/null
 ANTIGEN_PATH=~/.cache/antigen/antigen.zsh
 if [[ ! -f ${ANTIGEN_PATH} ]]; then
   mkdir -p "$(dirname ${ANTIGEN_PATH})"
   wget git.io/antigen -O ${ANTIGEN_PATH}
 fi
 
-#shellcheck disable=SC1090
+# shellcheck disable=SC1090
 source "${ANTIGEN_PATH}"
 antigen use oh-my-zsh
 
 # Load bundles from the default repo (oh-my-zsh)
+# shellcheck source=/dev/null
 POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 antigen theme romkatv/powerlevel10k
 
