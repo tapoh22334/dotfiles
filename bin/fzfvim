@@ -1,2 +1,2 @@
 #!/bin/bash
-vim "$(fzf --height 40% --reverse)"
+nvim "$(fzf --height 40% --reverse)"
