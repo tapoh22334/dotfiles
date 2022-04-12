@@ -131,6 +131,7 @@ export FZF_DEFAULT_OPTS='--no-height --no-reverse'
 export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
+# shellcheck source=/dev/null
 [ -f ~/.misc.zsh ] && source ~/.misc.zsh
 _zshrc_notice_if_not_exist ~/.misc.zsh
 
