@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pip3 install online-judge-tools
+sudo npm install -g atcoder-cli
