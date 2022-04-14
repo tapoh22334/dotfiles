@@ -22,6 +22,6 @@ function screensaver () {
 
     read -k1 -r -s
 
-    kill -SIGUSR1 $_PID_SS >/dev/null 2>&1
+    kill -SIGUSR1 $_PID_SS
     clear
 }

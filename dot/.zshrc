@@ -58,10 +58,10 @@ if uname -r | grep -i 'microsoft' >/dev/null ; then
   _zshrc_notice_if_not_exist "$BROWSER"
 
   # X11 server
-  #if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
-  #  '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch
-  #  _zshrc_echo "X server started"
-  #fi
+  if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
+    '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch
+    _zshrc_echo "X server started"
+  fi
 
   #if [[ $SHLVL -eq 1 ]] && ! pgrep -f docker > /dev/null; then
   #  sudo cgroupfs-mount && sudo service docker start
