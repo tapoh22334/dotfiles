@@ -1,11 +1,12 @@
 [user]
 	email = iwase22334@gmail.com
 	name = iwase22334
-
-[diff]
-	tool=vimdiff
 [difftool]
-	prompt=false
+	prompt = true
+[diff]
+	tool = nvimdiff
+[difftool "nvimdiff"]
+	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 [merge]
 	tool=vimdiff
 [mergetool]

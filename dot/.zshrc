@@ -140,7 +140,8 @@ export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap 
 [ -f ~/.misc.zsh ] && source ~/.misc.zsh
 _zshrc_notice_if_not_exist ~/.misc.zsh
 
-export PATH="/usr/local/opt/postgresql@11/bin:$PATH"
+export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin"
+export PATH="$PATH:/usr/local/opt/postgresql@11/bin"
 export PATH="$PATH:/home/$USER/.local/bin"
 export PATH="$PATH:$HOME/bin"
 
