@@ -19,3 +19,5 @@ function __zsh_fzf_order_depth() {
 
 zle -N __zsh_fzf_order_depth
 bindkey '^f' __zsh_fzf_order_depth
+
+bindkey '^R' history-incremental-search-backward
