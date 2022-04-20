@@ -30,12 +30,14 @@ antigen apply
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Editor
+export EDITOR="/usr/bin/nvim"
 alias vim='nvim'
 if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim ]]; then
   curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 
+# Env manager
 if [[ -e "$HOME/.anyenv" ]]; then
     export ANYENV_ROOT="$HOME/.anyenv"
     export PATH="$ANYENV_ROOT/bin:$PATH"
@@ -88,7 +90,10 @@ autoload -U compinit && compinit
 
 # vi keymap
 bindkey -v
-bindkey '^R' history-incremental-search-backward
+
+# shellcheck source=/dev/null
+[ -f ~/.keybaind.zsh ] && source ~/.keybaind.zsh
+_zshrc_notice_if_not_exist ~/.keybaind.zsh
 
 setopt no_beep
 setopt auto_cd
