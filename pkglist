@@ -24,3 +24,10 @@ cmake
 build-essential
 gdb
 clang-format
+
+## Ruby
+ruby
+ruby-dev
+
+## ssl
+libssl-dev
