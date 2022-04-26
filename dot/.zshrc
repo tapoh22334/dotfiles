@@ -148,4 +148,6 @@ export PATH="$PATH:$HOME/bin"
 #export PATH=$PATH:$HOME/.fasd/bin
 #eval "$(fasd --init auto)"
 
-source /home/iwase/.config/broot/launcher/bash/br
+# shellcheck source=/dev/null
+source "$HOME"/.config/broot/launcher/bash/br
+_zshrc_notice_if_not_exist "$HOME"/.config/broot/launcher/bash/br
