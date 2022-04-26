@@ -60,6 +60,8 @@ nnoremap <space>g :Ag<CR>
 nnoremap <space>f :Files ./<CR>
 nnoremap <space>F :Files ~/<CR>
 nnoremap <space>b :Buffers<CR>
+nmap <silent> <C-w>" :split \| wincmd j \| resize 20 \| terminal<CR>
+nmap <silent> <C-w>' :vsplit \| wincmd l \| terminal<CR>
 nmap <C-n> :NERDTreeToggle<CR>
 
 xmap ga <Plug>(EasyAlign)
@@ -83,11 +85,8 @@ inoremap <C-l> <Up><End><CR>
 """ terminal settin """
 " nvim not opens terminal in current dir
 if has('nvim')
-  " Neovim 用
-  map <c-t> :let $VIM_DIR=expand('%:p:h')<CR>:ter zsh -c "cd $VIM_DIR;zsh"<CR>
-  autocmd WinEnter * if &buftype ==# 'terminal' | startinsert | endif
+  autocmd BufWinEnter,WinEnter term://* startinsert
 else
-  " Vim 用
   autocmd WinEnter * if &buftype ==# 'terminal' | normal i | endif
 endif
 
