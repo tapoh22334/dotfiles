@@ -59,15 +59,16 @@ au BufWritePost *.py,*.c,*.cpp,*.h silent! !eval 'ctags -R -o newtags; mv newtag
 nnoremap <space>g :Ag<CR>
 nnoremap <space>f :Files ./<CR>
 nnoremap <space>F :Files ~/<CR>
+nnoremap <space>t :Tagbar<CR>
 nnoremap <space>b :Buffers<CR>
-nmap <silent> <C-w>" :split \| wincmd j \| resize 20 \| terminal<CR>
-nmap <silent> <C-w>' :vsplit \| wincmd l \| terminal<CR>
-nmap <C-n> :NERDTreeToggle<CR>
+nnoremap <Space>n :NERDTreeToggle<CR>
+nnoremap <Space>m :MPageToggle<CR>
+nnoremap <Space><Space> :
+nnoremap <silent> <C-w>" :split \| wincmd j \| resize 20 \| terminal<CR>
+nnoremap <silent> <C-w>' :vsplit \| wincmd l \| terminal<CR>
 
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
-
-nnoremap <Space><Space> :call deoplete#toggle()<CR>
 
 """ 
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
@@ -110,6 +111,10 @@ call plug#begin()
 Plug 'tomasiser/vim-code-dark', {'do':
     \'mkdir -p ~/.config/nvim/colors/; rsync -a colors/ ~/.config/nvim/colors/' }
 Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
+
+Plug 'lacombar/vim-mpage'
+let g:mpage_window_prefered_width = 40
+
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
@@ -119,8 +124,11 @@ Plug 'vim-scripts/DoxygenToolkit.vim'
 Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
+Plug 'mg979/vim-visual-multi'
 
 Plug 'preservim/tagbar'
+let g:tagbar_position = 'topleft vertical'
+
 Plug 'vim-syntastic/syntastic'
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
