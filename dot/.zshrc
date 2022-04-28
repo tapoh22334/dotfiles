@@ -22,6 +22,7 @@ antigen use oh-my-zsh
 
 # Load bundles from the default repo (oh-my-zsh)
 antigen theme romkatv/powerlevel10k
+antigen bundle 'endaaman/lxd-completion-zsh'
 
 antigen apply
 
@@ -49,6 +50,8 @@ _zshrc_notice_if_not_exist "$HOME/.anyenv"
 if [[ -z $DISPLAY ]]; then
   export DISPLAY=localhost:0.0
 fi
+_zshrc_echo "DISPLAY=""$DISPLAY"
+
 
 # settings for  WSL
 if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
@@ -82,6 +85,8 @@ if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
     _zshrc_echo "X server started"
   fi
 
+  export DOCKER_HOST=tcp://192.168.11.13:2375
+  _zshrc_echo "DOCKER_HOST=""$DOCKER_HOST"
   #if [[ $SHLVL -eq 1 ]] && ! pgrep -f docker > /dev/null; then
   #  sudo cgroupfs-mount && sudo service docker start
   #  :
