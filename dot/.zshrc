@@ -39,17 +39,22 @@ fi
 
 # Env manager
 if [[ -e "$HOME/.anyenv" ]]; then
-    export ANYENV_ROOT="$HOME/.anyenv"
-    export PATH="$ANYENV_ROOT/bin:$PATH"
-    eval "$(anyenv init -)"
+  export ANYENV_ROOT="$HOME/.anyenv"
+  export PATH="$ANYENV_ROOT/bin:$PATH"
+  eval "$(anyenv init -)"
 fi
 _zshrc_notice_if_not_exist "$HOME/.anyenv"
 
-## settings for  WSL
-if uname -r | grep -i 'microsoft' >/dev/null ; then
+# Remote access
+if [[ -z $DISPLAY ]]; then
+  export DISPLAY=localhost:0.0
+fi
+
+# settings for  WSL
+if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
   _zshrc_echo "WSL"
 
-  ## Browser
+  # Browser
   export BROWSER='/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'
   function chrome () {
     "$BROWSER" "$1"
@@ -57,7 +62,19 @@ if uname -r | grep -i 'microsoft' >/dev/null ; then
   function chromefile () {
     chrome "$(wslpath -w "$(realpath "$1")")"
   }
-  _zshrc_notice_if_not_exist "$BROWSER"
+
+  # open function
+  function open() {
+    if [ $# != 1 ]; then
+      explorer.exe .
+    else
+      if [ -e "$1" ]; then
+        cmd.exe /c start "$(wslpath -w "$1")" 2> /dev/null
+      else
+        echo "open: ""$1"" : No such file or directory" 
+      fi
+    fi
+  }
 
   # X11 server
   if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
@@ -72,16 +89,22 @@ if uname -r | grep -i 'microsoft' >/dev/null ; then
   #_zshrc_echo "docker daemon working"
 
 else
-  _zshrc_echo "Linux"
+  _zshrc_echo "Non WSL"
+  ## TODO set browser
+  export BROWSER=''
 fi
+_zshrc_notice_if_not_exist "$BROWSER"
 
-if [[ -z $DISPLAY ]]; then
-  export DISPLAY=:0.0
-fi
+if [[ -z "$SSH_CLIENT" ]]; then
+  if ! ps -p "$SSH_AGENT_PID" &> /dev/null ; then
+    eval "$(ssh-agent)"
+  fi
+  _zshrc_echo "ssh-agent is running"
 
-# tmux 
-if [[ $SHLVL -eq 1 ]]; then
-  tmux attach || tmux new
+  if ! ssh-add -l > /dev/null; then
+    ssh-add ~/.ssh/id_rsa &> /dev/null
+    _zshrc_echo "ssh key is added to the agent"
+  fi
 fi
 
 autoload -Uz promptinit && promptinit
@@ -132,7 +155,6 @@ _zshrc_notice_if_not_exist ~/.fzf.zsh
 
 export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -l -g ""'
 export FZF_DEFAULT_OPTS='--no-height --no-reverse'
-# Using highlight (http://www.andre-simon.de/doku/highlight/en/highlight.html)
 export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
@@ -151,3 +173,9 @@ export PATH="$PATH:$HOME/bin"
 # shellcheck source=/dev/null
 source "$HOME"/.config/broot/launcher/bash/br
 _zshrc_notice_if_not_exist "$HOME"/.config/broot/launcher/bash/br
+
+# tmux 
+if [[ $SHLVL -eq 1 ]]; then
+  tmux attach || tmux new
+fi
+
