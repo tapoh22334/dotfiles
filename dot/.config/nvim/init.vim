@@ -159,6 +159,10 @@ Plug 'jelera/vim-javascript-syntax', {'for': ['javascript']}
 Plug 'mattn/emmet-vim', {'for': ['html']}
 Plug 'rust-lang/rust.vim', {'for': ['rust']}
 
+Plug 'vimwiki/vimwiki'
+let g:vimwiki_list = [{'path': '~/vimwiki/',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
+
 "" Make sure you use single quotes
 "function! BuildYCM(info)
 "  " info is a dictionary with 3 fields

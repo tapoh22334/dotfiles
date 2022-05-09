@@ -8,6 +8,9 @@ figlet
 jq
 x11-apps
 
+## Network
+bridge-utils
+
 ## Search
 fzf
 silversearcher-ag
