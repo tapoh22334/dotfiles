@@ -160,8 +160,10 @@ Plug 'mattn/emmet-vim', {'for': ['html']}
 Plug 'rust-lang/rust.vim', {'for': ['rust']}
 
 Plug 'vimwiki/vimwiki'
-let g:vimwiki_list = [{'path': '~/vimwiki/',
-                      \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_list = [{'path': '~/wiki/',
+                      \ 'syntax': 'markdown',
+                      \ 'index': 'Home',
+                      \ 'ext': '.md'}]
 
 "" Make sure you use single quotes
 "function! BuildYCM(info)
