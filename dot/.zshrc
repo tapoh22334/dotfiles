@@ -137,6 +137,8 @@ setopt EXTENDED_HISTORY
 export LANG=en_US.UTF-8
 export LSCOLORS=gxfxxxxxcxxxxxxxxxgxgx
 
+export DOTFILES_HOME="$HOME/.dotfiles"
+
 #function
 function c() {
   builtin cd "$@" && ls -F
@@ -146,6 +148,10 @@ function mkcd(){
   mkdir -p "$1" && cd "$1" || return
 }
 
+function git_gen_message() {
+    git diff --cached --name-only | cat -
+}
+
 # alias
 alias l='ls -G'
 alias ll='ls -l -G'
@@ -153,6 +159,19 @@ alias la='ls -a -G'
 alias fcat='fzfcat'
 alias fcd='fzfcd'
 alias fvim='fzfvim'
+alias vizshrc='vim ~/.zshrc'
+alias vivimrc='vim ~/.vimrc'
+alias vidot='vim ~/.dotfiles'
+alias gfst='git fetch && git status'
+alias gcauto='git commit -am $(git_gen_message)'
+alias dt='cd $DOTFILES_HOME'
+alias dthelp='find $DOTFILES_HOME -type f | grep .zshrc | xargs grep -e "^alias" -e "^function"'
+alias dtcheck='(cd $DOTFILES_HOME; git fetch && git status) && shellcheck $DOTFILES_HOME/dot/.zshrc'
+
+# local wiki
+export WIKI_HOME="$HOME/wiki"
+_zshrc_notice_if_not_exist "$WIKI_HOME"
+alias wk='vim +VimwikiIndex'
 
 # shellcheck source=/dev/null
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
