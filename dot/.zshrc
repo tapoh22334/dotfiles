@@ -153,18 +153,23 @@ function _zshrc_git_gen_message() {
 }
 
 # alias
+## ls
 alias l='ls -G'
 alias ll='ls -l -G'
 alias la='ls -a -G'
+## fzf
 alias fcat='fzfcat'
 alias fcd='fzfcd'
 alias fvim='fzfvim'
+## vim
 alias viz='vim ~/.zshrc'
 alias vivimrc='vim ~/.vimrc'
 alias vidot='vim ~/.dotfiles'
+## git
 alias g='git'
 alias gfs='git fetch && git status'
 alias gcauto='git commit -am "$(_zshrc_git_gen_message)"'
+## dotfiles
 alias dt='cd $DOTFILES_HOME'
 alias dthelp='find $DOTFILES_HOME -type f | grep .zshrc | xargs grep -e "^alias" -e "^function"'
 alias dtcheck='(cd $DOTFILES_HOME; git fetch && git status) && shellcheck $DOTFILES_HOME/dot/.zshrc'
