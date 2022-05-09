@@ -114,7 +114,7 @@ fi
 
 autoload -Uz promptinit && promptinit
 prompt clint
-autoload -U compinit && compinit
+#autoload -U compinit && compinit
 
 # vi keymap
 bindkey -v
@@ -208,4 +208,3 @@ _zshrc_notice_if_not_exist "$HOME"/.config/broot/launcher/bash/br
 if [[ $SHLVL -eq 1 ]]; then
   tmux attach || tmux new
 fi
-
