@@ -159,7 +159,7 @@ alias la='ls -a -G'
 alias fcat='fzfcat'
 alias fcd='fzfcd'
 alias fvim='fzfvim'
-alias vizshrc='vim ~/.zshrc'
+alias viz='vim ~/.zshrc'
 alias vivimrc='vim ~/.vimrc'
 alias vidot='vim ~/.dotfiles'
 alias g='git'
@@ -172,7 +172,7 @@ alias dtcheck='(cd $DOTFILES_HOME; git fetch && git status) && shellcheck $DOTFI
 # local wiki
 export WIKI_HOME="$HOME/wiki"
 _zshrc_notice_if_not_exist "$WIKI_HOME"
-alias wk='vim +VimwikiIndex'
+alias wk='(cd $WIKI_HOME; vim +VimwikiIndex)'
 
 # shellcheck source=/dev/null
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
