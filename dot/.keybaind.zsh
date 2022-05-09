@@ -13,7 +13,7 @@ function __zsh_fzf_order_depth() {
     #    |xargs -n1 ls --color=always -1d 2>/dev/null \
     #    | fzf --ansi
 
-    BUFFER=${BUFFER}$(\
+    APPEND=$(\
         find . -maxdepth 4 -printf "%d %P\n"\
         |sort -n \
         |perl -pe 's/^\d+\s//;' \
@@ -21,7 +21,8 @@ function __zsh_fzf_order_depth() {
         |fzf --ansi --preview '(tree -Cd ./) 2> /dev/null | head -200'
     )
 
-    #CURSOR=${#BUFFER}
+    BUFFER=${BUFFER}${APPEND}
+    CURSOR=${#BUFFER}
 }
 
 zle -N __zsh_fzf_order_depth
