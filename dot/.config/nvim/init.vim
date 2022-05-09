@@ -1,6 +1,7 @@
-" general
+" Vimrc
 "
-"set nobackup
+" general
+" set nobackup
 set noswapfile
 set autoread
 set hidden

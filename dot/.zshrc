@@ -148,8 +148,8 @@ function mkcd(){
   mkdir -p "$1" && cd "$1" || return
 }
 
-function git_gen_message() {
-    git diff --cached --name-only | cat -
+function _zshrc_git_gen_message() {
+    echo -n "Update " ; git diff --name-only | xargs echo
 }
 
 # alias
@@ -162,8 +162,9 @@ alias fvim='fzfvim'
 alias vizshrc='vim ~/.zshrc'
 alias vivimrc='vim ~/.vimrc'
 alias vidot='vim ~/.dotfiles'
-alias gfst='git fetch && git status'
-alias gcauto='git commit -am $(git_gen_message)'
+alias g='git'
+alias gfs='git fetch && git status'
+alias gcauto='git commit -am "$(_zshrc_git_gen_message)"'
 alias dt='cd $DOTFILES_HOME'
 alias dthelp='find $DOTFILES_HOME -type f | grep .zshrc | xargs grep -e "^alias" -e "^function"'
 alias dtcheck='(cd $DOTFILES_HOME; git fetch && git status) && shellcheck $DOTFILES_HOME/dot/.zshrc'
