@@ -169,8 +169,11 @@ alias vidot='vim ~/.dotfiles'
 alias g='git'
 alias gfs='git fetch && git status'
 alias gcauto='git commit -am "$(_zshrc_git_gen_message)"'
+## broot
+alias bo="br --conf ~/.config/broot/select.toml"
+
 ## dotfiles
-alias dt='cd $DOTFILES_HOME'
+alias dt='vim $(bo $DOTFILES_HOME/dot -h)'
 alias dthelp='find $DOTFILES_HOME -type f | grep .zshrc | xargs grep -e "^alias" -e "^function"'
 alias dtcheck='(cd $DOTFILES_HOME; git fetch && git status) && shellcheck $DOTFILES_HOME/dot/.zshrc'
 
