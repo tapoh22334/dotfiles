@@ -10,6 +10,7 @@ x11-apps
 
 ## Network
 bridge-utils
+arp-scan
 
 ## Search
 fzf
