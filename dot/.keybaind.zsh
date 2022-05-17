@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+bindkey "jj" vi-cmd-mode
 bindkey '^a' vi-beginning-of-line
 bindkey '^e' vi-end-of-line
 bindkey '^k' kill-line
