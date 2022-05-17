@@ -180,7 +180,7 @@ alias dtcheck='(cd $DOTFILES_HOME; git fetch && git status) && shellcheck $DOTFI
 # local wiki
 export WIKI_HOME="$HOME/wiki"
 _zshrc_notice_if_not_exist "$WIKI_HOME"
-alias wk='(cd $WIKI_HOME; vim +VimwikiIndex)'
+alias wk='(cd $WIKI_HOME && git pull && vim +VimwikiIndex && gcauto && git push)'
 
 # shellcheck source=/dev/null
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

@@ -75,6 +75,7 @@ nmap ga <Plug>(EasyAlign)
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap j gj
 nnoremap k gk
+inoremap <silent> jj <ESC>
 inoremap <C-l> <Up><End><CR>
 "inoremap " ""<`0`><C-o>6<left>
 "inoremap ' ''<`0`><C-o>6<left>
