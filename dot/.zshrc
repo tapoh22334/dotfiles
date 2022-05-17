@@ -211,3 +211,6 @@ _zshrc_notice_if_not_exist "$HOME"/.config/broot/launcher/bash/br
 if [[ $SHLVL -eq 1 ]]; then
   tmux attach || tmux new
 fi
+
+# shellcheck source=/dev/null
+source /home/iwase/.config/broot/launcher/bash/br
