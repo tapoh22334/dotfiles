@@ -15,7 +15,6 @@ arp-scan
 traceroute
 
 ## Search
-fzf
 silversearcher-ag
 
 ## Editor
