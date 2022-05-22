@@ -110,6 +110,7 @@ if [[ -z "$SSH_CLIENT" ]]; then
     ssh-add ~/.ssh/id_rsa &> /dev/null
     _zshrc_echo "ssh key is added to the agent"
   fi
+  _zshrc_echo "$(ssh-add -l)"
 fi
 
 autoload -Uz promptinit && promptinit
@@ -207,8 +208,11 @@ export PATH="$PATH:$HOME/bin"
 source "$HOME"/.config/broot/launcher/bash/br
 _zshrc_notice_if_not_exist "$HOME"/.config/broot/launcher/bash/br
 
-# tmux 
-if [[ $SHLVL -eq 1 ]]; then
+# tmux
+if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
+    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+fi
+if [[ -z "$SSH_CLIENT" && $SHLVL -eq 1 ]]; then
   tmux attach || tmux new
 fi
 
