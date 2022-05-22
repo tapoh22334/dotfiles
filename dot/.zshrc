@@ -216,5 +216,7 @@ if [[ -z "$SSH_CLIENT" && $SHLVL -eq 1 ]]; then
   tmux attach || tmux new
 fi
 
+alias tspnet='TS_SOCKET=/var/tmp/socket.net tsp'
+
 # shellcheck source=/dev/null
 source /home/iwase/.config/broot/launcher/bash/br
