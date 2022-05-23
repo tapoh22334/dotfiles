@@ -10,6 +10,7 @@ x11-apps
 task-spooler
 socat
 lsof
+ffmpeg
 
 ## Network
 bridge-utils
