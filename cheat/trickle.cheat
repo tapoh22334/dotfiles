@@ -1,0 +1,11 @@
+% trickle, network
+
+# Restrict download bandwidth (KB/s)
+trickle -s -d <dl-speed> <command>
+
+# Restrict upload bandwidth (KB/s)
+trickle -s -u <ul-speed> <command>
+
+# Restrict upload/download bandwidth (KB/s)
+trickle -s -u <ul-speed> -d <dl-speed> <command>
+

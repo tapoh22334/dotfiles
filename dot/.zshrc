@@ -252,7 +252,6 @@ function tsp_print_summary () {
           <(tsp_queue_print_summary $TS_SOCK_CPU) \
           <(tsp_queue_print_summary $TS_SOCK_DISK)
 }
-
 tsp_print_summary
 
 # shellcheck source=/dev/null

@@ -1,0 +1,27 @@
+% youtube-dl, utility
+
+# Download specified url or id
+youtube-dl <url-or-id>
+
+# Download specified url or id with restricted bandwidth(speed:10K)
+youtube-dl --rate-limit <speed> <url-or-id>
+
+# Download specified url or id with restricted bandwidth(speed:10K)
+youtube-dl --rate-limit <speed> <url-or-id>
+
+# Download specified url or id with restricted bandwidth(speed:10K) into dir
+youtube-dl --rate-limit <speed> -o <dir>'/%(title)s.%(ext)s' <url-or-id>
+
+# Get movie information by json
+youtube-dl --j <url-or-id>
+
+# Get title and url
+youtube-dl --get-title --get-url "ytsearch<num-of-search>:<keyword>"
+
+# Get id
+youtube-dl --get-id "ytsearch<num-of-search>:<keyword>"
+
+# Download all in playlist
+while read id; do TS_SOCKET=/var/tmp/socket.net tsp youtube-dl -f bestvideo+bestaudio --merge-output-format mp4 -o <dir>'/%(title)s.%(ext)s' $id; done < <(youtube-dl --get-id <playlist-id>);
+
+$ dir:  find / -type d

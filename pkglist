@@ -17,6 +17,7 @@ bridge-utils
 arp-scan
 traceroute
 wondershaper
+trickle
 
 ## Search
 silversearcher-ag

@@ -1,0 +1,21 @@
+% wondershaper
+
+# Restrict download speed (Kbps)
+wondershaper -a <if> -d <dl-speed>
+
+# Restrict upload speed (Kbps)
+wondershaper -a <if> -u <ul-speed>
+
+# Restrict upload/download speed (Kbps)
+wondershaper -a <if> -d <dl-speed> -u <ul-speed>
+
+# get status
+wondershaper -sa <if>
+
+# Debian Restrict upload/download speed (Kbps)
+wondershaper <if> <dl-speed> <ul-speed>
+
+# Debian Restrict upload/download speed (Kbps)
+wondershaper clean <if>
+
+$ if:   ip link | grep -e '^[[:digit:]]\+' | fzf | cut -d':' -f2
