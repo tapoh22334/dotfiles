@@ -28,3 +28,4 @@
 	excludesfile = /home/iwase/.gitignore_global
 	editor = vim
     filemode=false
+	autocrlf = false

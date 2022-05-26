@@ -165,6 +165,7 @@ alias fvim='fzfvim'
 ## vim
 alias viz='vim ~/.zshrc'
 alias vivimrc='vim ~/.vimrc'
+alias vicheat='vim ~/.local/share/navi/cheats/cheat'
 alias vidot='vim ~/.dotfiles'
 ## git
 alias g='git'
@@ -216,7 +217,18 @@ if [[ -z "$SSH_CLIENT" && $SHLVL -eq 1 ]]; then
   tmux attach || tmux new
 fi
 
+function tsprelaunch () {
+    (
+        export TS_SOCKET=/var/tmp/socket.net; \
+        while read -r n; do \
+            tsp -i "$n" | grep Command | sed -e "s/Command: //g" | xargs tsp ;\
+        done < <(tsp -l | tr -s ' ' | awk '/finished/{ if ($4 == 1) { print $1 } }') ; \
+    )
+}
+
 alias tspnet='TS_SOCKET=/var/tmp/socket.net tsp'
+alias tspcpu='TS_SOCKET=/var/tmp/socket.cpu tsp'
+alias tspdisk='TS_SOCKET=/var/tmp/socket.disk tsp'
 
 # shellcheck source=/dev/null
 source /home/iwase/.config/broot/launcher/bash/br

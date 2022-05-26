@@ -25,16 +25,16 @@ sudo firewall-cmd --get-active-zones
 sudo firewall-cmd --zone=<zone> --list-ports
 
 # Allow the default HTTP and HTTPS port to firewall to be public (example <port>='80/tcp')
-sudo firewall-cmd --permanent --add-port=<port>
+sudo firewall-cmd --add-port=<port> --zone=<zone> --permanent 
 
 # Allow the default HTTP and HTTPS port to firewall to be public permanent(example <port>='80/tcp')
-sudo firewall-cmd --add-port=<port>
+sudo firewall-cmd --add-port=<port> --zone=<zone>
 
 # Remove ports from public permanent (example <port>='80/tcp')
 sudo firewall-cmd --permanent --zone=<zone> --remove-port=<port>
 
 # Remove ports from public (example <port>='80/tcp')
-sudo firewall-cmd --zone=<port> --remove-port=<port>
+sudo firewall-cmd --zone=<zone> --remove-port=<port>
 
 # Disable firewallD
 systemctl disable firewalld

@@ -16,6 +16,7 @@ ffmpeg
 bridge-utils
 arp-scan
 traceroute
+wondershaper
 
 ## Search
 silversearcher-ag
