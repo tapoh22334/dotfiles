@@ -217,18 +217,43 @@ if [[ -z "$SSH_CLIENT" && $SHLVL -eq 1 ]]; then
   tmux attach || tmux new
 fi
 
+export TS_SOCK_NET=/var/tmp/socket.net
+export TS_SOCK_CPU=/var/tmp/socket.cpu
+export TS_SOCK_DISK=/var/tmp/socket.disk
+alias tspnet='TS_SOCKET=$TS_SOCK_NET tsp'
+alias tspcpu='TS_SOCKET=$TS_SOCK_CPU tsp'
+alias tspdisk='TS_SOCKET=$TS_SOCK_DISK tsp'
+
 function tsprelaunch () {
     (
-        export TS_SOCKET=/var/tmp/socket.net; \
+        export TS_SOCKET=$TS_SOCK_NET; \
         while read -r n; do \
             tsp -i "$n" | grep Command | sed -e "s/Command: //g" | xargs tsp ;\
         done < <(tsp -l | tr -s ' ' | awk '/finished/{ if ($4 == 1) { print $1 } }') ; \
     )
 }
 
-alias tspnet='TS_SOCKET=/var/tmp/socket.net tsp'
-alias tspcpu='TS_SOCKET=/var/tmp/socket.cpu tsp'
-alias tspdisk='TS_SOCKET=/var/tmp/socket.disk tsp'
+function tsp_queue_print_summary () {
+    TARGET="$1"
+                                        echo "$TARGET"
+    TS_SOCKET="$TARGET" tsp -l \
+        | tee \
+        >(grep finished | wc -l | xargs echo "     |- finished : ") \
+        >(grep running  | wc -l | xargs echo "     |- running  : ") \
+        >(grep queued   | wc -l | xargs echo "     |- queued   : ") \
+        &> /dev/null
+}
+
+function tsp_print_summary () {
+    LIGHT_GREEN='\033[1;32m'
+    NC='\033[0m' # No Color
+    echo "${LIGHT_GREEN}●${NC} task-spooler"
+    paste <(tsp_queue_print_summary $TS_SOCK_NET) \
+          <(tsp_queue_print_summary $TS_SOCK_CPU) \
+          <(tsp_queue_print_summary $TS_SOCK_DISK)
+}
+
+tsp_print_summary
 
 # shellcheck source=/dev/null
 source /home/iwase/.config/broot/launcher/bash/br
