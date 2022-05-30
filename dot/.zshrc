@@ -172,8 +172,14 @@ alias nvi='navi'
 alias snvi='sudo navi --print'
 ## git
 alias g='git'
+alias gad='git add'
+alias gcm='git commit'
+alias gph='git push'
+alias gpl='git pull'
+alias gpf='git fetch'
 alias gfs='git fetch && git status'
-alias gcauto='git commit -am "$(_zshrc_git_gen_message)"'
+alias gcma='git commit -am "$(_zshrc_git_gen_message)"'
+alias gsync='git pull && gcma && git push'
 ## broot
 alias bo="br --conf ~/.config/broot/select.toml"
 
