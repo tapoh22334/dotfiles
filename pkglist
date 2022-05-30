@@ -42,3 +42,10 @@ ruby-dev
 
 ## ssl
 libssl-dev
+
+## shellinabox
+libssl-dev
+libpam0g-dev
+zlib1g-dev
+dh-autoreconf
+shellinabox
