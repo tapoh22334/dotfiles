@@ -11,6 +11,7 @@ task-spooler
 socat
 lsof
 ffmpeg
+parallel
 
 ## Network
 bridge-utils

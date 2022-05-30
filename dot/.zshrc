@@ -167,6 +167,9 @@ alias viz='vim ~/.zshrc'
 alias vivimrc='vim ~/.vimrc'
 alias vicheat='vim ~/.local/share/navi/cheats/cheat'
 alias vidot='vim ~/.dotfiles'
+## navi
+alias nvi='navi'
+alias snvi='sudo navi --print'
 ## git
 alias g='git'
 alias gfs='git fetch && git status'
@@ -253,6 +256,8 @@ function tsp_print_summary () {
           <(tsp_queue_print_summary $TS_SOCK_DISK)
 }
 tsp_print_summary
+
+export XAUTHORITY=$HOME/.Xauthority
 
 # shellcheck source=/dev/null
 source /home/iwase/.config/broot/launcher/bash/br
