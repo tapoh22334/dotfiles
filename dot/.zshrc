@@ -177,6 +177,11 @@ alias gcauto='git commit -am "$(_zshrc_git_gen_message)"'
 ## broot
 alias bo="br --conf ~/.config/broot/select.toml"
 
+## parallel
+alias parallel-cluster="parallel -J cluster"
+alias parallel-cluster-order="parallel -k -J cluster"
+alias parallel-local="parallel -J local"
+
 ## dotfiles
 alias dt='vim $(bo $DOTFILES_HOME/dot -h)'
 alias dthelp='find $DOTFILES_HOME -type f | grep .zshrc | xargs grep -e "^alias" -e "^function"'

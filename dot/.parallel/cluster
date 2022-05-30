@@ -1,0 +1,6 @@
+--sshlogin nuc11.lan
+--sshlogin segovia.lan
+--sshlogin yepes.lan
+--sshlogin bob.lan
+--sshlogin :
+--workdir .
