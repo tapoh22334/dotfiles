@@ -246,9 +246,9 @@ function tsp_queue_print_summary () {
                                         echo "$TARGET"
     TS_SOCKET="$TARGET" tsp -l \
         | tee \
-        >(grep finished | wc -l | xargs echo "     |- finished : ") \
-        >(grep running  | wc -l | xargs echo "     |- running  : ") \
-        >(grep queued   | wc -l | xargs echo "     |- queued   : ") \
+        >(grep -c finished | xargs echo "     |- finished : ") \
+        >(grep -c running  | xargs echo "     |- running  : ") \
+        >(grep -c queued   | xargs echo "     |- queued   : ") \
         &> /dev/null
 }
 
