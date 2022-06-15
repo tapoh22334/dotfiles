@@ -71,19 +71,18 @@ nnoremap <silent> <C-w>' :vsplit \| wincmd l \| terminal<CR>
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
+
 """ 
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap j gj
 nnoremap k gk
 inoremap <silent> jj <ESC>
 inoremap <C-l> <Up><End><CR>
-"inoremap " ""<`0`><C-o>6<left>
-"inoremap ' ''<`0`><C-o>6<left>
-"inoremap ( ()<`0`><C-o>6<left>
-"inoremap [ []<`0`><C-o>6<left>
-"inoremap { {}<`0`><C-o>6<left>
-"inoremap {<CR> {<CR>}<ESC>O
-"inoremap {;<CR> {<CR>};<ESC>O
+inoremap " ""<C-o>1<left>
+inoremap ' ''<C-o>1<left>
+inoremap ( ()<C-o>1<left>
+inoremap [ []<C-o>1<left>
+inoremap { {}<C-o>1<left>
 
 """ terminal settin """
 " nvim not opens terminal in current dir
@@ -121,6 +120,21 @@ Plug 'junegunn/goyo.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
+" CTRL-A CTRL-Q to select all and build quickfix list
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'vim-scripts/DoxygenToolkit.vim'
 Plug 'junegunn/vim-easy-align'
@@ -130,6 +144,40 @@ Plug 'mg979/vim-visual-multi'
 
 Plug 'preservim/tagbar'
 let g:tagbar_position = 'topleft vertical'
+let g:rust_use_custom_ctags_defs = 1
+let g:tagbar_type_rust = {
+  \ 'ctagsbin' : '/usr/local/bin/ctags',
+  \ 'ctagstype' : 'rust',
+  \ 'kinds' : [
+      \ 'n:modules',
+      \ 's:structures:1',
+      \ 'i:interfaces',
+      \ 'c:implementations',
+      \ 'f:functions:1',
+      \ 'g:enumerations:1',
+      \ 't:type aliases:1:0',
+      \ 'v:constants:1:0',
+      \ 'M:macros:1',
+      \ 'm:fields:1:0',
+      \ 'e:enum variants:1:0',
+      \ 'P:methods:1',
+  \ ],
+  \ 'sro': '::',
+  \ 'kind2scope' : {
+      \ 'n': 'module',
+      \ 's': 'struct',
+      \ 'i': 'interface',
+      \ 'c': 'implementation',
+      \ 'f': 'function',
+      \ 'g': 'enum',
+      \ 't': 'typedef',
+      \ 'v': 'variable',
+      \ 'M': 'macro',
+      \ 'm': 'field',
+      \ 'e': 'enumerator',
+      \ 'P': 'method',
+  \ },
+\ }
 
 Plug 'vim-syntastic/syntastic'
 set statusline+=%#warningmsg#
@@ -160,12 +208,44 @@ Plug 'hail2u/vim-css3-syntax', {'for': ['css','scss','sass']}
 Plug 'jelera/vim-javascript-syntax', {'for': ['javascript']}
 Plug 'mattn/emmet-vim', {'for': ['html']}
 Plug 'rust-lang/rust.vim', {'for': ['rust']}
+syntax enable
+filetype plugin indent on
 
 Plug 'vimwiki/vimwiki'
 let g:vimwiki_list = [{'path': '~/wiki/',
                       \ 'syntax': 'markdown',
                       \ 'index': 'Home',
                       \ 'ext': '.md'}]
+
+Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
+" NOTE: You can use other key to expand snippet.
+
+" Expand
+imap <expr> <C-k>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-k>'
+smap <expr> <C-k>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-k>'
+
+" Expand or jump
+imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+
+" Jump forward or backward
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+
+" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
+" See https://github.com/hrsh7th/vim-vsnip/pull/50
+"nmap        s   <Plug>(vsnip-select-text)
+"xmap        s   <Plug>(vsnip-select-text)
+"nmap        S   <Plug>(vsnip-cut-text)
+"xmap        S   <Plug>(vsnip-cut-text)
+
+" If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
+let g:vsnip_filetypes = {}
+let g:vsnip_filetypes.javascriptreact = ['javascript']
+let g:vsnip_filetypes.typescriptreact = ['typescript']
 
 "" Make sure you use single quotes
 "function! BuildYCM(info)
