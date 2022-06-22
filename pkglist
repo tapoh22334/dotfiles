@@ -12,6 +12,8 @@ socat
 lsof
 ffmpeg
 parallel
+taskwarrior
+smartmontools
 
 ## Network
 bridge-utils

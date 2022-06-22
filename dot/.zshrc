@@ -180,6 +180,13 @@ alias gpf='git fetch'
 alias gfs='git fetch && git status'
 alias gcma='git commit -am "$(_zshrc_git_gen_message)"'
 alias gsync='git pull && gcma && git push'
+## taskwarror
+alias t='task'
+alias ta='task add'
+alias td='task delete'
+alias tcmp='task completed'
+alias tbndn='task burndown'
+alias tsmr='task summary'
 ## broot
 alias bo="br --conf ~/.config/broot/select.toml"
 
@@ -196,7 +203,7 @@ alias dtcheck='(cd $DOTFILES_HOME; git fetch && git status) && shellcheck $DOTFI
 # local wiki
 export WIKI_HOME="$HOME/wiki"
 _zshrc_notice_if_not_exist "$WIKI_HOME"
-alias wk='(cd $WIKI_HOME && git pull && vim +VimwikiIndex && gcauto && git push)'
+alias wk='(cd $WIKI_HOME && git pull && vim +VimwikiIndex && gsync && git push)'
 
 # shellcheck source=/dev/null
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

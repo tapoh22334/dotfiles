@@ -1,0 +1,9 @@
+#!/bin/bash
+
+git clone https://github.com/universal-ctags/ctags.git /tmp/uctags
+pushd /tmp/uctags
+./autogen.sh
+./configure --prefix=/usr/local # defaults to /usr/local
+make
+sudo make install # may require extra privileges depending on where to install
+popd
