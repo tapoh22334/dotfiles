@@ -72,17 +72,19 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 
-""" 
+"""
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap j gj
 nnoremap k gk
 inoremap <silent> jj <ESC>
 inoremap <C-l> <Up><End><CR>
-inoremap " ""<C-o>1<left>
-inoremap ' ''<C-o>1<left>
-inoremap ( ()<C-o>1<left>
-inoremap [ []<C-o>1<left>
-inoremap { {}<C-o>1<left>
+inoremap " ""🍎<C-o>2<left>
+inoremap ' ''🍎<C-o>2<left>
+inoremap ( ()🍎<C-o>2<left>
+inoremap [ []🍎<C-o>2<left>
+inoremap { {}🍎<C-o>2<left>
+inoremap <> <>🍎<C-o>2<left>
+inoremap <C-k> <ESC>/🍎<CR>s
 
 """ terminal settin """
 " nvim not opens terminal in current dir
@@ -216,36 +218,6 @@ let g:vimwiki_list = [{'path': '~/wiki/',
                       \ 'syntax': 'markdown',
                       \ 'index': 'Home',
                       \ 'ext': '.md'}]
-
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
-" NOTE: You can use other key to expand snippet.
-
-" Expand
-imap <expr> <C-k>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-k>'
-smap <expr> <C-k>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-k>'
-
-" Expand or jump
-imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-
-" Jump forward or backward
-imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-
-" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
-" See https://github.com/hrsh7th/vim-vsnip/pull/50
-"nmap        s   <Plug>(vsnip-select-text)
-"xmap        s   <Plug>(vsnip-select-text)
-"nmap        S   <Plug>(vsnip-cut-text)
-"xmap        S   <Plug>(vsnip-cut-text)
-
-" If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
-let g:vsnip_filetypes = {}
-let g:vsnip_filetypes.javascriptreact = ['javascript']
-let g:vsnip_filetypes.typescriptreact = ['typescript']
 
 "" Make sure you use single quotes
 "function! BuildYCM(info)
