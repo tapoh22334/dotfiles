@@ -48,7 +48,8 @@ _zshrc_notice_if_not_exist "$HOME/.anyenv"
 
 # Remote access
 if [[ -z $DISPLAY ]]; then
-  export DISPLAY=localhost:0.0
+  export DISPLAY=$(ip route list default | awk '{print $3}'):0
+  export LIBGL_ALWAYS_INDIRECT=1
 fi
 _zshrc_echo "DISPLAY=""$DISPLAY"
 
@@ -56,6 +57,8 @@ _zshrc_echo "DISPLAY=""$DISPLAY"
 # settings for  WSL
 if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
   _zshrc_echo "WSL"
+
+  alias ps1='powershell.exe'
 
   # Browser
   export BROWSER='/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'

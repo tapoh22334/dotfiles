@@ -78,13 +78,16 @@ nnoremap j gj
 nnoremap k gk
 inoremap <silent> jj <ESC>
 inoremap <C-l> <Up><End><CR>
-inoremap " ""🍎<C-o>2<left>
-inoremap ' ''🍎<C-o>2<left>
-inoremap ( ()🍎<C-o>2<left>
-inoremap [ []🍎<C-o>2<left>
-inoremap { {}🍎<C-o>2<left>
-inoremap <> <>🍎<C-o>2<left>
-inoremap <C-k> <ESC>/🍎<CR>s
+inoremap " ""🥕<C-o>2<left>
+inoremap ' ''🥕<C-o>2<left>
+inoremap ( ()🥕<C-o>2<left>
+inoremap () ()
+inoremap [ []🥕<C-o>2<left>
+inoremap [] []
+inoremap { {}🥕<C-o>2<left>
+inoremap {} {}
+inoremap <> <>🥕<C-o>2<left>
+inoremap <C-k> <ESC>/🥕<CR>s
 
 """ terminal settin """
 " nvim not opens terminal in current dir
@@ -209,9 +212,9 @@ let g:html5_aria_attributes_complete = 1
 Plug 'hail2u/vim-css3-syntax', {'for': ['css','scss','sass']}
 Plug 'jelera/vim-javascript-syntax', {'for': ['javascript']}
 Plug 'mattn/emmet-vim', {'for': ['html']}
-Plug 'rust-lang/rust.vim', {'for': ['rust']}
-syntax enable
-filetype plugin indent on
+"Plug 'rust-lang/rust.vim', {'for': ['rust']}
+"syntax enable
+"filetype plugin indent on
 
 Plug 'vimwiki/vimwiki'
 let g:vimwiki_list = [{'path': '~/wiki/',
@@ -219,17 +222,11 @@ let g:vimwiki_list = [{'path': '~/wiki/',
                       \ 'index': 'Home',
                       \ 'ext': '.md'}]
 
-"" Make sure you use single quotes
-"function! BuildYCM(info)
-"  " info is a dictionary with 3 fields
-"  " - name:   name of the plugin
-"  " - status: 'installed', 'updated', or 'unchanged'
-"  " - force:  set on PlugInstall! or PlugUpdate!
-"  if a:info.status == 'installed' || a:info.force
-"    "!./install.py
-"    !python3 install.py --clangd-completer --rust-complete
-"  endif
-"endfunction
-"Plug 'ycm-core/YouCompleteMe', { 'do': function('BuildYCM') }
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
+let g:ycm_auto_trigger = 1
+let g:ycm_min_num_of_chars_for_completion = 3
+let g:ycm_autoclose_preview_window_after_insertion = 1
+set splitbelow
 
 call plug#end()
