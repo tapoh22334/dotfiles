@@ -71,7 +71,6 @@ nnoremap <silent> <C-w>' :vsplit \| wincmd l \| terminal<CR>
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
-
 """
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap j gj
@@ -85,6 +84,7 @@ inoremap () ()
 inoremap [ []🥕<C-o>2<left>
 inoremap [] []
 inoremap { {}🥕<C-o>2<left>
+inoremap {<CR> {<CR>}🥕<ESC>==O
 inoremap {} {}
 inoremap <> <>🥕<C-o>2<left>
 inoremap <C-k> <ESC>/🥕<CR>s
@@ -99,12 +99,6 @@ endif
 
 """" move window in order
 tnoremap <C-o> <C-\><C-n><C-w>
-
-"""""""""""" OpenBrowset """""""""""""""
-let g:openbrowser_browser_commands = [
-       \ {'name': '/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe',
-       \  'args': ['{browser}', '{uri}']} ]
-" command! OpenBrowserCurrent execute "OpenBrowser" expand("%")
 
 """""""""""" Plugin python """""""""""""
 autocmd BufRead,BufNewFile *.py setfiletype python
@@ -146,6 +140,13 @@ Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
 Plug 'mg979/vim-visual-multi'
+
+Plug 'tyru/open-browser.vim'
+let g:openbrowser_browser_commands = [
+       \ {'name': '/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+       \  'args': ['{browser}', '{uri}']} ]
+" command! OpenBrowserCurrent execute "OpenBrowser" expand("%")
+
 
 Plug 'preservim/tagbar'
 let g:tagbar_position = 'topleft vertical'

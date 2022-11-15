@@ -83,7 +83,8 @@ if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
   }
 
   # X11 server
-  if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
+  #if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
+  if [[ $SHLVL -eq 1 ]]; then
     '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch
     _zshrc_echo "X server started"
   fi
@@ -113,7 +114,7 @@ if [[ -z "$SSH_CLIENT" ]]; then
     ssh-add ~/.ssh/id_rsa &> /dev/null
     _zshrc_echo "ssh key is added to the agent"
   fi
-  _zshrc_echo "$(ssh-add -l)"
+  #_zshrc_echo "$(ssh-add -l)"
 fi
 
 autoload -Uz promptinit && promptinit
@@ -206,7 +207,7 @@ alias dtcheck='(cd $DOTFILES_HOME; git fetch && git status) && shellcheck $DOTFI
 # local wiki
 export WIKI_HOME="$HOME/wiki"
 _zshrc_notice_if_not_exist "$WIKI_HOME"
-alias wk='(cd $WIKI_HOME && git pull && vim +VimwikiIndex && gsync && git push)'
+alias wk='(cd $WIKI_HOME && git pull && vim +VimwikiIndex && gad . ; gsync && git push)'
 
 # shellcheck source=/dev/null
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
