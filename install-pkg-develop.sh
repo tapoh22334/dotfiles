@@ -21,7 +21,6 @@ EOS)
 PKGS=$(echo $PKGS; cat << EOS
 ctags
 cmake
-gdb
 clang-format
 EOS)
 
@@ -32,13 +31,14 @@ EOS)
 
 PKGS=$(echo $PKGS | grep -vE "^\s*#" | tr "\n" " " )
 
-## Search
 _PKGS_APT=$(cat << EOS
+gdb
 EOS
 )
 PKGS_APT=$( echo $_PKGS_APT | grep -vE "^\s*#" | tr "\n" " " )
 
 _PKGS_BREW=$(cat <<EOS
+
 EOS
 )
 PKGS_BREW=$( echo $_PKGS_BREW | grep -vE "^\s*#" | tr "\n" " " )
