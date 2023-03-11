@@ -57,14 +57,14 @@ au BufWritePost *.py,*.c,*.cpp,*.h silent! !eval 'ctags -R -o newtags; mv newtag
 "" remaps 
 
 """ plugin shortcut
-nnoremap <space>g :Ag<CR>
-nnoremap <space>f :Files ./<CR>
-nnoremap <space>F :Files ~/<CR>
-nnoremap <space>t :Tagbar<CR>
-nnoremap <space>b :Buffers<CR>
-nnoremap <Space>n :NERDTreeToggle<CR>
-nnoremap <Space>m :MPageToggle<CR>
-nnoremap <Space><Space> :
+let mapleader = "\<Space>"
+nnoremap <leader>g :Ag<CR>
+nnoremap <leader>f :Files ./<CR>
+nnoremap <leader>F :Files ~/<CR>
+nnoremap <leader>t :Tagbar<CR>
+nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>n :NERDTreeToggle<CR>
+nnoremap <leader>m :MPageToggle<CR>
 nnoremap <silent> <C-w>" :split \| wincmd j \| resize 20 \| terminal<CR>
 nnoremap <silent> <C-w>' :vsplit \| wincmd l \| terminal<CR>
 
@@ -229,5 +229,7 @@ let g:ycm_auto_trigger = 1
 let g:ycm_min_num_of_chars_for_completion = 3
 let g:ycm_autoclose_preview_window_after_insertion = 1
 set splitbelow
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 call plug#end()
