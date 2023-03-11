@@ -28,7 +28,8 @@ antigen apply
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 # shellcheck source=/dev/null
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+  [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || p10k configure
 
 # Editor
 export EDITOR="/usr/bin/nvim"
