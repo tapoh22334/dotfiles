@@ -26,7 +26,6 @@ set showmatch
 set laststatus=2
 " command completion
 set wildmode=list:longest
-
 " Tab space
 set list
 set listchars=tab:»-,trail:-,eol:↲,extends:»,precedes:«,nbsp:%
@@ -223,11 +222,7 @@ let g:vimwiki_list = [{'path': '~/wiki/',
                       \ 'index': 'Home',
                       \ 'ext': '.md'}]
 
-Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
-let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
-let g:ycm_auto_trigger = 1
-let g:ycm_min_num_of_chars_for_completion = 3
-let g:ycm_autoclose_preview_window_after_insertion = 1
-set splitbelow
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 call plug#end()
+
