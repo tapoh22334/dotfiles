@@ -224,5 +224,7 @@ let g:vimwiki_list = [{'path': '~/wiki/',
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+
 call plug#end()
 
