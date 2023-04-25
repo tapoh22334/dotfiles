@@ -29,9 +29,7 @@ antigen apply
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 # shellcheck source=/dev/null
 
-if [[ -z "$SSH_CLIENT" ]]; then
   [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || p10k configure
-fi
 
 # Editor
 export EDITOR="/usr/bin/nvim"
@@ -88,7 +86,7 @@ if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
   # X11 server
   #if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
   if [[ $SHLVL -eq 1 ]]; then
-    '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch
+    '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch &
     _zshrc_echo "X server started"
   fi
 
