@@ -25,7 +25,7 @@
 	tamplate = ~/.gitmessage.txt
 	template = /home/iwase/.gitmessage.txt
 [core]
-	excludesfile = /home/iwase/.gitignore_global
+	excludesFile = /Users/iwase/.gitignore_global
 	editor = vim
     filemode=false
 	autocrlf = false

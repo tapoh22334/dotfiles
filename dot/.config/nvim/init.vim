@@ -26,7 +26,6 @@ set showmatch
 set laststatus=2
 " command completion
 set wildmode=list:longest
-
 " Tab space
 set list
 set listchars=tab:»-,trail:-,eol:↲,extends:»,precedes:«,nbsp:%
@@ -233,12 +232,10 @@ let g:vimwiki_list = [{'path': '~/wiki/',
 "let g:ycm_min_num_of_chars_for_completion = 3
 "let g:ycm_autoclose_preview_window_after_insertion = 1
 "set splitbelow
-
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
 Plug '0xStabby/chatgpt-vim'
 
 call plug#end()
-
 
 colorscheme codedark
