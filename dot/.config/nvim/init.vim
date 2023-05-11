@@ -48,7 +48,6 @@ set hlsearch
 "colorscheme solarized
 set t_Co=256
 set t_ut=
-colorscheme codedark
 
 " tag
 set tags
@@ -108,8 +107,9 @@ syntax enable
 set visualbell t_vb=
 
 call plug#begin()
-Plug 'tomasiser/vim-code-dark', {'do':
-    \'mkdir -p ~/.config/nvim/colors/; rsync -a colors/ ~/.config/nvim/colors/' }
+"Plug 'tomasiser/vim-code-dark', {'do':
+"    \'mkdir -p ~/.config/nvim/colors/; rsync -a colors/ ~/.config/nvim/colors/' }
+Plug 'tomasiser/vim-code-dark'
 Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
 
 Plug 'lacombar/vim-mpage'
@@ -142,10 +142,13 @@ Plug 'tpope/vim-fugitive'
 Plug 'mg979/vim-visual-multi'
 
 Plug 'tyru/open-browser.vim'
-let g:openbrowser_browser_commands = [
-       \ {'name': '/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe',
-       \  'args': ['{browser}', '{uri}']} ]
-" command! OpenBrowserCurrent execute "OpenBrowser" expand("%")
+"let g:openbrowser_browser_commands = [
+"       \ {'name': '/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+"       \  'args': ['{browser}', '{uri}']} ]
+"command! OpenBrowserCurrent execute "OpenBrowser" expand("%")
+let g:netrw_nogx = 1 " disable netrw's gx mapping.
+nmap gx <Plug>(openbrowser-smart-search)
+vmap gx <Plug>(openbrowser-smart-search)
 
 
 Plug 'preservim/tagbar'
@@ -196,6 +199,7 @@ let g:syntastic_check_on_wq = 0
 
 let g:syntastic_sh_checkers = ['shellcheck']
 let g:syntastic_python_checkers = ['python', 'flake8', 'mypy']
+let g:syntastic_python_flake8_args = '--ignore="E501"'
 let g:syntastic_yaml_checkers = ['yamllint']
 let g:syntastic_json_checkers = ['jsonlint']
 
@@ -223,13 +227,18 @@ let g:vimwiki_list = [{'path': '~/wiki/',
                       \ 'index': 'Home',
                       \ 'ext': '.md'}]
 
-Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
-let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
-let g:ycm_auto_trigger = 1
-let g:ycm_min_num_of_chars_for_completion = 3
-let g:ycm_autoclose_preview_window_after_insertion = 1
-set splitbelow
+"Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+"let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
+"let g:ycm_auto_trigger = 1
+"let g:ycm_min_num_of_chars_for_completion = 3
+"let g:ycm_autoclose_preview_window_after_insertion = 1
+"set splitbelow
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+Plug '0xStabby/chatgpt-vim'
+
 call plug#end()
+
+
+colorscheme codedark
