@@ -84,8 +84,8 @@ if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
   }
 
   # X11 server
-  #if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
-  if [[ $SHLVL -eq 1 ]]; then
+  if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
+  #if [[ $SHLVL -eq 1 ]]; then
     '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch &
     _zshrc_echo "X server started"
   fi

@@ -1,5 +1,10 @@
 " Vimrc
 "
+
+if has('win32') || has('win64') || has('win16')
+  set shell=powershell.exe
+endif
+
 " general
 " set nobackup
 set noswapfile
@@ -19,7 +24,6 @@ set whichwrap=b,s,h,l,<,>,[,]
 set number
 set cursorline
 set virtualedit=onemore
-set smartindent
 " show pair brackets
 set showmatch
 " show status line
@@ -29,6 +33,7 @@ set wildmode=list:longest
 " Tab space
 set list
 set listchars=tab:»-,trail:-,eol:↲,extends:»,precedes:«,nbsp:%
+set smartindent
 set expandtab
 set tabstop=4
 set shiftwidth=4
@@ -75,17 +80,24 @@ nnoremap j gj
 nnoremap k gk
 inoremap <silent> jj <ESC>
 "inoremap <C-l> <Up><End><CR>
-inoremap " ""🥕<C-o>2<left>
-inoremap ' ''🥕<C-o>2<left>
-inoremap ( ()🥕<C-o>2<left>
+"inoremap " ""🥕<C-o>2<left>
+"inoremap ' ''🥕<C-o>2<left>
+"inoremap ( ()🥕<C-o>2<left>
+"inoremap [ []🥕<C-o>2<left>
+"inoremap { {}🥕<C-o>2<left>
+"inoremap {<CR> {<CR>}🥕<ESC>==O
+"inoremap <> <>🥕<C-o>2<left>
+"inoremap <C-k> <ESC>/🥕<CR>s
+inoremap " ""<C-o><left>
+inoremap ' ''<C-o><left>
+inoremap ( ()<C-o><left>
+inoremap [ []<C-o><left>
+inoremap { {}<C-o><left>
+inoremap {<CR> {<CR>}<ESC>==O
+inoremap <> <><C-o><left>
 inoremap () ()
-inoremap [ []🥕<C-o>2<left>
 inoremap [] []
-inoremap { {}🥕<C-o>2<left>
-inoremap {<CR> {<CR>}🥕<ESC>==O
 inoremap {} {}
-inoremap <> <>🥕<C-o>2<left>
-inoremap <C-k> <ESC>/🥕<CR>s
 
 """ terminal settin """
 " nvim not opens terminal in current dir
@@ -203,6 +215,7 @@ let g:syntastic_yaml_checkers = ['yamllint']
 let g:syntastic_json_checkers = ['jsonlint']
 
 Plug 'davidhalter/jedi-vim'
+let g:jedi#usages_command = ""
 
 Plug 'google/yapf', {'rtp': 'plugins/vim'}
 
@@ -212,6 +225,8 @@ let g:html5_event_handler_attributes_complete = 1
 let g:html5_rdfa_attributes_complete = 1
 let g:html5_microdata_attributes_complete = 1
 let g:html5_aria_attributes_complete = 1
+
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 Plug 'hail2u/vim-css3-syntax', {'for': ['css','scss','sass']}
 Plug 'jelera/vim-javascript-syntax', {'for': ['javascript']}
@@ -235,5 +250,8 @@ nmap <silent> gd <Plug>(coc-definition)
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 call plug#end()
+
+
+autocmd FileType go setlocal noexpandtab tabstop=2 shiftwidth=2
 
 colorscheme codedark
