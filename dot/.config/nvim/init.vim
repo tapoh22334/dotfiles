@@ -74,7 +74,7 @@ nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap j gj
 nnoremap k gk
 inoremap <silent> jj <ESC>
-inoremap <C-l> <Up><End><CR>
+"inoremap <C-l> <Up><End><CR>
 inoremap " ""🥕<C-o>2<left>
 inoremap ' ''🥕<C-o>2<left>
 inoremap ( ()🥕<C-o>2<left>
@@ -226,15 +226,13 @@ let g:vimwiki_list = [{'path': '~/wiki/',
                       \ 'index': 'Home',
                       \ 'ext': '.md'}]
 
-"Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
-"let g:ycm_global_ycm_extra_conf = '${HOME}/.ycm_extra_conf.py'
-"let g:ycm_auto_trigger = 1
-"let g:ycm_min_num_of_chars_for_completion = 3
-"let g:ycm_autoclose_preview_window_after_insertion = 1
-"set splitbelow
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug '0xStabby/chatgpt-vim'
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+inoremap <silent><expr> <C-l> coc#refresh()
+nmap <silent> gd <Plug>(coc-definition)
+
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 call plug#end()
 
