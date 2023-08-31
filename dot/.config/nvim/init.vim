@@ -231,9 +231,8 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'hail2u/vim-css3-syntax', {'for': ['css','scss','sass']}
 Plug 'jelera/vim-javascript-syntax', {'for': ['javascript']}
 Plug 'mattn/emmet-vim', {'for': ['html']}
-"Plug 'rust-lang/rust.vim', {'for': ['rust']}
-"syntax enable
-"filetype plugin indent on
+
+Plug 'maxmellon/vim-jsx-pretty'
 
 Plug 'vimwiki/vimwiki'
 let g:vimwiki_list = [{'path': '~/wiki/',
@@ -253,5 +252,6 @@ call plug#end()
 
 
 autocmd FileType go setlocal noexpandtab tabstop=2 shiftwidth=2
+autocmd FileType typescriptreact setlocal expandtab tabstop=2 shiftwidth=2
 
 colorscheme codedark
