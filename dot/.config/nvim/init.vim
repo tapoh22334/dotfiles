@@ -227,10 +227,12 @@ let g:html5_microdata_attributes_complete = 1
 let g:html5_aria_attributes_complete = 1
 
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+let g:go_fmt_command = "goimports"
 
 Plug 'hail2u/vim-css3-syntax', {'for': ['css','scss','sass']}
 Plug 'jelera/vim-javascript-syntax', {'for': ['javascript']}
-Plug 'mattn/emmet-vim', {'for': ['html']}
+Plug 'mattn/emmet-vim'
+let g:user_emmet_leader_key='<c-t>'
 
 Plug 'maxmellon/vim-jsx-pretty'
 
@@ -245,6 +247,9 @@ xmap <leader>a  <Plug>(coc-codeaction-selected)
 nmap <leader>a  <Plug>(coc-codeaction-selected)
 inoremap <silent><expr> <C-l> coc#refresh()
 nmap <silent> gd <Plug>(coc-definition)
+
+Plug 'SirVer/ultisnips'
+Plug 'mlaursen/vim-react-snippets'
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
