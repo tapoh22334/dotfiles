@@ -246,11 +246,14 @@ fi
 export TS_SOCK_NET=/var/tmp/socket.net
 export TS_SOCK_CPU=/var/tmp/socket.cpu
 export TS_SOCK_DISK=/var/tmp/socket.disk
-alias tspnet='TS_SOCKET=$TS_SOCK_NET tsp'
-alias tspcpu='TS_SOCKET=$TS_SOCK_CPU tsp'
-alias tspdisk='TS_SOCKET=$TS_SOCK_DISK tsp'
+alias tsp-net='TS_SOCKET=$TS_SOCK_NET tsp'
+alias tsp-net-list='TS_SOCKET=$TS_SOCK_NET tsp -l'
+alias tsp-cpu='TS_SOCKET=$TS_SOCK_CPU tsp'
+alias tsp-cpu-list='TS_SOCKET=$TS_SOCK_CPU tsp -l'
+alias tsp-disk='TS_SOCKET=$TS_SOCK_DISK tsp'
+alias tsp-disk-list='TS_SOCKET=$TS_SOCK_DISK tsp -l'
 
-function tsprelaunch () {
+function tsp-relaunch () {
     (
         export TS_SOCKET=$TS_SOCK_NET; \
         while read -r n; do \
@@ -259,7 +262,7 @@ function tsprelaunch () {
     )
 }
 
-function tsp_queue_print_summary () {
+function tsp-queue-print-summary () {
     TARGET="$1"
                                         echo "$TARGET"
     TS_SOCKET="$TARGET" tsp -l \
@@ -270,15 +273,15 @@ function tsp_queue_print_summary () {
         &> /dev/null
 }
 
-function tsp_print_summary () {
+function tsp-print-summary () {
     LIGHT_GREEN='\033[1;32m'
     NC='\033[0m' # No Color
     echo "${LIGHT_GREEN}●${NC} task-spooler"
-    paste <(tsp_queue_print_summary $TS_SOCK_NET) \
-          <(tsp_queue_print_summary $TS_SOCK_CPU) \
-          <(tsp_queue_print_summary $TS_SOCK_DISK)
+    paste <(tsp-queue-print-summary $TS_SOCK_NET) \
+          <(tsp-queue-print-summary $TS_SOCK_CPU) \
+          <(tsp-queue-print-summary $TS_SOCK_DISK)
 }
-tsp_print_summary
+tsp-print-summary
 
 export XAUTHORITY=$HOME/.Xauthority
 

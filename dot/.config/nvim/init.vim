@@ -74,6 +74,21 @@ nnoremap <silent> <C-w>' :vsplit \| wincmd l \| terminal<CR>
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+" Use K to show documentation in preview window
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
 """
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap j gj
@@ -252,6 +267,7 @@ Plug 'SirVer/ultisnips'
 Plug 'mlaursen/vim-react-snippets'
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+Plug 'vim-airline/vim-airline'
 
 call plug#end()
 
