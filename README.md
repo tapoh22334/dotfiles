@@ -5,8 +5,5 @@ Usage
 
 ```
 git clone https://github.com/iwase22334/dotfiles .dotfiles
-cd .dotfiles
-run-parts ./init
-./install-pkg.sh pkglist
-./install-bin.sh && ./install-dot.sh
+(cd .dotfiles && chmod +x setup.sh && ./setup.sh)
 ```
