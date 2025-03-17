@@ -1,6 +1,4 @@
 tap "homebrew/bundle"
-tap "homebrew/core"
-tap "homebrew/cask"
 
 brew "zsh"
 brew "stow"
