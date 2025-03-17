@@ -34,7 +34,7 @@ fi
 
 # Install packages from the list
 echo "🔧 Installing required packages..."
-xargs -n 1 brew install < "$BREW_LIST"
+brew bundle
 
 # Stow dotfiles
 echo "📂 Applying dotfiles configuration..."

@@ -2,9 +2,12 @@
 
 # If slow startup is observed, uncomment the following line to profile the startupy
 ENABLE_ZSH_PROFILING=false
-if ENABLE_ZSH_PROFILING; then
+if $ENABLE_ZSH_PROFILING; then
   zmodload zsh/zprof
 fi
+
+[[ -d ~/.linuxbrew ]] && eval "$(~/.linuxbrew/bin/brew shellenv)"
+[[ -d /home/linuxbrew/.linuxbrew ]] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Utility function for logging
 log_info() {
@@ -216,6 +219,6 @@ setup_x11_authority() {
 }
 setup_x11_authority
 
-if ENABLE_ZSH_PROFILING; then
+if $ENABLE_ZSH_PROFILING; then
   zprof
 fi
