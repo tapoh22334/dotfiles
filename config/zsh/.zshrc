@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/bin/zsh
+
+# If slow startup is observed, uncomment the following line to profile the startupy
+ENABLE_ZSH_PROFILING=false
+if ENABLE_ZSH_PROFILING; then
+  zmodload zsh/zprof
+fi
 
 # Utility function for logging
 log_info() {
@@ -44,17 +50,6 @@ install_vim_plug() {
 }
 install_vim_plug
 
-# Setup anyenv
-setup_anyenv() {
-  if [[ -d "$HOME/.anyenv" ]]; then
-    export ANYENV_ROOT="$HOME/.anyenv"
-    export PATH="$ANYENV_ROOT/bin:$PATH"
-    eval "$(anyenv init -)"
-  fi
-}
-check_exist "$HOME/.anyenv"
-setup_anyenv
-
 # Setup X11 forwarding for non-WSL environments
 setup_x11() {
   if [[ -z "$DISPLAY" ]]; then
@@ -66,6 +61,22 @@ setup_x11() {
 setup_x11
 
 # Setup for WSL environments
+# Setup browser function for WSL
+setup_wsl_browser() {
+  function chrome() {
+    "$BROWSER" "$1"
+  }
+  function chromefile() {
+    chrome "$(wslpath -w "$(realpath "$1")")"
+  }
+}
+# Start X11 server on WSL
+setup_x11_server() {
+  if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
+    '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch &
+    log_info "X server started"
+  fi
+}
 setup_wsl() {
   if grep -qEi "(Microsoft|WSL)" /proc/version; then
     log_info "WSL detected"
@@ -79,24 +90,6 @@ setup_wsl() {
   fi
 }
 setup_wsl
-
-# Setup browser function for WSL
-setup_wsl_browser() {
-  function chrome() {
-    "$BROWSER" "$1"
-  }
-  function chromefile() {
-    chrome "$(wslpath -w "$(realpath "$1")")"
-  }
-}
-
-# Start X11 server on WSL
-setup_x11_server() {
-  if [[ $SHLVL -eq 1 ]] && ! xset q &>/dev/null; then
-    '/mnt/c/Program Files/VcXsrv/xlaunch.exe' -run ~/.config.xlaunch &
-    log_info "X server started"
-  fi
-}
 
 # Setup SSH agent
 setup_ssh_agent() {
@@ -223,3 +216,6 @@ setup_x11_authority() {
 }
 setup_x11_authority
 
+if ENABLE_ZSH_PROFILING; then
+  zprof
+fi
