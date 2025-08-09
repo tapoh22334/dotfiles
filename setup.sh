@@ -29,11 +29,7 @@ fi
 # Stow dotfiles
 echo "📂 Applying dotfiles configuration..."
 
-PACKAGES=""
-find "$DOTFILES_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read -r line; do
-    PACKAGES="$PACKAGES $line"
-done
-
+PACKAGES=$(find "$DOTFILES_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | xargs)
 stow -v -t "$HOME" -d "$DOTFILES_DIR" $PACKAGES
 
 echo "✨ Dotfiles setup complete!"
