@@ -204,13 +204,13 @@ setup_bat() {
 }
 setup_bat
 
-# eza (ls replacement) with icons and git integration
+# eza (ls replacement) - minimal color, no icons
 setup_eza() {
   if command -v eza &> /dev/null; then
-    alias ls='eza --icons --git'
-    alias ll='eza -l --icons --git'
-    alias la='eza -la --icons --git'
-    alias tree='eza --tree --icons'
+    alias ls='eza --git'
+    alias ll='eza -l --git'
+    alias la='eza -la --git'
+    alias tree='eza --tree'
   fi
 }
 setup_eza
