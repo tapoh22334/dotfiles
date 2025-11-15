@@ -28,10 +28,33 @@ setup_antigen() {
   fi
   source "${antigen_path}"
   antigen use oh-my-zsh
+
+  # Completion and suggestion plugins
   antigen bundle 'endaaman/lxd-completion-zsh'
-  antigen bundle zsh-users/zsh-syntax-highlighting
+  antigen bundle zsh-users/zsh-completions
+  antigen bundle zsh-users/zsh-autosuggestions
+  antigen bundle jeffreytse/zsh-vi-mode
+  antigen bundle zdharma-continuum/fast-syntax-highlighting
+
+  # oh-my-zsh plugins
+  antigen bundle z
+
   antigen apply
 }
+
+# Configure zsh-vi-mode to preserve important keybindings
+zvm_after_init() {
+  # Preserve fzf keybindings
+  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+  # Re-bind Ctrl+R for fzf history search
+  bindkey '^R' fzf-history-widget
+
+  # Re-bind other useful keys if needed
+  bindkey '^T' fzf-file-widget
+  bindkey '^[c' fzf-cd-widget
+}
+
 setup_antigen
 
 # Starship prompt
@@ -126,11 +149,11 @@ setup_ssh_agent
 # }
 # initialize_prompt
 
-# Set vi keymap
-set_vi_keymap() {
-  bindkey -v
-}
-set_vi_keymap
+# Set vi keymap (now handled by zsh-vi-mode plugin)
+# set_vi_keymap() {
+#   bindkey -v
+# }
+# set_vi_keymap
 
 # Load custom keybindings if available
 load_keybindings() {
@@ -146,6 +169,8 @@ setup_history() {
   export HISTFILE="$HOME/.zsh_history"
   export HISTSIZE=100000 SAVEHIST=100000
   setopt hist_ignore_dups hist_save_no_dups EXTENDED_HISTORY
+  setopt share_history           # Share history across multiple zsh sessions
+  setopt inc_append_history      # Append to history immediately
 }
 setup_history
 
@@ -168,6 +193,27 @@ setup_git() {
   alias gcma='git commit -am "$(_zshrc_git_gen_message)"' gsync='git pull && gcma && git push'
 }
 setup_git
+
+# bat (cat replacement) with Catppuccin theme
+setup_bat() {
+  if command -v bat &> /dev/null; then
+    export BAT_THEME="Catppuccin-mocha"
+    alias cat='bat --style=plain --paging=never'
+    alias less='bat'
+  fi
+}
+setup_bat
+
+# eza (ls replacement) with icons and git integration
+setup_eza() {
+  if command -v eza &> /dev/null; then
+    alias ls='eza --icons --git'
+    alias ll='eza -l --icons --git'
+    alias la='eza -la --icons --git'
+    alias tree='eza --tree --icons'
+  fi
+}
+setup_eza
 
 # Parallel execution aliases
 setup_parallel() {
