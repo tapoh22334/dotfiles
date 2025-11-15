@@ -1,0 +1,6 @@
+# Copy this file to .gitconfig.local and fill in your information
+# .gitconfig.local is gitignored and won't be committed
+
+[user]
+	email = your-email@example.com
+	name = Your Name

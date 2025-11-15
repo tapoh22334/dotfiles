@@ -1,6 +1,8 @@
-[user]
-	email = iwase22334@gmail.com
-	name = iwase22334
+# Include local/private config (not tracked in git)
+# Create ~/.gitconfig.local with your email and name
+[include]
+	path = ~/.gitconfig.local
+
 [difftool]
 	prompt = true
 [diff]
