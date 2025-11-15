@@ -30,7 +30,19 @@ fi
 echo "📂 Applying dotfiles configuration..."
 
 PACKAGES=$(find "$DOTFILES_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | xargs)
-stow -v -t "$HOME" -d "$DOTFILES_DIR" $PACKAGES
+stow -R -v -t "$HOME" -d "$DOTFILES_DIR" $PACKAGES
+
+# Install tmux plugin manager (TPM) and plugins
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    echo "🔌 Installing tmux plugin manager (TPM)..."
+    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+fi
+
+# Install tmux plugins
+if [ -d "$HOME/.tmux/plugins/tpm" ]; then
+    echo "🎨 Installing tmux plugins..."
+    "$HOME/.tmux/plugins/tpm/bin/install_plugins"
+fi
 
 echo "✨ Dotfiles setup complete!"
 

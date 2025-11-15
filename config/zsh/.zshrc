@@ -28,19 +28,31 @@ setup_antigen() {
   fi
   source "${antigen_path}"
   antigen use oh-my-zsh
-  antigen theme romkatv/powerlevel10k
   antigen bundle 'endaaman/lxd-completion-zsh'
+  antigen bundle zsh-users/zsh-syntax-highlighting
   antigen apply
 }
 setup_antigen
 
-# Powerlevel10k configuration
-setup_p10k() {
-  [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || p10k configure
+# Starship prompt
+setup_starship() {
+  if command -v starship &> /dev/null; then
+    eval "$(starship init zsh)"
+  else
+    log_info "starship not found, please install it with: brew install starship"
+  fi
 }
-setup_p10k
+setup_starship
+
+# Apply Catppuccin theme to zsh-syntax-highlighting
+setup_catppuccin() {
+  local catppuccin_path="$HOME/.zshrc.d/.catppuccin.zsh"
+  [[ -f "$catppuccin_path" ]] && source "$catppuccin_path"
+}
+setup_catppuccin
 
 # Set default editor to Neovim
+export AIDER_EDITOR="nvim"
 export EDITOR="/usr/bin/nvim"
 alias vim='nvim'
 
@@ -107,12 +119,12 @@ setup_ssh_agent() {
 }
 setup_ssh_agent
 
-# Initialize prompt
-initialize_prompt() {
-  autoload -Uz promptinit && promptinit
-  prompt clint
-}
-initialize_prompt
+# Initialize prompt (disabled - using Starship)
+# initialize_prompt() {
+#   autoload -Uz promptinit && promptinit
+#   prompt clint
+# }
+# initialize_prompt
 
 # Set vi keymap
 set_vi_keymap() {
@@ -222,3 +234,6 @@ setup_x11_authority
 if $ENABLE_ZSH_PROFILING; then
   zprof
 fi
+
+source /home/iwase/.config/broot/launcher/bash/br
+export PATH="$(npm bin -g):$PATH"

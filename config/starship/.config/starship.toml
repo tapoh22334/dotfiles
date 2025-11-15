@@ -1,0 +1,203 @@
+# Starship configuration with Catppuccin Mocha theme
+
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Use Catppuccin Mocha color palette
+palette = "catppuccin_mocha"
+
+# Inserts a blank line between shell prompts
+add_newline = true
+
+# Change command timeout
+command_timeout = 1000
+
+# Catppuccin-optimized format - clean and balanced
+format = """
+$username$hostname$directory$git_branch$git_status$fill$time
+$character"""
+
+# Right prompt - command duration
+right_format = """$cmd_duration"""
+
+[character]
+success_symbol = "[❯](bold mauve)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
+
+[os]
+disabled = false
+style = "bold blue"
+
+[os.symbols]
+Alpine = " "
+Amazon = " "
+Android = " "
+Arch = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Linux = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Windows = "󰍲 "
+
+[username]
+style_user = "bold lavender"
+style_root = "bold red"
+format = "[$user]($style)"
+disabled = false
+show_always = true
+
+[hostname]
+ssh_only = false
+ssh_symbol = " "
+format = "[@$hostname]($style) "
+style = "bold yellow"
+disabled = false
+
+[directory]
+style = "bold blue"
+read_only = " 󰌾"
+truncation_length = 3
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+home_symbol = "~"
+
+[fill]
+symbol = " "
+
+[git_branch]
+symbol = ""
+style = "bold mauve"
+format = "[$symbol $branch]($style) "
+
+[git_status]
+style = "bold peach"
+format = '([$all_status$ahead_behind]($style) )'
+conflicted = "="
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕${ahead_count}⇣${behind_count}"
+up_to_date = ""
+untracked = "?${count}"
+stashed = '\$${count}'
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
+
+[time]
+disabled = false
+time_format = "%H:%M:%S"
+style = "bold lavender"
+format = "[$time]($style)"
+
+[cmd_duration]
+min_time = 1000
+style = "bold yellow"
+format = "󱎫 [$duration]($style)"
+show_milliseconds = false
+
+[python]
+symbol = " "
+style = "bold green"
+format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+
+[nodejs]
+symbol = " "
+style = "bold green"
+format = "via [$symbol($version )]($style)"
+
+[rust]
+symbol = " "
+style = "bold red"
+format = "via [$symbol($version )]($style)"
+
+[golang]
+symbol = " "
+style = "bold blue"
+format = "via [$symbol($version )]($style)"
+
+[java]
+symbol = " "
+style = "bold red"
+format = "via [$symbol($version )]($style)"
+
+[docker_context]
+symbol = " "
+style = "bold blue"
+format = "via [$symbol$context]($style) "
+only_with_files = true
+
+[package]
+symbol = "󰏗 "
+style = "bold teal"
+format = "via [$symbol$version]($style) "
+disabled = true
+
+[aws]
+symbol = " "
+style = "bold yellow"
+format = 'on [$symbol($profile )(\($region\) )]($style)'
+disabled = false
+
+[gcloud]
+symbol = "󱇶 "
+style = "bold blue"
+format = 'on [$symbol$account(@$domain)(\($region\))]($style) '
+disabled = false
+
+# Catppuccin Mocha color palette definition
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"

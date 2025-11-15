@@ -1,4 +1,19 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(mkfs)",
+      "Bash(dd if=/dev/zero)"
+    ]
+  },
   "hooks": {
     "Notification": [
       {
@@ -22,5 +37,6 @@
         ]
       }
     ]
-  }
+  },
+  "alwaysThinkingEnabled": false
 }

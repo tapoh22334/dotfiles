@@ -123,7 +123,7 @@ vim.api.nvim_set_keymap('i', '\'', "''<C-o><left>", { noremap = true })
 vim.api.nvim_set_keymap('i', '(', '()<C-o><left>', { noremap = true })
 vim.api.nvim_set_keymap('i', '[', '[]<C-o><left>', { noremap = true })
 vim.api.nvim_set_keymap('i', '{', '{}<C-o><left>', { noremap = true })
-vim.api.nvim_set_keymap('i', '<CR>', '{<CR>}<Esc>==O', { noremap = true })
+-- vim.api.nvim_set_keymap('i', '<CR>', '{<CR>}<Esc>==O', { noremap = true })
 
 -- Terminal mode mappings
 vim.api.nvim_set_keymap('t', '<C-o>', '<C-\\><C-n><C-w>', { noremap = true, silent = true })
@@ -157,8 +157,8 @@ vim.api.nvim_create_autocmd("FileType", {
   command = "setlocal expandtab tabstop=2 shiftwidth=2"
 })
 
--- Set colorscheme
-vim.cmd("colorscheme codedark")
+-- Set colorscheme (will be set after plugins are loaded)
+-- vim.cmd("colorscheme codedark")
 
 -- Plugin management using packer.nvim (replace with 'packer' or 'vim-plug' as necessary)
 local ensure_packer = function()
@@ -173,8 +173,84 @@ local ensure_packer = function()
 end
 
 local packer_bootstrap = ensure_packer()
-require('packer').startup(function()
-  -- Theme
+require('packer').startup(function(use)
+  -- Packer can manage itself
+  use 'wbthomason/packer.nvim'
+
+  -- Catppuccin theme
+  use {
+    "catppuccin/nvim",
+    as = "catppuccin",
+    config = function()
+      require("catppuccin").setup({
+        flavour = "mocha", -- latte, frappe, macchiato, mocha
+        background = {
+          light = "latte",
+          dark = "mocha",
+        },
+        transparent_background = false,
+        show_end_of_buffer = false,
+        term_colors = true,
+        dim_inactive = {
+          enabled = false,
+          shade = "dark",
+          percentage = 0.15,
+        },
+        no_italic = false,
+        no_bold = false,
+        no_underline = false,
+        styles = {
+          comments = { "italic" },
+          conditionals = { "italic" },
+          loops = {},
+          functions = {},
+          keywords = {},
+          strings = {},
+          variables = {},
+          numbers = {},
+          booleans = {},
+          properties = {},
+          types = {},
+          operators = {},
+        },
+        color_overrides = {},
+        custom_highlights = {},
+        integrations = {
+          coc_nvim = true,
+          cmp = true,
+          gitsigns = true,
+          nvimtree = true,
+          treesitter = true,
+          notify = false,
+          mini = {
+            enabled = true,
+            indentscope_color = "",
+          },
+          native_lsp = {
+            enabled = true,
+            virtual_text = {
+              errors = { "italic" },
+              hints = { "italic" },
+              warnings = { "italic" },
+              information = { "italic" },
+            },
+            underlines = {
+              errors = { "underline" },
+              hints = { "underline" },
+              warnings = { "underline" },
+              information = { "underline" },
+            },
+            inlay_hints = {
+              background = true,
+            },
+          },
+        },
+      })
+      vim.cmd.colorscheme "catppuccin"
+    end
+  }
+
+  -- Old theme (kept as backup)
   use 'tomasiser/vim-code-dark'
 
   -- NERDTree
