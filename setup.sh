@@ -30,7 +30,11 @@ fi
 echo "📂 Applying dotfiles configuration..."
 
 PACKAGES=$(find "$DOTFILES_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | xargs)
-stow -R -v -t "$HOME" -d "$DOTFILES_DIR" $PACKAGES
+for package in $PACKAGES; do
+  if ! stow -R -v -t "$HOME" -d "$DOTFILES_DIR" "$package" 2>&1; then
+    echo "⚠️  Warning: Could not stow $package (conflicts may exist)"
+  fi
+done
 
 # Setup git local configuration (user email and name)
 setup_git_local_config() {
