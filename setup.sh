@@ -86,5 +86,55 @@ if [ -d "$HOME/.tmux/plugins/tpm" ]; then
     "$HOME/.tmux/plugins/tpm/bin/install_plugins"
 fi
 
+# Install Neovim formatters and linters
+setup_nvim_tools() {
+  echo ""
+  echo "🔧 Installing Neovim formatters and linters..."
+
+  # Check if npm is available
+  if which npm >/dev/null 2>&1; then
+    echo "  📦 Installing Node.js tools..."
+    npm install -g prettier eslint 2>/dev/null || echo "  ⚠️  npm install failed (may need sudo or permissions)"
+  else
+    echo "  ⚠️  npm not found, skipping Node.js tools (prettier, eslint)"
+  fi
+
+  # Check if pip/pip3 is available
+  if which pip3 >/dev/null 2>&1; then
+    echo "  🐍 Installing Python tools..."
+    pip3 install --user black isort flake8 mypy cpplint 2>/dev/null || echo "  ⚠️  pip3 install failed"
+  elif which pip >/dev/null 2>&1; then
+    echo "  🐍 Installing Python tools..."
+    pip install --user black isort flake8 mypy cpplint 2>/dev/null || echo "  ⚠️  pip install failed"
+  else
+    echo "  ⚠️  pip not found, skipping Python tools (black, isort, flake8, mypy, cpplint)"
+  fi
+
+  # Install system tools via brew
+  echo "  🍺 Installing system tools..."
+  brew install shellcheck yamllint shfmt 2>/dev/null || echo "  ⚠️  Some brew packages may have failed"
+
+  # Rust tools (if cargo is available)
+  if which cargo >/dev/null 2>&1; then
+    echo "  🦀 Installing Rust tools..."
+    # stylua for Lua formatting
+    cargo install stylua 2>/dev/null || echo "  ⚠️  cargo install stylua failed"
+  else
+    echo "  ℹ️  cargo not found, skipping stylua (can use brew install stylua instead)"
+    brew install stylua 2>/dev/null || echo "  ⚠️  brew install stylua failed"
+  fi
+
+  echo "  ✅ Neovim tools installation complete"
+}
+setup_nvim_tools
+
+echo ""
 echo "✨ Dotfiles setup complete!"
+echo ""
+echo "📝 Next steps:"
+echo "  1. Restart your shell or run: source ~/.zshrc"
+echo "  2. Open Neovim: nvim"
+echo "  3. Lazy.nvim will auto-install plugins on first run"
+echo "  4. Run :checkhealth to verify everything works"
+echo ""
 
