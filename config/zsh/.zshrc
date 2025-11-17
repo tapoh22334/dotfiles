@@ -281,5 +281,4 @@ if $ENABLE_ZSH_PROFILING; then
   zprof
 fi
 
-source /home/iwase/.config/broot/launcher/bash/br
 export PATH="$(npm bin -g):$PATH"
