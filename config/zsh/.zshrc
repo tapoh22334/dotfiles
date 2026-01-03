@@ -281,4 +281,7 @@ if $ENABLE_ZSH_PROFILING; then
   zprof
 fi
 
+# User scripts
+[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
+
 export PATH="$(npm bin -g):$PATH"
