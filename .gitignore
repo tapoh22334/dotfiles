@@ -1,4 +1,5 @@
 .aider*
+.claude/
 
 # Local/private git configuration (email, name, etc)
 config/git/.gitconfig.local
