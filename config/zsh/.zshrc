@@ -285,3 +285,12 @@ fi
 [[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
 
 export PATH="$(npm bin -g):$PATH"
+
+# nested tmux: ssh 接続中だけ外側 tmux のキー処理を OFF にして二重プレフィックスを回避する。
+# trap EXIT で異常切断・Ctrl-C 時も必ず ON に戻す（zsh は関数内 EXIT トラップを関数終了時に実行）。
+ssh() {
+  [ -z "$TMUX" ] && { command ssh "$@"; return; }
+  tmux set prefix None \; set key-table off \; set status-style "fg=colour245,bg=colour238"
+  trap 'tmux set -u prefix ";" set -u key-table ";" set -u status-style' EXIT
+  command ssh "$@"
+}
