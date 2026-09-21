@@ -1,0 +1,23 @@
+repo: tapoh22334/ma-splitflap
+project:
+  number: 4
+  owner: tapoh22334
+
+epics:
+  - key: ipad
+    issue: 184
+    title: iPad版をApp Storeで公開リリースする
+    children:
+      - key: modes
+        issue: 185
+        title: 初見ユーザーが公開に耐えるモードだけを見られる状態にする
+        children:
+          - key: eval
+            issue: 186
+            title: 全モードをリリース基準で評価し公開/据え置きを判定する
+          - key: apply
+            issue: 187
+            title: 選定結果を公開モードセット(AVAILABLE_MODES)に反映する
+          - key: accept
+            issue: 188
+            title: 実機iPadで公開セットを受け入れ確認し記録に残す

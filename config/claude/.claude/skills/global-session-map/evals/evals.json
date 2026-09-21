@@ -1,0 +1,48 @@
+{
+  "skill_name": "global-session-map",
+  "notes": "Assertions graded by ../../../../tmp scratch grade.py; the mtime-trap check is the load-bearing one. Ground truth (2026-09-06): 39 sessions, 7 projects, 392 agents, span 2026-07-10..2026-09-06. Dormant projects: game-flood (08-03), ma-splitflap (08-04), c5017f (07-25), claude-aquarium (07-25).",
+  "evals": [
+    {
+      "id": 0,
+      "name": "month-scoped-overview",
+      "prompt": "8月って何やってたんだっけ？プロジェクト横断で見せて",
+      "expected_output": "August-only view grouped by project, using internal timestamps (not mtime), with agent counts as the weight signal.",
+      "files": [],
+      "assertions": [
+        "Covers >=3 distinct projects",
+        "Restricts to August rather than dumping everything since July",
+        "Does not attribute September activity to a project that stopped earlier (the mtime trap)",
+        "Conveys relative weight per project via agent or session counts",
+        "Names only projects that actually exist"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "cross-project-topic-search",
+      "prompt": "splitflap のトランジションまわり、どのセッションでやったか探して",
+      "expected_output": "Identifies session 6329b45a (ma-splitflap, feat-board-transition) as the real match, distinguishes same-branch-but-unrelated sessions, surfaces the claude-tower cross-project echo, and reports what the work concluded.",
+      "files": [],
+      "assertions": [
+        "Identifies the ma-splitflap board-transition session",
+        "Surfaces the cross-project claude-tower hit",
+        "Shows the evidence (turn or agent brief) that justified each match",
+        "Gives session ids or enough info to open them",
+        "Does not invent sessions or misattribute findings"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "what-to-resume",
+      "prompt": "最近さわってないプロジェクトある？そろそろ再開したいので全体の状況教えて",
+      "expected_output": "Global map ordered by weight with per-project dormancy from real last-activity dates, plus a grounded recommendation.",
+      "files": [],
+      "assertions": [
+        "Explicitly identifies dormant projects and how long",
+        "Bases dormancy on in-file timestamps, not mtime",
+        "Accounts for all 7 projects",
+        "Gives a usable recommendation grounded in the data",
+        "No invented projects, dates, or activity"
+      ]
+    }
+  ]
+}

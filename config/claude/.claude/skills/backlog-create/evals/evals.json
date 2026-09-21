@@ -1,0 +1,8 @@
+{
+  "skill_name": "backlog-create",
+  "evals": [
+    {"id":1,"eval_name":"rough-intention","prompt":"あとで queue-view の色を直したい。permission の ⚠ が薄くて見づらいんだよね。タスクにしといて。","expected_output":"A task written by meaning: title states the outcome (warn icon readable), description gives the why (hard to spot permission waits), acceptance criteria are verifiable — NOT a how/step list, NO line numbers.","files":[]},
+    {"id":2,"eval_name":"mid-work-bug","prompt":"レビュー中に見つけたんだけど、find_fork_parent が同一 mtime のとき親を非決定的に選んでる。今は直さないけど記録しといて。","expected_output":"Task capturing the bug by outcome+why (deterministic parent selection; nondeterminism is the defect) with verifiable acceptance criteria; searches for an existing task first; no implementation steps.","files":[]},
+    {"id":3,"eval_name":"multi-scope","prompt":"navigator のキー入力まわり、レビューして、遅延バグ直して、テストも足したい。backlog に積んで。","expected_output":"Recognizes THREE outcomes and splits into separate tasks (review / fix latency / add tests), each by meaning, rather than one giant how-to task. KISS: one outcome per task.","files":[]}
+  ]
+}

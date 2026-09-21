@@ -1,0 +1,46 @@
+{
+  "skill_name": "session-map",
+  "evals": [
+    {
+      "id": 0,
+      "name": "current-session",
+      "prompt": "このセッション、fork も含めて何が動いたのか tree で見せて",
+      "expected_output": "A tree of the current session: user turns as top-level nodes, subagents nested beneath the turn that spawned them, the one fork marked distinctly, each node one line with an outcome.",
+      "files": [],
+      "assertions": [
+        "Renders an actual indented tree (box-drawing or equivalent), not a flat list or prose",
+        "Identifies the fork and marks it distinctly from ordinary subagents",
+        "Reports the agent count as 45 (or states a count consistent with the session)",
+        "Shows nesting depth: at least one agent appears as a child of another agent, not just of a user turn",
+        "Each agent node carries an outcome, not only the task it was given",
+        "Groups agents under the user turn that caused them"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "project-wide",
+      "prompt": "このプロジェクトで今までどんなセッションがあった？ざっと知りたい",
+      "expected_output": "An index of all sessions in the project with titles, dates, branch and agent counts — not a full map of every session — followed by an offer to expand one.",
+      "files": [],
+      "assertions": [
+        "Lists multiple sessions (project-level view), not just the current one",
+        "Includes per-session metadata such as date, title, branch, or agent count",
+        "Does NOT dump a full tree for every session",
+        "Offers to drill into a specific session"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "agent-tracing",
+      "prompt": "収益化レポートのとき、市場調査って何個のエージェントが動いたんだっけ？どれが何を出したか知りたい",
+      "expected_output": "The market-research branch specifically: the parent research agent plus its nested children, each with what it returned. Should scope to the relevant subtree rather than dumping all 45 agents.",
+      "files": [],
+      "assertions": [
+        "Scopes to the market-research branch rather than listing all 45 agents",
+        "Shows the nested children spawned by the market research agent",
+        "States what each agent actually returned, not just its assignment",
+        "Answers the count question explicitly"
+      ]
+    }
+  ]
+}

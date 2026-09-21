@@ -1,0 +1,26 @@
+{
+  "skill_name": "repo-history",
+  "evals": [
+    {
+      "id": 0,
+      "name": "why-does-this-commit-exist",
+      "prompt": "claude-tower リポジトリで、bde0c61 のコミット (fix: count header bytes with wc -c, not awk length()) がなんでこうなってるのか経緯を教えて。なんでawkじゃだめだったの？",
+      "expected_output": "The commit is traced to the session that produced it, and the answer explains the reasoning found there: awk's length() counts characters in a UTF-8 locale and bytes in C, so the same header measured 219 locally and 77 on the CI runner. Should mention this was the last of several attempts (earlier commits in the same run chased _term_cols and stderr mixing) rather than presenting it as a single clean fix.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "what-happened-this-period",
+      "prompt": "~/working/claude-tower で 9月7日以降に何やったか、作業史としてまとめて。コミットだけじゃなくて何を指示されてそうなったのかも知りたい。",
+      "expected_output": "A timeline grouping the 10 commits under the user instructions that caused them. Should surface that 9 of them came from one instruction (「pushしてマージまでしておいて」) spanning ~22 hours, which is the fact git log alone cannot show. Branch names and whether work landed should appear.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "coverage-honesty",
+      "prompt": "claude-tower の全コミットについて、どれがどのセッション由来か対応づけて。全部わかる？",
+      "expected_output": "Reports that 68 of 258 commits are attributed, but immediately explains that 190 predate the oldest session on disk (2026-07-25) and so cannot be explained by any transcript — and that within the recorded era there are 0 unexplained commits. Must not present the raw 68/258 ratio as a failure or a limitation of the join.",
+      "files": []
+    }
+  ]
+}

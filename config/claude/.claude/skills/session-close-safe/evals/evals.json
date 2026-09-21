@@ -1,0 +1,26 @@
+{
+  "skill_name": "session-close-safe",
+  "evals": [
+    {
+      "id": 0,
+      "name": "concurrent-worktrees-normal-close",
+      "prompt": "そろそろこのセッション閉じたい。他のワークツリーでも作業してるから気をつけて。今 modeSettings 周りの変更が途中で、あと `?? dist-windows/` とか見慣れないのも git status に出てる。",
+      "expected_output": "git add -A を使わず自分の変更だけを名指しで add。dist-windows/ など帰属不明ファイルは残置(削除も add もしない)。git worktree list で他セッションを確認。失う文脈だけを記録。報告に「あえて触らなかったもの」が含まれる。",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "upstream-advanced-push-conflict",
+      "prompt": "作業一区切りついたから push して閉じたい。でもさっき別セッションで同じブランチいじってた気がする。",
+      "expected_output": "git fetch して上流が進んでいないか(fast-forward で押せるか)を確認。追いつけない/上流が先行していたら force push せず、push を保留してその旨を記録に残す。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "record-target-collision",
+      "prompt": "デバッグ途中だけど中断する。仮説は半分潰した。Backlog の該当タスクに残しといて。他のセッションでも同じタスク触ってるかも。",
+      "expected_output": "記録先(Backlogタスク/issue)の最終更新を確認。上書きでなく追記。自セッションが分かる一行(ワークツリー/ブランチ)を添える。位置ではなく意味(立てた仮説・潰した根拠・次に疑う場所)を記録。",
+      "files": []
+    }
+  ]
+}

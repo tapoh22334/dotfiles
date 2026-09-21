@@ -1,0 +1,56 @@
+{
+  "skill_name": "github-tickets",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "decompose-plan",
+      "prompt": "来週から予約システムのリニューアルに入る。決まってることを書くと: 今は電話でしかキャンセルできなくて、問い合わせの4割がキャンセル依頼。オペレーターが手作業で在庫戻してる / リニューアルでユーザー自身がWebからキャンセルできるようにしたい / キャンセルしたら在庫は即時戻す。今は手作業だから最大1日ラグがある / キャンセル期限は予約日の3日前まで。それ以降は電話のみ(ここは変えない) / 管理者側でもキャンセル理由を集計して見たいって要望が出てる。ただこれは優先度低い --- acme/booking のリポジトリでチケット化して、Projects(番号1)に載せたい。",
+      "expected_output": "An approval-gated proposal: a 3-level Epic/Story/Task tree rendered as a tree, with per-level template bodies, type::epic and type::story labels, Task unlabeled, and a plan to link via sub-issues and add to Project 1. Should not create anything yet.",
+      "files": [],
+      "assertions": [
+        {"id": "a0-1", "text": "Presents the hierarchy as a tree/outline for approval BEFORE creating anything, and does not actually create issues"},
+        {"id": "a0-2", "text": "Uses exactly three levels (Epic, Story, Task) with at least one Epic, 2+ Stories, and 2+ Tasks"},
+        {"id": "a0-3", "text": "Applies type::epic to Epics and type::story to Stories, and applies NO type label to Tasks"},
+        {"id": "a0-4", "text": "Epic body uses the 解決する課題 / 成功指標 headings; Story bodies use ユーザーストーリー / 受入条件; Task bodies use やること / 完了条件"},
+        {"id": "a0-5", "text": "Every Story is independently valuable and demonstrable (no Story that is merely a schema/infra change like 'add a column')"},
+        {"id": "a0-6", "text": "Captures the 3日前 cancellation deadline constraint somewhere (as scope boundary or acceptance criterion), not silently dropped"},
+        {"id": "a0-7", "text": "Represents the low-priority 管理者向けキャンセル理由集計 as a separate lower-priority item rather than mixing it into the main cancellation Story"},
+        {"id": "a0-8", "text": "Ticket bodies describe outcomes/meaning rather than implementation step lists (no 'まず〜次に〜' procedures)"},
+        {"id": "a0-9", "text": "Plans sub-issue linking using node IDs via addSubIssue (not issue numbers passed to GraphQL), if commands are shown"},
+        {"id": "a0-10", "text": "Mentions the missing 'project' scope / gh auth refresh requirement, OR correctly plans gh project item-add for Project 1"}
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "reorganize-existing",
+      "prompt": "issue が散らかってきたので整理してほしい。親子関係がついてないのが多いのと、粒度もバラバラな気がする。どう直すべきか教えて。 (given a repo state with 10 issues including orphans, a mis-leveled Story #15, and an oversized Story #40)",
+      "expected_output": "A proposal (not applied edits) that: nests orphans #32/#33/#34 under Story #35, flags #15 as a Task not a Story, flags #40 as too large and needing split into multiple Stories under an Epic, and leaves #31 (standalone bug) alone or notes it as fine.",
+      "files": [],
+      "assertions": [
+        {"id": "a1-1", "text": "Proposes changes rather than reporting them as already applied; no mutations executed"},
+        {"id": "a1-2", "text": "Identifies #15 (Elasticsearch のインデックス設計) as mis-leveled — a Task, not a Story, because it is not independently valuable"},
+        {"id": "a1-3", "text": "Identifies #40 (管理画面のリニューアル一式) as too large and proposes splitting it into multiple Stories, likely under an Epic"},
+        {"id": "a1-4", "text": "Proposes nesting the orphaned cancellation issues #32, #33, #34 under Story #35"},
+        {"id": "a1-5", "text": "Treats #31 (standalone paging bug) appropriately — left top-level or explicitly noted as fine standalone, NOT forced under a fabricated Epic"},
+        {"id": "a1-6", "text": "Notes that the cancellation cluster (#35 + children) has no Epic above it, or proposes one"},
+        {"id": "a1-7", "text": "Uses addSubIssue with replaceParent for re-parenting, and/or correctly describes the re-parent mechanic, if commands are shown"},
+        {"id": "a1-8", "text": "Gives reasoning for each granularity judgment rather than asserting it flatly"}
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "single-bug-no-ceremony",
+      "prompt": "さっき見つけたんだけど、予約一覧を2ページ目に行くと予約が0件になる。1ページ目は普通に出る。offsetの計算がおかしそう。チケット切っといて。",
+      "expected_output": "A single Task-level issue with no type label, no invented Epic or Story above it, using the やること/完了条件 template. Should NOT over-structure.",
+      "files": [],
+      "assertions": [
+        {"id": "a2-1", "text": "Proposes exactly ONE issue — does not invent an Epic or Story above a single bug"},
+        {"id": "a2-2", "text": "Applies no type:: label (Task level is unlabeled)"},
+        {"id": "a2-3", "text": "Uses the Task template headings やること / 完了条件"},
+        {"id": "a2-4", "text": "Title is a concrete outcome ending in a verb form, not a bare noun like 'ページングのバグ'"},
+        {"id": "a2-5", "text": "Preserves the reproduction detail (page 2 empty, page 1 fine) so the bug is actionable"},
+        {"id": "a2-6", "text": "Treats the user's offset guess as a hypothesis rather than baking it into 完了条件 as the mandated fix"}
+      ]
+    }
+  ]
+}
