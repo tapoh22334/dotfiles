@@ -33,10 +33,3 @@ jobs:
           #   後半は Ruby なのでシェルとして解析できない
           ignore_names: '*.zsh .zshrc fzfbookmark'
 
-      - name: Run apt
-        run: ./install-pkg.sh pkglist
-
-      - name: Run apt
-        run: |
-          ./install-bin.sh && ./install-dot.sh &&
-          find ${HOME} -type l
