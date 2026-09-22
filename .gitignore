@@ -1,5 +1,15 @@
 .aider*
+# ホーム直下等に現れる .claude/ は追跡しない。
+# ただしリポジトリ内の stow パッケージ config/claude/.claude/ は例外(下で再許可)
 .claude/
+!config/claude/.claude/
+!config/claude/.claude/**
 
 # Local/private git configuration (email, name, etc)
 config/git/.gitconfig.local
+
+# Claude skills: 実行時キャッシュと生成物 (セッション履歴を含むため公開しない)
+config/claude/.claude/skills/**/.cache.json
+config/claude/.claude/skills/**/__pycache__/
+config/claude/.claude/skills/**/*.pyc
+config/claude/.claude/skills/*-workspace/

@@ -1,0 +1,39 @@
+{
+  "skill_name": "backlog-suspend",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "レビューが3つ溜まってるけど今日はもう無理。TASK-7 のレビューは navigator-list.sh の途中まで見た。一旦離脱するので、明日再開しやすいようにしといて。",
+      "expected_output": "Lands in-flight work on a branch, records the review's concrete resume point into TASK-7 via the backlog CLI, handles the missing remote gracefully, reports what was parked/recorded, no destructive ops.",
+      "assertions": [
+        {"text": "Uncommitted changes are committed on a branch, not left dangling or committed onto the default branch"},
+        {"text": "A concrete resume point (which file, how far, what's left) is written to the Backlog task via the CLI, not vaguely 'continue review'"},
+        {"text": "The missing git remote is detected and handled gracefully (noted), not treated as a hard failure that abandons the ritual"},
+        {"text": "No destructive git op (merge to main, force push, delete) is performed without confirmation"},
+        {"text": "No stray summary file (*.md etc.) is created outside the Backlog record"}
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "デバッグ中だけど中断する。queue-view の ⚠ が出ない件を追ってて、classify_pane_wait は正しいところまで確認した。次は get_wait_state の tmux 分岐を疑ってる。店じまいして。",
+      "expected_output": "Records the debug hypotheses (classify_pane_wait cleared, next suspect get_wait_state's tmux branch) to the Backlog task, keeps the real fix, discards the easily-reproducible debug scratch, no destructive ops.",
+      "assertions": [
+        {"text": "The debug state (tested/ruled-out hypotheses and the next place to look) is recorded to the Backlog task via the CLI"},
+        {"text": "The reproducible debug scratch (_debug_scratch.sh) is discarded, not committed or left behind"},
+        {"text": "The real fix (queue-view.sh change) is preserved via commit, not lost"},
+        {"text": "No destructive git op is performed without confirmation"}
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "セッション閉じる。特に途中の作業はないけど念のため。",
+      "expected_output": "Recognizes the clean tree, does not invent Backlog tasks or create files, gives a short 'nothing to park, safe to close' report.",
+      "assertions": [
+        {"text": "Recognizes there is nothing meaningful in flight (clean working tree)"},
+        {"text": "Does NOT create a Backlog task (no 'task create' call)"},
+        {"text": "Does NOT create any new file for the sake of recording"},
+        {"text": "Gives a concise 'safe to close' confirmation rather than over-recording"}
+      ]
+    }
+  ]
+}

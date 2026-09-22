@@ -18,7 +18,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -28,12 +28,8 @@ jobs:
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:
-          ignore_names: '*.zsh'
+          # .zshrc/.zsh: zsh は ShellCheck 非対応 (SC1071)
+          # fzfbookmark: bash から ruby -x で自身を再実行する polyglot。
+          #   後半は Ruby なのでシェルとして解析できない
+          ignore_names: '*.zsh .zshrc fzfbookmark'
 
-      - name: Run apt
-        run: ./install-pkg.sh pkglist
-
-      - name: Run apt
-        run: |
-          ./install-bin.sh && ./install-dot.sh &&
-          find ${HOME} -type l

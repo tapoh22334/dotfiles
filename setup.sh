@@ -1,8 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -e
 
-BREW_LIST="./packages/brewlist-full"
 DOTFILES_DIR="./config"
 
 # Install Homebrew if not installed
@@ -29,7 +28,7 @@ fi
 # Stow dotfiles
 echo "📂 Applying dotfiles configuration..."
 
-PACKAGES=$(find "$DOTFILES_DIR" -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | xargs)
+PACKAGES=$(find "$DOTFILES_DIR" -maxdepth 1 -mindepth 1 -type d -printf '%f\n')
 for package in $PACKAGES; do
   if ! stow -R -v -t "$HOME" -d "$DOTFILES_DIR" "$package" 2>&1; then
     echo "⚠️  Warning: Could not stow $package (conflicts may exist)"
@@ -47,17 +46,17 @@ setup_git_local_config() {
     echo ""
 
     # Prompt for email
-    read -p "Git email address: " git_email
+    read -r -p "Git email address: " git_email
     while [ -z "$git_email" ]; do
       echo "Email cannot be empty."
-      read -p "Git email address: " git_email
+      read -r -p "Git email address: " git_email
     done
 
     # Prompt for name
-    read -p "Git user name: " git_name
+    read -r -p "Git user name: " git_name
     while [ -z "$git_name" ]; do
       echo "Name cannot be empty."
-      read -p "Git user name: " git_name
+      read -r -p "Git user name: " git_name
     done
 
     # Create .gitconfig.local

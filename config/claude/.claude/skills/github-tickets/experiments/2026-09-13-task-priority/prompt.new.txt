@@ -1,0 +1,190 @@
+You are an agent following the skill below (its full text is between the ===== lines). Read it carefully and follow it.
+
+=====
+---
+name: github-tickets
+description: Register and organize work as a three-level Epic/Story/Task hierarchy of GitHub Issues, linked with native sub-issues and tracked on a GitHub Project. Use whenever the user wants to file, plan, or restructure work in GitHub — チケット登録 / チケット切って / Epic に分解して / Story 起こして / issue 立てて / GitHub Projects に積んで / 親子つけて / 階層整理して / チケット一覧 / file tickets / break this into epics and stories / create issues for this / put it on the project board / re-parent these issues. Also use when a plan, design doc, or brainstorm needs to become tracked work, when existing issues are orphaned or wrongly nested, or when someone asks about ticket granularity. Prefer this over ad-hoc `gh issue create` any time more than one issue is involved or hierarchy matters.
+---
+
+# GitHub Tickets — Epic / Story / Task
+
+Turn work into a three-level hierarchy of GitHub Issues that a future reader can act on without asking anyone what was meant.
+
+Two commitments shape everything here:
+
+**意味論で書く (write by meaning).** A ticket records *what outcome is wanted and why* — not the steps to get there. Steps rot the moment someone finds a better approach, and a ticket full of steps quietly becomes a plan nobody is allowed to improve. Meaning survives. When you catch yourself writing "まず〜を修正し、次に〜" you are writing a plan; compress it back to the outcome and let the implementer choose the route.
+
+**KISS.** Every heading must earn its place. A ticket nobody finishes reading is worse than a short one. If a section would be empty, boilerplate, or a restatement of the title, drop it.
+
+## Which level is this?
+
+Level decisions (Epic / Story / Task, the Story test, what is not a ticket) live in
+the structuring-work skill. This skill assumes the tree already passed its 検査表.
+The one-line reminder: Epic = why invest (≥2 Stories, outcome outside the repo);
+Story = what someone can now do end to end; Task = a mergeable change with a
+完了条件 you can write today.
+
+## Body templates
+
+Use the level's template. Headings are fixed so tickets are scannable in bulk; content is yours.
+
+**Epic**
+```markdown
+## 解決する課題
+<Who is hurting, and how. Observable, not abstract.>
+
+## 成功指標
+<How we will know this worked. Prefer something measurable; a
+ clearly-observable qualitative change is acceptable when numbers
+ aren't available. Do not invent metrics you cannot read.>
+
+## スコープ外
+<Only what a reader would plausibly assume is included but isn't.
+ Omit this heading if nothing needs excluding.>
+```
+
+**Story**
+```markdown
+## ユーザーストーリー
+<Xとして>、<Yしたい>。<なぜならZだから>。
+
+## 受入条件
+- [ ] <Observable behavior, phrased so someone else can verify it>
+- [ ] <Include the notable failure/edge path, not just the happy one>
+```
+
+**Task**
+```markdown
+## やること
+<The change, in one or two sentences. The outcome — not the procedure.>
+
+## 完了条件
+- [ ] <What must be true when this is merged>
+```
+
+Write bodies in the language the user is using (default 日本語 here). Keep the headings as written above so tooling and skimming stay consistent.
+
+### Titles
+
+A title is read in a list of eighty. Make it stand alone: `<動詞で終わる具体的な成果>`.
+
+- Good: `予約のキャンセルをユーザー自身で行えるようにする`
+- Bad: `キャンセル機能` (a noun — what about it?), `修正` (nothing), `BookingService.cancel() を実装` (an implementation, not an outcome)
+
+## Labels
+
+- Epic → `type::epic`
+- Story → `type::story`
+- Task → **no type label**
+
+Task is the default level, so labeling it adds noise to every issue in the repo without distinguishing anything — the absence of a type label *is* the signal. Create the two labels if missing (see reference).
+
+### Project fields
+
+Priority lives on the Story. A Task's priority *is* its Story's; set it per Task and the board holds two answers that drift apart the first time one is edited.
+
+- Story → set Priority (when the board has the field)
+- Task → leave Priority blank, even though the board offers it
+- Epic → leave blank unless the user asks
+
+"The board has a Priority field" is not an instruction to fill it at every level. Size and other fields are not covered by this rule; use judgment.
+
+## Doing the work
+
+### 1. Understand before proposing
+
+Find out what's already there: the repo, the target Project, existing Epics that this work might belong under, and the label state. Never create a second Epic for something an existing Epic already covers — check first.
+
+If the user handed you a plan or doc, read it fully. The decomposition should reflect *their* structure where it exists, not one you invented.
+
+### 2. Take the structured tree, show it, then wait
+
+**REQUIRED INPUT:** the output of the structuring-work skill — its 検査表, the tree,
+and the 保留 list. If the request arrives as raw items (a plan, 残件, a Backlog.md
+export), run structuring-work first; do not slice the tree here. This skill does not
+change levels, merge, or drop nodes — it registers what structuring-work produced.
+
+Show the tree with titles and one-line intents before creating anything, and ask
+for approval.
+
+```
+Epic: 予約キャンセルをセルフサービス化する  [type::epic]
+├─ Story: ユーザーが自分の予約をキャンセルできる  [type::story]
+│  ├─ Task: キャンセルAPIエンドポイントを追加する
+│  └─ Task: 予約一覧にキャンセル操作を追加する
+└─ Story: キャンセル済み予約の在庫が即時戻る  [type::story]
+   └─ Task: 在庫解放をキャンセル処理に接続する
+```
+
+This gate matters because issue creation is hard to undo — closing an issue leaves it visible forever, and a mis-sliced hierarchy pollutes the repo and the board for everyone. The tree is cheap to fix; twelve issues are not.
+
+Approval is per-batch, not standing. A new request means a new tree and a new approval. If the user has explicitly said to run without stopping (e.g. full-auto), proceed — but still print the tree first so the record exists.
+
+### 3. Write a manifest, then apply it
+
+Write the approved tree as a YAML manifest and hand it to `scripts/apply.sh`. Do not issue `gh issue create` calls by hand for a tree.
+
+```bash
+export GT_SCRIPTS=~/.claude/skills/github-tickets/scripts
+
+$GT_SCRIPTS/apply.sh --check tickets.yml    # prerequisites. Writes nothing.
+$GT_SCRIPTS/apply.sh tickets.yml            # create, then verify
+```
+
+Schema and every field: `references/manifest.md`.
+
+The manifest is worth the extra file because it states the **intended end state**, which makes the result checkable. Ad-hoc `gh` calls leave nothing to compare against, so a step that fails after earlier steps succeeded looks identical to success — issues exist, labels are right, and only the board is empty. That is not hypothetical: a tree once landed with all five issues created, correctly labelled and linked, and **zero of them on the board**, because the `project` scope was missing. Nobody noticed for a month.
+
+Two properties of the script address that directly:
+
+- **Preflight refuses to write.** Auth, scopes, board reachability and labels are checked before the first `gh issue create`. A missing `project` scope stops the run *before* anything is created, rather than after. A half-built tree cannot be cleanly undone — closing an issue leaves it visible forever.
+- **Verify diffs the result.** After creating, every node is re-read from GitHub and compared to the manifest: issue exists, labels present, linked under the right parent, on the board if one was requested. Mismatches print as `✗` lines.
+
+If preflight reports a missing `project` scope, you have two honest options — ask the user to run `gh auth refresh -s project` themselves (interactive browser flow, you cannot do it for them), or drop the `project:` block and file issues only. **Do not create issues while intending to add the board "after"**; that is precisely the sequence that failed.
+
+### 4. Report
+
+Give the tree again with real issue numbers and links, and note anything you deviated from. Report the verify result — if any `✗` lines appeared, say so plainly rather than describing the run as successful.
+
+### Checking a tree later
+
+`apply.sh --verify tickets.yml` re-checks an existing tree against its manifest. Use it when someone asks "did that actually get registered?" — it answers in seconds what would otherwise mean clicking through the board. Keep the manifest next to the work (or in the repo) so this stays possible.
+
+To adopt tickets that predate the manifest, list their real numbers under `issue:` and run `--verify`.
+
+## Organizing existing tickets
+
+**Show the tree.** Read a parent's children and progress in one GraphQL round trip (`subIssuesSummary` gives total/completed/percentCompleted). Render it as the same tree shape as above, with state and progress. For a whole-project view, list project items and group by parent.
+
+**Re-parent.** `addSubIssue` with `replaceParent:true` moves a child that already has a parent — you don't remove first. Use `removeSubIssue` only to make an issue top-level. Confirm before re-parenting issues you didn't just create; someone may have nested them deliberately.
+
+**Fix granularity.** When asked to review structure, look for the failure modes that actually recur:
+- A Story that isn't independently valuable → it's a Task; find or create its real Story
+- A Task hanging directly off an Epic → the Story between them is missing and unnamed, which usually means the *why* was never articulated
+- A Story with a dozen Tasks, or whose acceptance criteria describe several unrelated behaviors → it's really multiple Stories
+- Orphan issues that belong under an existing Epic
+
+Report these as proposals with reasoning, not as edits already made. Granularity is a judgment call and the user owns it — you're surfacing what looks off, not correcting them.
+
+**Bulk status updates.** Set Project fields across many items. Before closing an Epic, check `subIssuesSummary.completed == total` and say so if it isn't — closing a parent with open children usually means something was forgotten rather than finished.
+
+## Mechanics
+
+`scripts/apply.sh` handles tree creation; prefer it over hand-rolled commands. For everything else — Project field resolution, bulk status updates, re-parenting, reading progress — the commands are in `references/gh-commands.md`. Read it before executing writes; the node-ID vs database-ID distinction and the `gh` version split on `item-edit` both cause silent failures if you improvise.
+
+Sub-issue GraphQL mutations take **node IDs** (`I_kwD...`), not issue numbers. The script resolves these for you; you only need this when working outside it.
+=====
+
+Situation (do NOT run any commands; this is a planning exercise, produce only the plan):
+The user asked: 「この木を tapoh22334/claude-tower の issue にして Project「All Work」(#4) に載せて。」
+The project board has these fields: Status (Backlog/Ready/In progress/In review/Done), Priority (P0/P1/P2), Size (XS/S/M/L/XL).
+
+Tree (already approved by the user):
+Story: fork で作ったセッションが Navigator の一覧で親の下に見える
+├─ Task: feature/fork-detection をレビュー指摘を解消して main に取り込む
+├─ Task: 親未登録の fork 行のタイトルも _fork_label 経由で生成する
+└─ Task: nearest-parent と compaction 非 fork の設計保証をテストで固定する
+Task: Navigator 起動時に端末を失った古い navigator プロセスを掃除する
+Task: navigator-list.sh を責務ごとに 500 行以下に分ける
+
+Output ONLY a markdown table with columns: title | level | Status | Priority | Size — one row per node, with the exact value you would set on the board for each field, or "(blank)" if you would leave it unset. Then one sentence explaining your Priority decision. Nothing else.

@@ -1,0 +1,23 @@
+{
+  "skill_name": "summarize",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I've been working in a session whose conversation transcript is in transcript.md (read it first). Now I type: /summarize",
+      "expected_output": "A 2-4 paragraph on-screen prose summary in Japanese covering what was done AND the reasoning/dead-ends (timezone bug isolated over several steps), then what's next. Should capture WHY (e.g. why the fix was astimezone not a naive offset), anchor to concrete files/commits, and flag the still-failing verification.",
+      "files": ["transcript.md"]
+    },
+    {
+      "id": 1,
+      "prompt": "Here's our conversation so far in transcript.md (read it). I'm stepping away for a bit — 一旦まとめて",
+      "expected_output": "Japanese prose summary. The 'next' section must correctly state the work is blocked on the user's review of a committed spec (awaiting approval before implementation), not invent next coding steps.",
+      "files": ["transcript.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "transcript.md has our short exchange. 今何してたっけ？",
+      "expected_output": "A single tight paragraph (NOT padded to 3-4) summarizing a small one-file change, ending cleanly with no fabricated pending work.",
+      "files": ["transcript.md"]
+    }
+  ]
+}

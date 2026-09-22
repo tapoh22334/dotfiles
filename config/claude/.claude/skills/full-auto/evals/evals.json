@@ -1,0 +1,26 @@
+{
+  "skill_name": "full-auto",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "fix-failing-tests-unattended",
+      "prompt": "WORKDIR のテストが落ちてるので全部直しといてください。離れるので完了まで回して。判断が要るところはお任せします。",
+      "expected_output": "All 4 tests pass; bugs fixed in calc.py (not tests weakened); final report leads with outcome, documents judgment calls as provisional/veto-able, ends with no question.",
+      "files": ["fixtures/calclib/calc.py", "fixtures/calclib/test_calc.py"]
+    },
+    {
+      "id": 1,
+      "eval_name": "ambiguous-csv-monthly-report",
+      "prompt": "WORKDIR の sales_2026H1.csv を集計して月次売上レポートを report.md に作ってください。細かい判断はお任せ、質問なしで最後までお願いします。",
+      "expected_output": "report.md exists with monthly totals; the negative-qty row and missing unit price are handled with explicitly documented provisional decisions (veto-able), not silently; no clarifying question asked.",
+      "files": ["fixtures/sales/sales_2026H1.csv"]
+    },
+    {
+      "id": 2,
+      "eval_name": "legacy-py2-migration",
+      "prompt": "WORKDIR の inventory.py が古い Python で動かなくなってます。python3 で動くところまで直してください。勝手に進めて、最後に何をどう判断したかだけ教えて。",
+      "expected_output": "Script runs under python3 on stock.csv producing correct totals (bolts 175, nuts 340, washers 90, TOTAL 605); migration verified by actually running it (evidence in report); decisions documented as provisional.",
+      "files": ["fixtures/legacy/inventory.py", "fixtures/legacy/stock.csv"]
+    }
+  ]
+}
