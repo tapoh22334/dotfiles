@@ -28,7 +28,10 @@ jobs:
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:
-          ignore_names: '*.zsh'
+          # .zshrc/.zsh: zsh は ShellCheck 非対応 (SC1071)
+          # fzfbookmark: bash から ruby -x で自身を再実行する polyglot。
+          #   後半は Ruby なのでシェルとして解析できない
+          ignore_names: '*.zsh .zshrc fzfbookmark'
 
       - name: Run apt
         run: ./install-pkg.sh pkglist
