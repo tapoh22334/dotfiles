@@ -1,0 +1,171 @@
+{
+  "_comment": "用途別の分類表。skill-map の木の第1階層になる。新しいスキルを作ったらここに1行足す。足さなくても接頭辞推定か未分類へ出るので木から消えることはない。要約は木のノードに出る一行なので、60字程度・体言止めで書く。",
+  "group_order": [
+    "開発の規律",
+    "パイプラインを回す",
+    "走らせ方を決める",
+    "調べる・俯瞰する",
+    "仕事を切る・追う",
+    "セッションを畳む・戻る",
+    "設計する・批評する",
+    "作り方を直す",
+    "書く・作る",
+    "ブラウザを操る",
+    "未分類"
+  ],
+  "groups": {
+    "調べる・俯瞰する": {
+      "intent": "既にあるものの形を掴む。読む・探す・木にする",
+      "skills": {
+        "treeview": "任意の対象を木にして一望させる汎用エンジン",
+        "skill-map": "保有スキルを用途別の木にして見せる (この道具)",
+        "diagramming": "構成図・フロー・シーケンスの意味論を正す",
+        "global-session-map": "全プロジェクト横断でセッションを時系列に並べる",
+        "session-map": "単一セッション内の subagent/fork を木にする",
+        "repo-history": "コミットと生成元セッションを繋いで経緯を説明する",
+        "prior-art-survey": "作る前に既にあるかを調べ、自作を例外にする",
+        "brief": "離れて戻った人に現在地と次の一手を再構成する",
+        "summarize": "離れる前に、やったこととその理由を短く残す"
+      }
+    },
+    "仕事を切る・追う": {
+      "intent": "やることをチケットの形にして、腐らせずに追う",
+      "skills": {
+        "structuring-work": "起票前に、何をどの階層で切るかを決める",
+        "github-tickets": "Epic/Story/Task を GitHub Issues と Project に載せる",
+        "backlog-create": "追うべき仕事を意味(成果と理由)で書き起こす",
+        "backlog-list": "いま追っているものを状態別に見せる",
+        "backlog-steward": "腐ったチケットを見つけて削除案を出す",
+        "backlog-suspend": "作業を畳み、再開に足る記録を残して離れる",
+        "backlog-resume": "記憶ではなく記録から作業を拾い直す"
+      }
+    },
+    "セッションを畳む・戻る": {
+      "intent": "複数セッションが走る環境で、安全に止めて安全に戻る",
+      "skills": {
+        "session-close-safe": "他セッションを壊さないことを確かめて閉じる"
+      }
+    },
+    "設計する・批評する": {
+      "intent": "作る前と作った後に、それが正しいかを問う",
+      "skills": {
+        "metalize": "独立した批評者を立て、やり方自体を一段上から疑う",
+        "adversarial-review": "主張が読みやすいかではなく真かを査読する",
+        "usecase-review": "掲げたユースケースが実在するかを監査する",
+        "five-whys-root-fix": "症状ではなく根本を特定して直す",
+        "hypothesis-loop": "仮説カードを収束させて着工可否を判定する",
+        "combinatorial-ideation": "探索軸の組み合わせを機械的に網羅して種を出す",
+        "appflood-design": "量産アプリが AI 製に見えないための規範を当てる",
+        "systematic-debugging": "推測で直す前に、構造化して原因を絞る",
+        "requesting-code-review": "レビューを依頼する側の作法",
+        "receiving-code-review": "レビューを受ける側の作法",
+        "academic-paper-reviewer": "多視点で論文を査読する"
+      }
+    },
+    "作り方を直す": {
+      "intent": "道具そのものを作る・直す。メタな層",
+      "skills": {
+        "skill-improver": "実運用で効かなかった指示物を診断して直す",
+        "skill-creator": "スキルを新規に作り、評価して反復改善する",
+        "claude-md-management": "CLAUDE.md を監査して整える",
+        "claude-code-setup": "自動化の導入候補を提案する",
+        "writing-skills": "スキルを書く・直すためのメタスキル",
+        "skill-development": "plugin 用のスキルを作る",
+        "agent-development": "subagent を作る",
+        "command-development": "スラッシュコマンドを作る",
+        "hook-development": "フックを作る",
+        "mcp-integration": "MCP サーバを組み込む",
+        "plugin-structure": "plugin の骨格を作る",
+        "plugin-settings": "plugin の設定を扱う",
+        "claude-md-improver": "CLAUDE.md を監査して改善する",
+        "claude-automation-recommender": "コードベースを見て自動化の候補を挙げる"
+      }
+    },
+    "書く・作る": {
+      "intent": "成果物そのものを作る。文章・UI・コード",
+      "skills": {
+        "doc-coauthoring": "文書を構造化された手順で共同執筆する",
+        "frontend-design": "UI を templated に見せない水準で設計する",
+        "academic-paper": "学術論文を執筆する",
+        "deep-research": "論文レベルの深掘り調査を行う"
+      }
+    },
+    "ブラウザを操る": {
+      "intent": "Chrome / Playwright を通して実際の画面を触る",
+      "skills": {
+        "chrome-devtools": "MCP 経由で Chrome を操作しデバッグする",
+        "chrome-devtools-cli": "シェルから Chrome DevTools を叩く",
+        "a11y-debugging": "アクセシビリティの不具合を調べる",
+        "cookie-debugging": "Cookie の挙動を調べる",
+        "debug-optimize-lcp": "LCP (表示速度) を計測して改善する",
+        "memory-leak-debugging": "JS/Node のメモリリークを診断する",
+        "troubleshooting": "DevTools と文書で不具合を切り分ける"
+      }
+    },
+    "未分類": {
+      "intent": "分類表に未登録。用途を決めて上のどれかへ移すか、新しい群を作る",
+      "skills": {}
+    },
+    "開発の規律": {
+      "intent": "1機能を作り切るまでの作法。ブレスト→計画→TDD→レビュー→取り込み",
+      "skills": {
+        "using-superpowers": "会話の冒頭でスキルの探し方と使い方を確立する",
+        "brainstorming": "作る前に意図・要求・設計を広げる (創作作業の必須前段)",
+        "writing-plans": "仕様から多段の実装計画を書き起こす",
+        "executing-plans": "書かれた計画を別セッションで確認点付きで実行する",
+        "subagent-driven-development": "独立したタスクを subagent に割って計画を実行する",
+        "dispatching-parallel-agents": "独立した2件以上の作業を並列エージェントに配る",
+        "test-driven-development": "実装の前にテストを書く",
+        "verification-before-completion": "完了を主張する前に最終確認する",
+        "finishing-a-development-branch": "完成した作業の取り込み方を決める",
+        "using-git-worktrees": "隔離が要る作業のため worktree を用意する"
+      }
+    },
+    "パイプラインを回す": {
+      "intent": "工程を定義された順に通す枠組み。value-forge と spec-kit の2系統",
+      "skills": {
+        "vf-pipeline": "value-forge の入口。工程の順序・ゲート・差し戻しを持つ",
+        "vf-orient": "作る前に作らない選択肢を潰し、価値仮説を固定する",
+        "vf-articulate": "境界面を分節し、造り込みの緩急を理解から導く",
+        "vf-requirements": "EARS 記法で検証可能な要求に落とす",
+        "vf-userflows": "利用者が辿る経路を漏れなく列挙する",
+        "vf-harness": "欠陥クラスにゲートを紐づけ品質戦略を組む",
+        "vf-construct": "実装を差し替え可能な外部エンジンへ委譲する",
+        "vf-acceptance": "受入シナリオを実行し価値の実現を判定する",
+        "vf-trace": "要求から結果までの鎖を辿り穴を列挙する",
+        "vf-retro": "工程自体を検査し、効かない工程を外す候補にする",
+        "speckit-constitution": "spec-kit のプロジェクト憲章を作る",
+        "speckit-specify": "自然言語から仕様を起こす",
+        "speckit-clarify": "仕様の曖昧な箇所を質問で詰める",
+        "speckit-plan": "仕様から設計・技術選定を導く",
+        "speckit-tasks": "設計から依存順のタスク一覧を作る",
+        "speckit-implement": "タスク一覧を消化して実装する",
+        "speckit-analyze": "spec/plan/tasks の整合を読み取りで検査する",
+        "speckit-checklist": "要求の網羅性を測るチェックリストを生成する",
+        "speckit-taskstoissues": "タスクを GitHub issue へ変換する",
+        "speckit-git-initialize": "spec-kit 用に git を初期化する",
+        "speckit-git-feature": "機能ブランチを採番して切る",
+        "speckit-git-validate": "ブランチ名が規約に沿うか検査する",
+        "speckit-git-commit": "spec-kit のコマンド完了後に自動コミットする",
+        "speckit-git-remote": "GitHub 連携のため remote を検出する"
+      }
+    },
+    "走らせ方を決める": {
+      "intent": "誰に・どの模型で・どこまで自走させるかを決める上位の指揮",
+      "skills": {
+        "full-auto": "質問せず推奨を採用して完了まで自走する",
+        "fable-orchestrate": "判断は fable、探索は sonnet に振り分けて費用を抑える",
+        "process-retro": "工程の振り返りを観測事実に基づいて回す",
+        "process-research-rounds": "全ゲートを通るのに中身が空な時、知識の欠落を研究で埋める",
+        "session-economics": "セッションを使い回すか作り直すかをトークン経済で決める",
+        "academic-pipeline": "学術研究のパイプライン全体を指揮する"
+      }
+    }
+  },
+  "prefix_fallback": {
+    "vf-": "パイプラインを回す",
+    "speckit-": "パイプラインを回す",
+    "backlog-": "仕事を切る・追う"
+  },
+  "unclassified_group": "未分類"
+}
