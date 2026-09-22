@@ -123,7 +123,11 @@ preflight() {
     note_fail "gh not authenticated — run: gh auth login"; return; fi
 
   local scopes; scopes="$(gh auth status 2>&1 | grep -o "'[a-z:,_ ]*'" | tr -d "'" | tr ',' '\n' | tr -d ' ')"
-  grep -qx "repo" <<<"$scopes" && note_ok "scope: repo" || note_fail "scope: repo missing"
+  if grep -qx "repo" <<<"$scopes"; then
+    note_ok "scope: repo"
+  else
+    note_fail "scope: repo missing"
+  fi
 
   if [ -n "$PROJ_NUM" ]; then
     if grep -qx "project" <<<"$scopes"; then
@@ -194,7 +198,7 @@ node_id() { gh api "repos/$REPO/issues/$1" -q .node_id; }
 
 if [ "$MODE" = apply ]; then
   echo; echo "creating:"
-  while IFS=$'\t' read -r key parent level title labels assignees milestone issue fields; do
+  while IFS=$'\t' read -r key parent level title labels assignees milestone issue _; do
     parent="$(unblank "$parent")"; labels="$(unblank "$labels")"; issue="$(unblank "$issue")"
     assignees="$(unblank "$assignees")"; milestone="$(unblank "$milestone")"
     if [ -n "$issue" ]; then
@@ -221,7 +225,8 @@ print(next(r['body'] for r in d['rows'] if r['key']=='$key'))")"
     [ -z "$parent" ] && continue
     cnum="$(grep -P "^\Q$key\E\t" "$STATE" | cut -f2)"
     pnum="$(grep -P "^\Q$parent\E\t" "$STATE" | cut -f2)"
-    [ -n "$cnum" ] && [ -n "$pnum" ] || continue
+    if [ -z "$cnum" ] || [ -z "$pnum" ]; then continue; fi
+    # shellcheck disable=SC2016  # $p/$c は GraphQL 変数。シェル展開させない
     link_err="$(gh api graphql -f query='
       mutation($p:ID!,$c:ID!){ addSubIssue(input:{issueId:$p, subIssueId:$c, replaceParent:true}){ clientMutationId } }' \
       -f p="$(node_id "$pnum")" -f c="$(node_id "$cnum")" 2>&1 >/dev/null)"
@@ -283,7 +288,11 @@ print(next((r['issue'] for r in d['rows'] if r['key']=='$parent'), ''))")"
       echo "  ✗ #$num NOT on project board"; FAIL=1
     fi
   fi
-  [ "$FAIL" -eq 0 ] && echo "  ✓ #$num $title" || true
+  if [ "$FAIL" -eq 0 ]; then
+    echo "  ✓ #$num $title"
+  else
+    true
+  fi
 done <<<"$ROWS_TSV"
 
 echo
