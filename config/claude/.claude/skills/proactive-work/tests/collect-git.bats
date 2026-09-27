@@ -65,3 +65,24 @@ finding() { jq -r --arg k "$1" '.[] | select(.repo | endswith("/repo")) | .[$k]'
   [ "$(jq '.[0].unpushed_branches | length' <<<"$output")" -eq 0 ]
   [ "$(jq -r '.[0].linked_worktree' <<<"$output")" = true ]
 }
+
+@test "detached HEAD is not reported as a merged branch" {
+  git -C "$R/repo" checkout -q --detach
+  run "$COLLECT" "$R/repo"
+  [ "$(jq length <<<"$output")" -eq 0 ]
+}
+
+@test "branch checked out in a live worktree is not proposed as merged" {
+  git -C "$R/repo" worktree add -q "$R/live" -b live-branch
+  run "$COLLECT" "$R/repo"
+  [ "$(jq length <<<"$output")" -eq 0 ]
+}
+
+@test "repo without a remote reports no unpushed branches" {
+  git init -q -b main "$R/local"
+  git -C "$R/local" commit -q --allow-empty -m init
+  git -C "$R/local" switch -q -c topic
+  git -C "$R/local" commit -q --allow-empty -m wip
+  run "$COLLECT" "$R/local"
+  [ "$(jq length <<<"$output")" -eq 0 ]
+}

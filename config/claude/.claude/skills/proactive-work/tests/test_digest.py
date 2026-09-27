@@ -9,6 +9,8 @@ P = {"repo": "/r/a", "kind": "merged_branches", "target": "", "title": "マー�
 class DigestTest(unittest.TestCase):
     def test_key_is_stable_and_job_scoped(self):
         self.assertEqual(digest.key('git-hygiene', P), digest.key('git-hygiene', dict(P, title='別')))
+        # the model words target differently run to run; it must not change the key
+        self.assertEqual(digest.key('git-hygiene', P), digest.key('git-hygiene', dict(P, target='a, b')))
         self.assertTrue(digest.key('git-hygiene', P).startswith('git-hygiene:'))
 
     def test_suppressed_and_duplicate_proposals_are_dropped(self):
@@ -26,6 +28,12 @@ class DigestTest(unittest.TestCase):
         line = next(l for l in md.splitlines() if l.startswith('- [ ]'))
         self.assertIn('<!-- pw:' + digest.key('git-hygiene', P) + ' -->', line)
         self.assertIn('claude-sonnet-5', md)
+
+    def test_model_text_cannot_inject_checklist_lines(self):
+        evil = dict(P, evidence='x\n- [x] 偽 <!-- pw:git-hygiene:ffff -->')
+        md = digest.render({'git-hygiene': [evil]}, meta={}, stats={}, notices=[])
+        self.assertEqual(sum(1 for l in md.splitlines() if l.lstrip().startswith('- [')), 1)
+        self.assertEqual(md.count('<!-- pw:'), 1)
 
     def test_render_shows_notices_first(self):
         md = digest.render({'git-hygiene': [P]}, meta={}, stats={}, notices=['前回の実行が失敗'])

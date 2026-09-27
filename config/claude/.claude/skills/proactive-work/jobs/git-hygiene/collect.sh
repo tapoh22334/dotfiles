@@ -55,16 +55,23 @@ collect_repo() {
         --argjson t "$(git -C "$repo" log -1 --format=%ct "$def")" '{branch: $b, count: $c, newest_commit: $t}')
     fi
 
-    unpushed=$(git -C "$repo" for-each-ref --format='%(refname:short)' refs/heads |
-      while read -r b; do
-        [ "$b" = "$def" ] && continue
-        n=$(git -C "$repo" rev-list --count "$b" --not --remotes 2>/dev/null || echo 0)
-        [ "$n" -gt 0 ] && jq -n --arg b "$b" --argjson c "$n" \
-          --argjson t "$(git -C "$repo" log -1 --format=%ct "$b")" '{branch: $b, commits: $c, newest_commit: $t}'
-      done | jq -s .)
+    # branches checked out in any worktree are someone's live work, never leftovers
+    local checked_out
+    checked_out=$(git -C "$repo" worktree list --porcelain | sed -n 's|^branch refs/heads/||p')
 
-    [ -n "$def" ] && merged=$(git -C "$repo" branch --format='%(refname:short)' --merged "$def" |
-      grep -vxF -e "$def" -e "$(git -C "$repo" branch --show-current)" | jq -R . | jq -s .)
+    # without a remote, "not on any remote" is true of every branch and says nothing
+    if [ -n "$(git -C "$repo" remote)" ]; then
+      unpushed=$(git -C "$repo" for-each-ref --format='%(refname:short)' refs/heads |
+        while read -r b; do
+          [ "$b" = "$def" ] && continue
+          n=$(git -C "$repo" rev-list --count "$b" --not --remotes 2>/dev/null || echo 0)
+          [ "$n" -gt 0 ] && jq -n --arg b "$b" --argjson c "$n" \
+            --argjson t "$(git -C "$repo" log -1 --format=%ct "$b")" '{branch: $b, commits: $c, newest_commit: $t}'
+        done | jq -s .)
+    fi
+
+    [ -n "$def" ] && merged=$(git -C "$repo" for-each-ref --format='%(refname:short)' --merged "$def" refs/heads |
+      grep -vxF -f <(printf '%s\n' "$def" "$checked_out") | jq -R . | jq -s .)
 
     stash_count=$(git -C "$repo" stash list | wc -l)
     stash_newest=$(git -C "$repo" log -g -1 --format=%ct refs/stash 2>/dev/null || echo 0)

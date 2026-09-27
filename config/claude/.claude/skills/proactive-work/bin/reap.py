@@ -5,8 +5,8 @@ A closed digest: [x] = adopted, [ ] = rejected. A digest left open for
 UNANSWERED_DAYS counts as unanswered and is listed for closing.
 
   reap.py reap <ledger>        stdin: `gh issue list --json number,state,createdAt,body`
-                               stdout: {"to_close": [...], "added": n}
-  reap.py suppressed <ledger>  keys rejected in the last SUPPRESS_DAYS, one per line
+                               stdout: {"to_close": [...], "added": n, "open_keys": [...]}
+  reap.py suppressed <ledger>  keys answered in the last SUPPRESS_DAYS, one per line
   reap.py stats <ledger>       per-job counts and adoption rate as JSON
 """
 import datetime
@@ -44,30 +44,31 @@ def created_ts(issue):
 def reap(issues, ledger_path, now=None):
     now = time.time() if now is None else now
     done = {r['issue'] for r in read_ledger(ledger_path)}
-    rows, to_close = [], []
+    rows, to_close, open_keys = [], [], []
     for issue in issues:
-        if issue['number'] in done:
-            continue
         closed = issue['state'].upper() == 'CLOSED'
         expired = not closed and now - created_ts(issue) >= UNANSWERED_DAYS * DAY
-        if not (closed or expired):
+        if expired:
+            to_close.append(issue['number'])   # again, if an earlier close failed
+        elif not closed:
+            open_keys += [k for k, _ in parse_items(issue['body'])]
+        if issue['number'] in done or not (closed or expired):
             continue
         for key, checked in parse_items(issue['body']):
             verdict = 'unanswered' if expired else ('adopted' if checked else 'rejected')
             rows.append({'ts': int(now), 'issue': issue['number'], 'key': key, 'verdict': verdict})
-        if expired:
-            to_close.append(issue['number'])
     if rows:
         with open(ledger_path, 'a') as f:
             for r in rows:
                 f.write(json.dumps(r, ensure_ascii=False) + '\n')
-    return {'to_close': to_close, 'added': len(rows)}
+    return {'to_close': to_close, 'added': len(rows), 'open_keys': sorted(set(open_keys))}
 
 
 def suppressed(ledger_path, now=None):
     now = time.time() if now is None else now
+    # adopted items are still being acted on; rejected ones were declined
     return sorted({r['key'] for r in read_ledger(ledger_path)
-                   if r['verdict'] == 'rejected' and now - r['ts'] < SUPPRESS_DAYS * DAY})
+                   if r['verdict'] in ('adopted', 'rejected') and now - r['ts'] < SUPPRESS_DAYS * DAY})
 
 
 def stats(ledger_path):

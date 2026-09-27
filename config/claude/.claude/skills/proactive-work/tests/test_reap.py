@@ -43,14 +43,24 @@ class ReapTest(unittest.TestCase):
         self.assertEqual({r['verdict'] for r in self.rows()}, {'unanswered'})
         self.assertEqual(out['to_close'], [3])
 
+    def test_expired_issue_left_open_after_failed_close_is_closed_again(self):
+        reap.reap([issue(3, 'OPEN', iso(NOW - 15 * DAY))], self.ledger, now=NOW)
+        out = reap.reap([issue(3, 'OPEN', iso(NOW - 15 * DAY))], self.ledger, now=NOW)
+        self.assertEqual(out['to_close'], [3])
+        self.assertEqual(len(self.rows()), 2)
+
+    def test_open_digest_keys_are_reported_for_suppression(self):
+        out = reap.reap([issue(2, 'OPEN', iso(NOW - 3 * DAY))], self.ledger, now=NOW)
+        self.assertEqual(out['open_keys'], ['git-hygiene:aaa', 'git-hygiene:bbb'])
+
     def test_reaping_is_idempotent(self):
         reap.reap([issue(1, 'CLOSED', iso(NOW - DAY))], self.ledger, now=NOW)
         reap.reap([issue(1, 'CLOSED', iso(NOW - DAY))], self.ledger, now=NOW)
         self.assertEqual(len(self.rows()), 2)
 
-    def test_suppressed_keys_are_recent_rejections(self):
+    def test_suppressed_keys_are_recent_answers(self):
         reap.reap([issue(1, 'CLOSED', iso(NOW - DAY))], self.ledger, now=NOW)
-        self.assertEqual(reap.suppressed(self.ledger, now=NOW), ['git-hygiene:bbb'])
+        self.assertEqual(reap.suppressed(self.ledger, now=NOW), ['git-hygiene:aaa', 'git-hygiene:bbb'])
         self.assertEqual(reap.suppressed(self.ledger, now=NOW + 31 * DAY), [])
 
     def test_stats_per_job(self):

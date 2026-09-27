@@ -49,9 +49,13 @@ trap on_exit EXIT
 
 # 1. gate
 stage=gate
-gate_json=$(python3 "$HERE/bin/gate.py") && gate_ok=1 || gate_ok=0
-window=$(jq '.metrics.window_resets_at // 0' <<<"$gate_json")
-if [ "$gate_ok" -eq 0 ] && [ "$force" -eq 0 ]; then
+gate_rc=0
+gate_json=$(python3 "$HERE/bin/gate.py") || gate_rc=$?
+window=$(jq '.metrics.window_resets_at // 0' <<<"$gate_json" 2>/dev/null || echo 0)
+if [ "$gate_rc" -ge 2 ] || [ -z "$gate_json" ]; then
+  log "gate crashed (rc=$gate_rc): $gate_json"; exit 1          # recorded as failed
+fi
+if [ "$gate_rc" -ne 0 ] && [ "$force" -eq 0 ]; then
   log "gate closed: $gate_json"
   exit 0
 fi
@@ -67,6 +71,7 @@ jq -e '.authMethod == "claude.ai" and .subscriptionType == "max"' <<<"$auth" >/d
 
 # 3. reap last digests' answers into the ledger
 stage=reap
+: >"$tmp/reap.json"
 if [ "$dry" -eq 0 ]; then
   gh issue list -R "$REPO" --label digest --state all --limit 50 --json number,state,createdAt,body |
     python3 "$HERE/bin/reap.py" reap "$STATE/ledger.jsonl" >"$tmp/reap.json"
@@ -75,12 +80,17 @@ if [ "$dry" -eq 0 ]; then
   done
 fi
 python3 "$HERE/bin/reap.py" suppressed "$STATE/ledger.jsonl" >"$tmp/suppressed.txt"
+[ -s "$tmp/reap.json" ] && jq -r '.open_keys[]' "$tmp/reap.json" >>"$tmp/suppressed.txt"
 python3 "$HERE/bin/reap.py" stats "$STATE/ledger.jsonl" >"$tmp/stats.json"
 
-# 4. collect facts; changes touched in the last 24h are work in progress, not leftovers
+# 4. collect facts; anything touched in the last 24h is work in progress, not a leftover
 stage=collect
 "$HERE/jobs/$JOB/collect.sh" | jq --argjson cutoff "$(( $(date +%s) - 86400 ))" '
-  map(if .uncommitted and .uncommitted.newest_mtime > $cutoff then .uncommitted = null else . end)
+  map(if .uncommitted and .uncommitted.newest_mtime > $cutoff then .uncommitted = null else . end
+      | if .default_branch_local_commits and .default_branch_local_commits.newest_commit > $cutoff
+        then .default_branch_local_commits = null else . end
+      | if .stashes and .stashes.newest > $cutoff then .stashes = null else . end
+      | .unpushed_branches |= map(select(.newest_commit <= $cutoff)))
   | map(select(.uncommitted or .default_branch_local_commits or .stashes
                or (.unpushed_branches | length > 0) or (.merged_branches | length > 0)
                or (.prunable_worktrees | length > 0)))
@@ -94,10 +104,15 @@ fi
 # 5. judge: read-only tools, no MCP, subscription auth (never --bare: it forces API-key auth)
 stage=judge
 { cat "$HERE/jobs/$JOB/prompt.md"; printf '\n## facts\n\n```json\n'; cat "$tmp/facts.json"; printf '```\n'; } >"$tmp/prompt.md"
-(cd "$RUNDIR" && "$CLAUDE" -p "$(cat "$tmp/prompt.md")" \
+# facts can outgrow a single argv entry (128 KiB), so the prompt goes through stdin
+deny=$(jq -nc --arg h "$HOME" '{permissions: {deny: [
+  "Read(/\($h)/.ssh/**)", "Read(/\($h)/.gnupg/**)", "Read(/\($h)/.config/**)", "Read(/\($h)/.aws/**)",
+  "Read(/\($h)/.netrc)", "Read(/\($h)/.claude/.credentials.json)", "Read(/\($h)/.local/share/keyrings/**)",
+  "Read(**/.env)", "Read(**/.env.*)"]}}')
+(cd "$RUNDIR" && "$CLAUDE" -p \
   --model "$MODEL" --max-turns 10 --max-budget-usd 3 --output-format json \
-  --tools "Read,Grep,Glob" --strict-mcp-config \
-  --json-schema "$(cat "$HERE/jobs/$JOB/schema.json")" </dev/null) >"$tmp/out.json"
+  --tools "Read,Grep,Glob" --strict-mcp-config --settings "$deny" \
+  --json-schema "$(cat "$HERE/jobs/$JOB/schema.json")" <"$tmp/prompt.md") >"$tmp/out.json"
 jq -e '.subtype == "success" and (.structured_output.proposals | type == "array")' "$tmp/out.json" >/dev/null ||
   { log "judge failed: $(jq -c '{subtype, result}' "$tmp/out.json")"; exit 1; }
 models=$(jq -r '.modelUsage | keys | join(",")' "$tmp/out.json")
@@ -114,6 +129,8 @@ notices=()
 last=$(tail -n 1 "$STATE/runs.jsonl" 2>/dev/null || true)
 [ "$(jq -r '.status // empty' <<<"$last" 2>/dev/null)" = failed ] &&
   notices+=("前回の実行が失敗しました(段階: $(jq -r .stage <<<"$last"))。journalctl --user -u proactive-work を確認してください。")
+[ "$(date +%d)" -le 7 ] &&
+  notices+=("月初の確認: claude -p の課金ポリシーに変更が無いか https://support.claude.com/en/articles/15036540 を確認してください。")
 python3 "$HERE/bin/digest.py" "$JOB" "$tmp/proposals.json" "$tmp/suppressed.txt" "$tmp/stats.json" \
   "$tmp/meta.json" "${notices[@]}" >"$tmp/body.md"
 

@@ -3,7 +3,7 @@
 
 Runs only on quota that would otherwise expire: the weekly window must be about
 to reset, the projected surplus must be large, and the user must not be working.
-Missing or stale evidence means "don't run". Exit 0 = run, 1 = don't.
+Missing or stale evidence means "don't run". Exit 0 = run, 1 = don't, 2 = the gate itself failed.
 """
 import argparse
 import glob
@@ -20,6 +20,7 @@ FIVE_HOUR_LIMIT = 50.0
 IDLE_MINUTES = 60
 DEFAULT_PACE = 1.0        # %/h when there is not enough history
 OWN_RUN_MARKER = 'proactive-work-run'
+SPENT_STAGES = ('judge', 'post')   # a failure here already consumed quota
 
 
 def read_jsonl(path):
@@ -64,7 +65,9 @@ def evaluate(snapshots_path, runs_path, projects_dir, now=None, job_cost=10.0):
     now = time.time() if now is None else now
     reasons, metrics = [], {}
     snaps = [s for s in read_jsonl(snapshots_path)
-             if isinstance(s.get('seven_day'), dict) and 'ts' in s]
+             if 'ts' in s and isinstance(s.get('seven_day'), dict)
+             and s['seven_day'].get('resets_at') is not None
+             and s['seven_day'].get('used_percentage') is not None]
     if not snaps:
         return {'ok': False, 'reasons': ['no_snapshot'], 'metrics': metrics}
 
@@ -97,7 +100,7 @@ def evaluate(snapshots_path, runs_path, projects_dir, now=None, job_cost=10.0):
         reasons.append('surplus_too_small')
 
     five = latest.get('five_hour') or {}
-    if five.get('resets_at', 0) > now and five.get('used_percentage', 0) >= FIVE_HOUR_LIMIT:
+    if (five.get('resets_at') or 0) > now and (five.get('used_percentage') or 0) >= FIVE_HOUR_LIMIT:
         reasons.append('five_hour_busy')
 
     idle_min = (now - last_user_activity(projects_dir)) / 60
@@ -106,7 +109,8 @@ def evaluate(snapshots_path, runs_path, projects_dir, now=None, job_cost=10.0):
         reasons.append('user_active')
 
     for r in read_jsonl(runs_path):
-        if r.get('status') != 'failed' and abs(r.get('window_resets_at', 0) - reset) < H:
+        spent = r.get('status') != 'failed' or r.get('stage') in SPENT_STAGES
+        if spent and abs(r.get('window_resets_at', 0) - reset) < H:
             reasons.append('already_ran_this_window')
             break
 
@@ -121,7 +125,11 @@ def main():
     ap.add_argument('--projects', default=os.path.expanduser('~/.claude/projects'))
     ap.add_argument('--job-cost', type=float, default=10.0)
     a = ap.parse_args()
-    result = evaluate(a.snapshots, a.runs, a.projects, job_cost=a.job_cost)
+    try:
+        result = evaluate(a.snapshots, a.runs, a.projects, job_cost=a.job_cost)
+    except Exception as e:  # a crash must not look like "gate closed"
+        print(json.dumps({'ok': False, 'error': repr(e)}))
+        sys.exit(2)
     print(json.dumps(result))
     sys.exit(0 if result['ok'] else 1)
 

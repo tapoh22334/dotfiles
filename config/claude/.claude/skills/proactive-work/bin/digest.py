@@ -14,11 +14,13 @@ import sys
 MAX_PROPOSALS = 10   # a digest nobody finishes reading teaches the reader to ignore it
 HEADER = ('採用する提案に ☑ を付けてから、この issue を close してください'
           '(☐ のまま close = 却下。14 日放置は未回答として自動 close)。\n'
-          '却下した提案は 30 日間再掲しません。')
+          '回答した提案と、未回答のダイジェストに載っている提案は、30 日間再掲しません。')
 
 
 def key(job, p):
-    ident = '|'.join((p['repo'], p['kind'], p.get('target', '')))
+    # repo+kind only: the prompt groups each kind per repo, and free-text fields
+    # (target, title) drift between runs, which would defeat suppression
+    ident = '|'.join((p['repo'], p['kind']))
     return f"{job}:{hashlib.sha1(ident.encode()).hexdigest()[:10]}"
 
 
@@ -32,6 +34,11 @@ def select(job, proposals, suppressed):
     return kept[:MAX_PROPOSALS]
 
 
+def clean(text):
+    """One line, no HTML comments: model text must not forge checklist items."""
+    return ' '.join(str(text).split()).replace('<!--', '&lt;!--')
+
+
 def render(by_job, meta, stats, notices):
     out = [f'> {n}' for n in notices]
     out += ['' if notices else None, HEADER]
@@ -39,11 +46,11 @@ def render(by_job, meta, stats, notices):
     for job, proposals in by_job.items():
         out += ['', f'## {job}']
         for p in proposals:
-            out.append(f"- [ ] **{p['title']}** — `{p['repo']}` <!-- pw:{key(job, p)} -->")
-            out.append(f"  - 根拠: {p['evidence']}")
-            out.append(f"  - 推奨: {p['action']}")
+            out.append(f"- [ ] **{clean(p['title'])}** — `{clean(p['repo'])}` <!-- pw:{key(job, p)} -->")
+            out.append(f"  - 根拠: {clean(p['evidence'])}")
+            out.append(f"  - 推奨: {clean(p['action'])}")
             if p.get('why_safe'):
-                out.append(f"  - 安全な理由: {p['why_safe']}")
+                out.append(f"  - 安全な理由: {clean(p['why_safe'])}")
     out += ['', '---']
     for job, s in sorted(stats.items()):
         rate = '—' if s.get('rate') is None else f"{s['rate']:.0%}"

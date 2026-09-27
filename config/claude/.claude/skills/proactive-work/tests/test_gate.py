@@ -97,11 +97,41 @@ class GateTest(unittest.TestCase):
         self.write([{"ts": NOW - 2 * H, "window_resets_at": reset, "status": "posted"}], self.runs)
         self.assertIn('already_ran_this_window', self.run_gate()['reasons'])
 
-    def test_failed_run_does_not_consume_window(self):
+    def test_failure_before_judge_does_not_consume_window(self):
         reset = NOW + 10 * H
         self.write([snap(NOW - 1 * H, 40.0, reset)])
-        self.write([{"ts": NOW - 2 * H, "window_resets_at": reset, "status": "failed"}], self.runs)
+        self.write([{"ts": NOW - 2 * H, "window_resets_at": reset, "status": "failed", "stage": "reap"}], self.runs)
         self.assertNotIn('already_ran_this_window', self.run_gate()['reasons'])
+
+    def test_failure_after_spending_quota_consumes_window(self):
+        reset = NOW + 10 * H
+        self.write([snap(NOW - 1 * H, 40.0, reset)])
+        for stage in ('judge', 'post'):
+            self.write([{"ts": NOW - 2 * H, "window_resets_at": reset, "status": "failed", "stage": stage}], self.runs)
+            self.assertIn('already_ran_this_window', self.run_gate()['reasons'], stage)
+
+    def test_null_five_hour_percentage_is_tolerated(self):
+        reset = NOW + 10 * H
+        s = snap(NOW - 1 * H, 40.0, reset)
+        s['five_hour']['used_percentage'] = None
+        self.write([s])
+        self.assertTrue(self.run_gate()['ok'])
+
+    def test_snapshot_without_reset_is_ignored(self):
+        reset = NOW + 10 * H
+        bad = snap(NOW - 1 * H, 40.0, reset)
+        del bad['seven_day']['resets_at']
+        self.write([bad])
+        self.assertIn('no_snapshot', self.run_gate()['reasons'])
+
+    def test_main_exits_2_on_crash(self):
+        import subprocess
+        with open(self.snaps, 'w') as f:
+            f.write(json.dumps({"ts": "x", "seven_day": {"used_percentage": "y", "resets_at": "z"}}) + '\n')
+        r = subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), '..', 'bin', 'gate.py'),
+                            '--snapshots', self.snaps, '--runs', self.runs, '--projects', self.projects],
+                           capture_output=True, text=True)
+        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
 
     def test_pace_uses_steeper_recent_slope(self):
         reset = NOW + 10 * H
