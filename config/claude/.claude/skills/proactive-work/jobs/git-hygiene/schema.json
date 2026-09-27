@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "repo": {"type": "string"},
+          "kind": {"enum": ["uncommitted", "default_branch_local_commits", "unpushed_branch",
+                            "merged_branches", "stash", "prunable_worktree"]},
+          "target": {"type": "string"},
+          "title": {"type": "string"},
+          "evidence": {"type": "string"},
+          "action": {"type": "string"},
+          "why_safe": {"type": "string"}
+        },
+        "required": ["repo", "kind", "target", "title", "evidence", "action", "why_safe"]
+      }
+    }
+  },
+  "required": ["proposals"]
+}
