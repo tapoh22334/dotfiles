@@ -1,0 +1,12 @@
+[Unit]
+Description=proactive-work: spend expiring Claude quota on maintenance proposals
+After=network-online.target
+
+[Service]
+Type=oneshot
+# claude lives in ~/.local/bin; jq/flock/gh come from linuxbrew
+Environment=PATH=%h/.local/bin:/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin
+UnsetEnvironment=ANTHROPIC_API_KEY
+ExecStart=%h/.claude/skills/proactive-work/bin/run.sh
+Nice=10
+TimeoutStartSec=30min
