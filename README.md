@@ -21,4 +21,5 @@ Claude skills
 | `skills/*-workspace/` | スキル作成時の作業スクラッチ | 復元不要 |
 | `skills/**/.cache.json` | 実行時キャッシュ。セッション履歴を含むため公開しない | 初回実行時に再生成 |
 | `skills/vf-*` | value-forge リポジトリが所有 | value-forge の `scripts/install.sh` |
+| `skills/proactive-work` | proactive-work リポジトリが所有 | `~/proactive-work/install.sh` |
 | `skills/doc-coauthoring` | `~/.agents/` のスキルマネージャが管理 | 同マネージャで再取得 |
