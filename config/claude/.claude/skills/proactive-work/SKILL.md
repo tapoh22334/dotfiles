@@ -1,12 +1,12 @@
 ---
 name: proactive-work
-description: Spend Claude Max quota that would otherwise expire on maintenance proposals nobody asked for — currently git leftovers across ~/working (uncommitted changes, unpushed or merged branches, stashes, local-only commits on main) — delivered as ONE weekly digest issue whose checkboxes record what was adopted. Use when the user asks about the digest or its adoption rate, wants to run it by hand, asks why it did or didn't run, wants to add a job, or says proactive-work / ダイジェスト / 余った枠を使う / 指示なしで保守 / 自動で後片付け / 採用率 / なぜ走らなかった. Not for doing the cleanup itself — the digest proposes, the user decides.
+description: Spend Claude Max quota that would otherwise expire on maintenance proposals nobody asked for — currently git leftovers across ~/working (uncommitted changes, unpushed or merged branches, stashes, local-only commits on main) — delivered at most once a day as a digest issue (only when there is something new) whose checkboxes record what was adopted. Use when the user asks about the digest or its adoption rate, wants to run it by hand, asks why it did or didn't run, wants to add a job, or says proactive-work / ダイジェスト / 余った枠を使う / 指示なしで保守 / 自動で後片付け / 採用率 / なぜ走らなかった. Not for doing the cleanup itself — the digest proposes, the user decides.
 ---
 
 # proactive-work
 
-使わなければ週リセットで消える Claude Max の枠だけを使い、誰も頼んでいない保守の提案を
-週 1 本のダイジェスト(`tapoh22334/proactive-digest` の issue)にまとめる。
+利用者が使い切らない Claude Max の週枠を 1 日 1 回まで使い、誰も頼んでいない保守の提案を
+ダイジェスト(`tapoh22334/proactive-digest` の issue)にまとめる。新しい提案が無い日は投稿しない。
 希少なのはトークンではなく**読む人の注意**なので、成果は提案数ではなく**採用率**で測る。
 
 設計と根拠: dotfiles `docs/superpowers/specs/2026-09-27-proactive-work-design.md`、
@@ -17,7 +17,7 @@ description: Spend Claude Max quota that would otherwise expire on maintenance p
 | 部品 | 役割 | 守っている性質 |
 |---|---|---|
 | `bin/usage-snapshot.sh` | statusline。`rate_limits` を `~/.local/state/claude-usage/` に記録 | 使用率は対話セッションの statusline にしか来ない。`claude -p` からは読めない |
-| `bin/gate.py` | 週リセット 24h 以内・余りが十分・5h 枠が空いている・利用者が 60 分無操作・今週未実行、の全てで実行可 | 材料が欠けたら実行しない |
+| `bin/gate.py` | 予測余りが「今日+残り日数分」の実行を賄える・5h 枠が空いている・利用者が 60 分無操作・20h 以内に未実行、の全てで実行可 | 材料が欠けたら実行しない。週の前半ほど厳しい |
 | `bin/run.sh` | 課金検査 → 採否回収 → 収集 → 判断 → 投稿 | 書き込みはこのスクリプトだけ |
 | `jobs/<job>/collect.sh` | 事実だけを JSON で出す | LLM を使わない |
 | `jobs/<job>/prompt.md` + `schema.json` | 判断基準と構造化出力 | モデルは `--tools Read,Grep,Glob --strict-mcp-config` で書き込み手段を持たない |
