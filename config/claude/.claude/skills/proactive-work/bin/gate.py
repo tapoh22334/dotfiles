@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""Decide whether proactive-work may spend quota now.
+"""Decide whether proactive-work may spend quota now (at most once a day).
 
-Runs only on quota that would otherwise expire: the weekly window must be about
-to reset, the projected surplus must be large, and the user must not be working.
+Runs only on quota the user is not going to need: the weekly surplus projected at
+the user's own pace must cover today's run plus one run for every remaining day,
+and the user must not be working right now.
 Missing or stale evidence means "don't run". Exit 0 = run, 1 = don't, 2 = the gate itself failed.
 """
 import argparse
 import glob
+import math
 import json
 import os
 import sys
 import time
 
 H = 3600.0
-RESET_HORIZON_H = 24      # only spend quota that expires within this many hours
+MIN_RUN_INTERVAL_H = 20  # "once a day", with slack for the 3-hourly timer jitter
 BASE_MARGIN = 15.0        # % kept free regardless of forecast
 MAX_STALENESS_H = 24
 FIVE_HOUR_LIMIT = 50.0
@@ -94,9 +96,10 @@ def evaluate(snapshots_path, runs_path, projects_dir, now=None, job_cost=10.0):
                    projected=round(projected, 2), margin=round(margin, 2),
                    surplus=round(surplus, 2), job_cost=job_cost)
 
-    if hours_to_reset > RESET_HORIZON_H:
-        reasons.append('reset_not_near')
-    if surplus < 2 * job_cost:
+    # reserve one run per remaining day so early-week runs never starve later ones
+    required = job_cost * (math.ceil(hours_to_reset / 24) + 1)
+    metrics['required_surplus'] = round(required, 2)
+    if surplus < required:
         reasons.append('surplus_too_small')
 
     five = latest.get('five_hour') or {}
@@ -110,8 +113,8 @@ def evaluate(snapshots_path, runs_path, projects_dir, now=None, job_cost=10.0):
 
     for r in read_jsonl(runs_path):
         spent = r.get('status') != 'failed' or r.get('stage') in SPENT_STAGES
-        if spent and abs(r.get('window_resets_at', 0) - reset) < H:
-            reasons.append('already_ran_this_window')
+        if spent and now - r.get('ts', 0) < MIN_RUN_INTERVAL_H * H:
+            reasons.append('already_ran_today')
             break
 
     return {'ok': not reasons, 'reasons': reasons, 'metrics': metrics}
