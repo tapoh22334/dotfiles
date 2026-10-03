@@ -41,12 +41,17 @@ class GateTest(unittest.TestCase):
         r = self.run_gate()
         self.assertTrue(r['ok'], r)
 
-    def test_blocks_when_reset_far(self):
-        reset = NOW + 60 * H
-        self.write([snap(NOW - 1 * H, 20.0, reset)])
-        r = self.run_gate()
-        self.assertFalse(r['ok'])
-        self.assertIn('reset_not_near', r['reasons'])
+    def test_runs_mid_week_when_surplus_covers_remaining_days(self):
+        reset = NOW + 100 * H                   # 5 days left -> needs 6 x job_cost
+        self.write([snap(NOW - 1 * H, 2.0, reset)])
+        self.assertTrue(self.run_gate(job_cost=10.0)['ok'])
+
+    def test_mid_week_needs_reserve_for_each_remaining_day(self):
+        reset = NOW + 100 * H
+        self.write([snap(NOW - 1 * H, 30.0, reset)])
+        r = self.run_gate(job_cost=10.0)
+        self.assertIn('surplus_too_small', r['reasons'])
+        self.assertEqual(r['metrics']['required_surplus'], 60.0)
 
     def test_blocks_when_surplus_small(self):
         reset = NOW + 10 * H
@@ -91,24 +96,30 @@ class GateTest(unittest.TestCase):
         self.activity(NOW - 60, name='-home-u--local-state-proactive-work-run')
         self.assertNotIn('user_active', self.run_gate()['reasons'])
 
-    def test_blocks_when_already_ran_this_window(self):
+    def test_blocks_when_already_ran_today(self):
         reset = NOW + 10 * H
         self.write([snap(NOW - 1 * H, 40.0, reset)])
-        self.write([{"ts": NOW - 2 * H, "window_resets_at": reset, "status": "posted"}], self.runs)
-        self.assertIn('already_ran_this_window', self.run_gate()['reasons'])
+        self.write([{"ts": NOW - 2 * H, "window_resets_at": reset, "status": "empty"}], self.runs)
+        self.assertIn('already_ran_today', self.run_gate()['reasons'])
+
+    def test_runs_again_the_next_day(self):
+        reset = NOW + 10 * H
+        self.write([snap(NOW - 1 * H, 40.0, reset)])
+        self.write([{"ts": NOW - 21 * H, "window_resets_at": reset, "status": "posted"}], self.runs)
+        self.assertNotIn('already_ran_today', self.run_gate()['reasons'])
 
     def test_failure_before_judge_does_not_consume_window(self):
         reset = NOW + 10 * H
         self.write([snap(NOW - 1 * H, 40.0, reset)])
         self.write([{"ts": NOW - 2 * H, "window_resets_at": reset, "status": "failed", "stage": "reap"}], self.runs)
-        self.assertNotIn('already_ran_this_window', self.run_gate()['reasons'])
+        self.assertNotIn('already_ran_today', self.run_gate()['reasons'])
 
     def test_failure_after_spending_quota_consumes_window(self):
         reset = NOW + 10 * H
         self.write([snap(NOW - 1 * H, 40.0, reset)])
         for stage in ('judge', 'post'):
             self.write([{"ts": NOW - 2 * H, "window_resets_at": reset, "status": "failed", "stage": stage}], self.runs)
-            self.assertIn('already_ran_this_window', self.run_gate()['reasons'], stage)
+            self.assertIn('already_ran_today', self.run_gate()['reasons'], stage)
 
     def test_null_five_hour_percentage_is_tolerated(self):
         reset = NOW + 10 * H
