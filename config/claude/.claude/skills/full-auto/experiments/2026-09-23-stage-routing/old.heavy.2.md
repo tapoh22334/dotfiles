@@ -1,0 +1,18 @@
+1. Confirm scope: check `gh issue list` (already have snapshot) — none of #37/#41/#43 is "Tail as inline left-pane mode"; this is new feature work, not a reuse candidate. **裁定**: create a new issue rather than folding into #37 (#37 is about the nested-Navigator *bug*, this is a design change to Tail that also fixes the symptom). **反証行**: if implementing this turns out to be a one-line fix identical to #37's root cause, close as duplicate of #37 with a comment explaining the merge.
+2. `gh issue create` — title "Tail ビューを左ペインの表示モードとして動かす(別窓遷移をやめる)", body linking #37 as related/likely-fixed-by, describing current behavior (別窓 + 戻ると Navigator 入れ子) and desired behavior (Tail はモード切替、別窓なし).
+3. github-tickets `apply.sh` — register the new issue on Project "All Work" (#4), verify placement.
+4. vf-pipeline (orient → articulate → requirements → userflows → harness → construct → acceptance → trace) — drive the actual design/implementation: orient on current Tail/Queue/Tile window-switch code path, articulate the left-pane-mode behavior, define requirements/userflows (enter Tail mode, exit back to Navigator without nesting), build harness, construct the change, define acceptance criteria, trace back to the issue.
+5. superpowers:test-driven-development — write failing bats tests first for: Tail mode renders in left pane (no new tmux window), exiting Tail returns to Navigator without re-attaching/nesting, existing Queue/Tile behavior unaffected.
+6. Implement the minimal change to satisfy tests (within vf-pipeline's construct stage).
+7. superpowers:systematic-debugging — invoke only if a test fails unexpectedly during implementation (root-cause before patching, per full-auto's "本質的失敗" rule).
+8. Run `make test` and `make lint` — self-verify actual output (real bats pass/fail counts, real shellcheck output), not agent-reported "done".
+9. tower-reviewer — run the project review agent on the diff before opening the PR, per CLAUDE.md's `tmux-plugin/`-touching-PR requirement.
+10. Address any tower-reviewer findings (fix or record as 暫定裁定 with 反証行/veto if a finding is judged non-blocking).
+11. Commit on the current branch (`fix/settle-not-in-subshell` is unrelated to this task — **裁定**: create a fresh branch, e.g. `feat/tail-inline-mode`, off `main` rather than stacking on the unrelated in-progress branch. **根拠**: mixing an unrelated in-flight fix with new feature work risks scope contamination in the PR. **反証行**: if `fix/settle-not-in-subshell` turns out to be a prerequisite dependency, rebase onto it instead and note this in the PR).
+12. Push branch, `gh pr create` — PR body states *why* (別窓遷移が入れ子/pane 縮小の原因になっている), links the new issue (and #37) with "Closes #<new>" / "Related to #37".
+13. Wait for CI via polling (not "waiting" idle) — check `gh pr checks` in a loop with backoff; do not end turn on "CI pending."
+14. On CI red: measure baseline on `main` first (per memory: `tower-suite-preexisting-failures`) to classify regression vs pre-existing before reporting or fixing.
+15. On CI green: leave PR open for user merge (merge is an outward-facing action requiring explicit prior authorization per global CLAUDE.md — not covered by full-auto's veto-able-ruling exceptions since it's irreversible-ish and visible to others). Report readiness instead of merging.
+16. Final report per full-auto §7: ①成果+証拠(issue #, PR #, test/lint/CI output) ②暫定裁定一覧(new issue vs reuse #37, branch choice, tower-reviewer disposition) ③残件 for user (merge decision).
+
+Backlog after this task: new issue created for "Tail as left-pane mode" (added to Project "All Work" #4 via apply.sh), #37 referenced as related but left open pending user judgment on whether it's fully subsumed.

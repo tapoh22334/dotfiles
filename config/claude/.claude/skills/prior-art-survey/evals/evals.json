@@ -1,0 +1,50 @@
+{
+  "skill_name": "prior-art-survey",
+  "evals": [
+    {
+      "id": 0,
+      "name": "design-measurement",
+      "prompt": "実在の Web サイトを開いて、フォントサイズの階層・余白・配色・CSS 変数を測定して、サイト間で比較できる形で JSON に出すスクリプトを書きたい。Playwright で各ページを開いて computed style を集める方向で考えてる。書いてもらえる?",
+      "expected_output": "Restates the goal implementation-independently (not 'a Playwright script'), searches under domain terms like design tokens / computed style extraction / web design mining, surfaces concrete existing tools with URLs, reaches an explicit 採用/改造/部分自作/自作 verdict with grounds, and writes a research document including a 見送った候補と理由 section.",
+      "assertions": [
+        "Restates the goal in implementation-independent terms rather than accepting 'Playwright script' as the frame",
+        "Searches using domain vocabulary beyond the user's own words (e.g. design tokens, computed style extraction, web design mining/census, visual regression)",
+        "Names at least 3 concrete existing tools/projects/papers with a URL or citation for each",
+        "States one of the four verdicts (採用/改造/部分自作/自作) explicitly with grounds",
+        "If the verdict is 自作, lists what was examined and why each was rejected (not merely 'nothing found')",
+        "Produces a research document file with a 見送った候補と理由 section",
+        "Does not write the implementation script"
+      ],
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "hidden-domain",
+      "prompt": "取引先から来る商品マスタCSVと、うちの社内マスタCSVを突き合わせたい。商品名の表記がバラバラ(全角半角、\"(株)\"の有無、型番の区切り、スペース)で完全一致だと全然ヒットしない。名前の似てる度合いで候補を出して人が確認する感じにしたい。似てる度合いの計算は、共通の文字数を数えて割合を出す感じで自前で書こうと思ってる。",
+      "expected_output": "Identifies that this is the established field of record linkage / entity resolution / fuzzy matching, names the standard vocabulary (Levenshtein, Jaro-Winkler, token-set ratio, blocking, NFKC normalization), surfaces real libraries (rapidfuzz, recordlinkage, dedupe, splink), and warns the user's hand-rolled 'count common characters' metric is a known-weak approach.",
+      "assertions": [
+        "Names the domain explicitly (record linkage / entity resolution / fuzzy matching / 名寄せ)",
+        "Surfaces established similarity metrics by name (e.g. Levenshtein, Jaro-Winkler, token set ratio) rather than only the user's proposed metric",
+        "Names at least 2 real libraries with URLs (e.g. rapidfuzz, recordlinkage, dedupe, splink, fuzzywuzzy)",
+        "Raises normalization as a distinct prior step (NFKC / 全角半角 / 法人格表記) rather than folding it into similarity scoring",
+        "Explicitly evaluates the user's proposed self-built metric rather than silently accepting it",
+        "Reaches an explicit verdict recommending existing tooling over the hand-rolled approach",
+        "Produces a research document file"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "bounded-no-overreach",
+      "prompt": "scripts/measure.mjs の 42行目あたり、viewport の幅が narrow のときだけ font-size の測定値が 0 で返ってくる。たぶん要素がまだレンダリングされてないうちに読んでる。直して。",
+      "expected_output": "Recognizes this as a bounded bug fix in existing code and does NOT run a prior-art survey. Should go straight to inspecting the code / diagnosing. The skill must not fire here, or if consulted, must be explicitly set aside as disproportionate.",
+      "assertions": [
+        "Does NOT produce a prior-art research document",
+        "Does NOT perform web searches for existing libraries",
+        "Goes directly to inspecting/diagnosing the specific bug",
+        "Total response stays proportionate to a small bug fix (no multi-phase research program)"
+      ],
+      "files": []
+    }
+  ]
+}
