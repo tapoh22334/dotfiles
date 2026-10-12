@@ -1,0 +1,34 @@
+# Claude スキルの台帳 — 外部リポジトリが所有するスキルはここに全部載せる。
+#
+# dotfiles 自身の skills/ はこのファイルに書かない(stow で配置される)。
+# それ以外のスキルは、ここに無ければ「散っている」と見なし、
+# scripts/sync-skill-sources.sh が警告する。setup.sh がこれを読み、無い repo は
+# clone し、各 repo のやり方で ~/.claude/skills に symlink を張る。
+#
+# 1 ソース = 1 repo。install(repo 内のインストーラ)か link(repo 内の
+# ディレクトリを ~/.claude/skills/<名前> へ symlink)のどちらかで配置する。
+# skills は「配置後に ~/.claude/skills に存在するはずの名前」で、検査に使う。
+
+sources:
+  - name: value-forge
+    repo: tapoh22334/value-forge
+    path: ~/working/value-forge
+    install: scripts/install.sh
+    skills: [vf-pipeline, vf-orient, vf-articulate, vf-requirements, vf-userflows, vf-harness, vf-construct, vf-acceptance, vf-trace, vf-retro]
+
+  - name: claude-tower
+    repo: tapoh22334/claude-tower
+    path: ~/working/claude-tower
+    link:
+      tower: skills/tower
+    skills: [tower]
+
+  - name: proactive-work
+    repo: tapoh22334/proactive-work
+    path: ~/proactive-work
+    install: install.sh
+    skills: [proactive-work]
+
+# 別のマネージャが置くもの。警告しないが、ここに書く(把握はしておく)。
+unmanaged:
+  - doc-coauthoring   # ~/.agents/skills のマネージャ
