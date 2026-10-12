@@ -1,7 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash",
       "Read",
       "Edit",
       "Write",
@@ -32,11 +31,36 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if [[ \"$(uname)\" == \"Darwin\" ]]; then osascript -e 'display notification \"作業が完了しました。\" with title \"Claude Code\" sound name \"Glass\"'; else powershell.exe -Command \"[void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]; [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]; \\$xml = [Windows.Data.Xml.Dom.XmlDocument]::new(); \\$xml.LoadXml('<toast><visual><binding template=\\\"ToastText02\\\"><text id=\\\"1\\\">Claude Code</text><text id=\\\"2\\\">作業が完了しました。</text></binding></visual></toast>'); [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('ClaudeCode').Show([Windows.UI.Notifications.ToastNotification]::new(\\$xml))\"; fi"
+            "command": "if [ \"$(uname)\" = \"Darwin\" ]; then osascript -e 'display notification \"作業が完了しました。\" with title \"Claude Code\" sound name \"Glass\"'; elif command -v powershell.exe >/dev/null 2>&1; then powershell.exe -Command \"[void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]; [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]; \\$xml = [Windows.Data.Xml.Dom.XmlDocument]::new(); \\$xml.LoadXml('<toast><visual><binding template=\\\"ToastText02\\\"><text id=\\\"1\\\">Claude Code</text><text id=\\\"2\\\">作業が完了しました。</text></binding></visual></toast>'); [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('ClaudeCode').Show([Windows.UI.Notifications.ToastNotification]::new(\\$xml))\"; fi"
           }
         ]
       }
     ]
   },
-  "alwaysThinkingEnabled": false
+  "statusLine": {
+    "type": "command",
+    "command": "/home/iwase/.claude/skills/proactive-work/bin/usage-snapshot.sh"
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "academic-research-skills@academic-research-skills": true
+  },
+  "extraKnownMarketplaces": {
+    "academic-research-skills": {
+      "source": {
+        "source": "github",
+        "repo": "Imbad0202/academic-research-skills"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": false,
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(git push:*) — direct push to main is disallowed by CLAUDE.md; this project requires branch + PR workflow",
+      "Bash(gh issue close:*) and ticket-closing actions without an explicit completion comment — CLAUDE.md requires closing comments explain what/why"
+    ]
+  },
+  "skipWorkflowUsageWarning": true
 }
