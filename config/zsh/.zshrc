@@ -284,4 +284,4 @@ fi
 # User scripts
 [[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
 
-export PATH="$(npm bin -g):$PATH"
+export PATH="$HOME/.local/bin:$PATH"
