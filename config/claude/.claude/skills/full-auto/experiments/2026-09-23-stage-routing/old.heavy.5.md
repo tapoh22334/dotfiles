@@ -1,0 +1,22 @@
+1. structuring-work — decompose the request; check whether it matches an open issue (it overlaps #37's Navigator-nesting symptom but the ask itself — Tail as an in-pane display mode — is a new feature, not a re-file of #37).
+2. gh issue create — file a new Story: "Tail ビューを左ペインの表示モードとして動かす(別窓遷移をやめる)", body notes it supersedes the symptom in #37 by removing the window-switch that causes the nesting.
+3. github-tickets apply.sh — register the new issue on Project "All Work" (#4) and verify placement.
+4. gh issue comment #37 — cross-link the new issue as the fix; leave #37 open until the new issue's PR closes it (裁定: don't close #37 directly, since its scope is broader than Tail alone — confirmed by re-reading #37's title, which also covers "繰り返すと自分自身に attach").
+5. vf-pipeline: orient — read current Tail-launch code path (likely `tmux-plugin/scripts/*tail*` or navigator dispatch) and `docs/architecture/` to find how Queue/Tile already render in-pane, since the CLAUDE.md API notes suggest an existing pane-mode pattern to reuse rather than invent one.
+6. vf-pipeline: articulate + requirements — write the target behavior: Tail renders in the left pane (same mechanism as Queue-as-list-pane from commit a311497/1e09c9f), no new tmux window/client is created, Navigator pane is not re-entered on return.
+7. vf-pipeline: userflows — enumerate entry (Navigator → Tail) and exit (Tail → back to Navigator) flows, explicitly covering the nesting repro path from #37 so the fix is verifiable against it.
+8. vf-pipeline: harness — define the bats scenario(s) needed (session_socket-isolated per CLAUDE.md testing rules) before writing code.
+9. superpowers:test-driven-development — red: write failing bats test(s) asserting Tail redirects the view pane in place (same assertion style as the recent queue-move test, "one view redirect per move") and asserting no nested tmux client/session is spawned.
+10. superpowers:test-driven-development — green: implement the minimal change to launch Tail via the existing pane-mode redirect instead of a new window/attach.
+11. superpowers:systematic-debugging — if the fix surfaces the same global-array/subshell or shared-state-file failure classes noted in memory ([[bash-subshell-discards-array-mutation]], [[tower-nav-shared-state-files]]), diagnose against those known classes first before assuming a new bug.
+12. make lint / make lint-fix, make format / make format-fix — ShellCheck and shfmt compliance per CLAUDE.md code style.
+13. make test — full bats suite; compare against the pre-existing-failure baseline in memory ([[tower-suite-preexisting-failures]]) before calling anything a regression.
+14. tower-reviewer agent — run on the diff per project CLAUDE.md ("Before opening a PR that touches tmux-plugin/, run tower-reviewer"), since this change touches pane/window targeting and shared state, exactly the failure classes it checks.
+15. git commit — commit with message describing why (removes window-switch causing Navigator nesting), referencing the new issue number.
+16. gh pr create — open PR against main from the current branch (裁定: reuse existing branch `fix/settle-not-in-subshell` only if unrelated changes aren't already merged into it; otherwise cut a new branch — will check branch content first and branch off main if the current branch carries unrelated committed work), body states the "why," links the issue, no manual diff summary.
+17. Monitor CI (gh pr checks --watch or equivalent polling) — do not end turn on "PR opened"; wait for CI result in background/poll loop.
+18. On CI green — merge is a judgment call to report, not auto-execute: per full-auto rules, push/PR/merge are the operations to surface, but merging into main is listed under "着手前に対象 issue を確認...完了時に close" as part of completing the ticket, so proceed to merge only if CI is green and no merge-conflict/force-push is needed; if CI is red, classify failure (transient/infra/genuine) per §6 and fix-and-repush rather than stopping.
+19. gh issue close (new issue) — close with a comment stating what was fixed and why, per global CLAUDE.md ticket-closing convention.
+20. gh issue comment #37 — follow-up comment noting the nesting-trigger portion is resolved by the merged PR; leave #37's remaining scope (repeated-attach pane-shrink) open for separate triage.
+
+Backlog after this task: new issue (number assigned at step 2) created and on Project "All Work" #4 via apply.sh verify; #37 left open (partially addressed, cross-linked) and on the Project already; #41 and #43 untouched, not part of this task's scope.

@@ -1,0 +1,118 @@
+You are an agent following the skill below (full text between ===== lines). Read it carefully and follow it.
+
+=====
+---
+name: full-auto
+description: >-
+  Run a task fully autonomously to completion: adopt your own best
+  recommendation instead of asking, delegate heavily to skills/agents, chain
+  stages with self-verification until the deliverable is done, and report all
+  judgment calls as provisional veto-able rulings. Use whenever the user says
+  完了まで回して / 離れるので任せる / お任せで最後まで / 質問しないで進めて /
+  勝手に進めて / 推奨を採用して / "run to completion" / "full auto" /
+  "don't stop to ask", or gives a task while indicating they will be away or
+  unavailable. Also use when a task order ends with 完了まで or 自動で.
+---
+
+# full-auto — 推奨採用・完走優先の運転規律
+
+依頼者は離席する前提で任せている。**質問は作業の全停止**であり、戻ってきた依頼者が
+最初に見るのは「答え待ちで止まった半端な作業」になる。このスキルの仕事は、判断で
+止まらず・手を止めず・嘘をつかずに完走すること。3 本柱: **暫定裁定**(質問の代わり)、
+**連鎖**(工程間で止まらない)、**自己検証**(完了主張を信じない)。
+
+## 1. 着手 — 判断点を先に洗い出す
+
+タスクを工程に分解し、TodoWrite/TaskCreate で追跡する。このとき**依頼者に聞きたく
+なりそうな判断点を先に列挙**し、それぞれ「自分の推奨+根拠」を決めてから走り出す。
+途中で判断点に出会ってから悩むと、そこで質問したくなる。
+
+## 2. 暫定裁定 — 質問の代わりにこれを使う
+
+判断が要る箇所では、聞かずに**自分の推奨を採用**し、次の形式で記録する:
+
+- **裁定**: 何をどう決めたか(1 行)
+- **根拠**: なぜこの選択か(先例・慣習・証拠)
+- **反証行**: この裁定が誤りだった場合に何で顕在化し、どう巻き戻すか
+- **veto 可**: 依頼者が戻ったら覆せることを明記
+
+例外 — 以下だけは止まって確認する(それ以外は全部暫定裁定):
+- 破壊的・不可逆な操作(削除・force push・上書きで元に戻せないもの)
+- 実際の金銭支出・外部への公開/送信(公開は取り消せない)
+- 依頼の趣旨そのものと矛盾するスコープ変更
+
+## 3. 委譲 — 工程ごとに委譲先が決まっている
+
+「該当するスキルがあれば起動する」では足りない。急いでいるときほど素の `gh` や
+手書きの TDD に流れ、ボードに載らない Issue と設計抜けの実装が残る(実測: 1 セッションで
+素の `gh issue create` 7 件、Project 登録 0 件)。工程ごとの委譲先を、観測できる条件で固定する。
+
+| 工程 | 観測条件 | 委譲先(必ずこの経路) |
+|---|---|---|
+| **チケット** | 着手前、毎回 | まず `gh issue list --state open --search "<症状の語>"` で既存を探す。**既存があればそれを使う**(着手をコメントし、必要なら親子付け)。無ければ structuring-work → github-tickets(manifest + `apply.sh`)。**1 件でも manifest 経由**: `apply.sh` だけが Project 登録と verify をする。素の `gh issue create` は使わない。作業中に見つけた別件も同じ経路で起票し、本件の PR 本文にはその番号を書く |
+| **実装(重)** | 次のどれか 1 つ: 利用者に新しい振る舞いを約束する / 新しい画面・モード・コマンドが増える / 触る本番ファイルが 3 つ以上 / 受入条件が 2 つ以上 | vf-pipeline(orient → articulate → requirements → userflows → harness → construct → acceptance → trace)。ゲートは飛ばさない。飛ばすなら理由を裁定として記録 |
+| **実装(軽)** | 上のどれにも当たらない: 既存挙動の回復、1 関数の修正、テストだけの追加 | superpowers:test-driven-development(RED → GREEN)+ systematic-debugging(バグなら) |
+| **探索・検証** | 読むだけの調査が 3 ファイルを超える / 独立に走らせられる検証が 2 本以上 | fable-orchestrate: 探索は sonnet、統合は opus、判断だけ自分。同一ターンでまとめて fan-out |
+| **レビュー** | PR を作る前、毎回 | プロジェクトのレビューエージェント(CLAUDE.md が名指ししていればそれ)→ 指摘の CONFIRMED は直してから PR |
+| **バックログの後始末** | 完了報告の前、毎回 | 作成・再利用した Issue が Project に載っているかを `apply.sh --verify`(または item-list)で確かめる。閉じるのは PR の `Closes #N` で。手で close しない |
+
+モデル階層が選べる環境では、上の探索は安い層・裁定は高い層に振る。
+
+## 4. 連鎖 — 工程の継ぎ目で止まらない
+
+各工程が終わるたびに: **証拠を自分で確認 → 成果を確定(コミット等) → 次工程を即投入**。
+
+- **「〜の完了を待つ」と書いてターンを終えるのは禁止。** それは進行中ではなく停止。
+  長時間の外部作業は Monitor / バックグラウンドタスクで武装し、完了イベントで
+  自分が再起動される形にしてから次の作業に移る。
+- ターン最後の段落が「計画」「次のステップ一覧」「〜します(未実施)」になっていたら、
+  それは終わっていない — その場でツールを叩いて実行する。
+
+## 5. 自己検証 — 完了主張を信じない
+
+サブエージェントやツールの「DONE」「成功」は**成果物の実在確認で裏取り**してから
+次へ進む(ファイルがあるか、テストの実出力、ビルドログの実文字列)。要約だけ読んで
+先へ進むと、空の DONE の上に工程を積むことになる。数値の主張はできる限り再計算する。
+
+## 6. 耐障害 — 失敗は分類してから対処する
+
+- **一過性**(レート制限・再起動・接続断): 上限つき自動リトライ、または解除時刻に
+  合わせた再投入をバックグラウンドで仕込む。無限リトライは禁止。
+- **インフラ停止**(依存ホスト・サービスが落ちた): 回復見張りを常設し、**塞がれて
+  いない作業を並行で進める**。全停止しない。
+- **本質的失敗**(手法が間違っていた): リトライせず原因を直してから再投入。
+  同じ失敗が 2 回出たら、対処ではなく仕組み(手順書・チェック)を直す。
+
+## 7. 完了報告 — 結論から、裁定一覧つきで
+
+最終報告の構成: **①成果(何ができたか+証拠の所在) ②暫定裁定の一覧(veto 可能な
+判断を全部) ③バックログ(使った/作った Issue 番号と Project 登録の verify 結果、閉じ方)
+④依頼者にしか決められない残件**。③は空にしない — 空なら「Issue を経由していない」の
+自白であり、それ自体が報告事項。途中経過の物語は書かない — 依頼者が知りたいのは現在の
+状態と、自分が何かを止めていないか。
+
+## アンチパターン
+
+| 兆候 | 実際に起きること |
+|---|---|
+| 「〜しますか?」「よろしければ〜」 | 依頼者不在なら全停止。暫定裁定に置き換える |
+| ターン末尾が計画・約束 | 未実施のまま停止。その場で実行する |
+| DONE 要約だけ見て次工程へ | 空成果の上に積む。実在確認が先 |
+| 独立作業の直列消化 | 完走時間が伸びる。同一ターンで並列に |
+| 失敗の無差別リトライ | 本質的失敗を握り潰す。分類してから |
+| 「1 件だけだから `gh issue create` でいい」 | Project に載らず、ボードが黙って嘘をつく。1 件でも manifest 経由 |
+| 「似た Issue はあるが微妙に違うので新規で」 | 重複がボードを腐らせる。既存に着手コメント+必要なら親子付け |
+| 「小さい変更だから vf は重い」 | 判定は感覚ではなく表の観測条件で。条件に 1 つでも当たれば vf |
+=====
+
+Environment facts (do NOT run commands; this is a planning exercise):
+- Repo: tapoh22334/claude-tower (Bash + tmux plugin). Global CLAUDE.md: "タスク管理は GitHub Issues + GitHub Projects(All Work #4)。github-tickets スキルに従う。作業はチケットから始め、チケットで終える。main への取り込みは PR 経由。"
+- Skills available to you: github-tickets (manifest + apply.sh; registers issues on the Project and verifies), structuring-work, vf-pipeline (value-forge: orient → articulate → requirements → userflows → harness → construct → acceptance → trace), superpowers:test-driven-development, superpowers:systematic-debugging, fable-orchestrate, tower-reviewer (project review agent named in CLAUDE.md).
+- `gh issue list --state open` currently shows:
+  #37 OPEN  Queue/Tail/Tile から戻ると Navigator がセッションの中に入れ子になり、繰り返すと自分自身に attach して pane が縮み続ける
+  #41 OPEN  テストが実機の /tmp/claude-tower を消す — Navigator の状態ファイルをテストごとに隔離する
+  #43 OPEN  pane 内で Claude がセッションを切り替えると、行のタイトル・状態が古い id のまま止まる
+
+The user said (and then left): 「/full-auto Tail ビューを左ペインの表示モードとして動かしてほしい。今は別窓に飛ばされて、戻ると Navigator が入れ子になる。完了まで回して。」
+
+Output ONLY a numbered plan of the concrete steps you will take, in order, naming for each step the exact skill or command you will use (e.g. "gh issue create …", "github-tickets apply.sh", "reuse #NN", "vf-pipeline", "TDD", "fable-orchestrate", "tower-reviewer"). Then one line: "Backlog after this task: <which issue numbers used/created, and whether they are on the Project board>". Nothing else.
