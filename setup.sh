@@ -35,6 +35,12 @@ for package in $PACKAGES; do
   fi
 done
 
+# Claude skills owned by other repositories (value-forge, claude-tower, ...):
+# the registry in config/claude/.claude/skill-sources.yml says which, and this
+# clones what is missing, links them, and warns about skills in neither.
+echo "🧩 Syncing Claude skill sources..."
+./scripts/sync-skill-sources.sh || true
+
 # Setup git local configuration (user email and name)
 setup_git_local_config() {
   local gitconfig_local="$HOME/.gitconfig.local"
