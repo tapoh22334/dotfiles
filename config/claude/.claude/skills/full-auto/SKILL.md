@@ -51,6 +51,7 @@ description: >-
 | **実装(軽)** | 上のどれにも当たらない: 既存挙動の回復、1 関数の修正、テストだけの追加 | superpowers:test-driven-development(RED → GREEN)+ systematic-debugging(バグなら) |
 | **探索・検証** | 読むだけの調査が 3 ファイルを超える / 独立に走らせられる検証が 2 本以上 | fable-orchestrate: 探索は sonnet、統合は opus、判断だけ自分。同一ターンでまとめて fan-out |
 | **レビュー** | PR を作る前、毎回 | プロジェクトのレビューエージェント(CLAUDE.md が名指ししていればそれ)→ 指摘の CONFIRMED は直してから PR |
+| **画面のレビュー** | 人が見る画面(ダッシュボード・UI・ページ)を作る・大きく変えるとき | 作る前に usecase-review(パネル・機能ごとに「見て変わる行動」の証拠)、PR の前にスクリーンショットで product-design-reviewer。コードレビューはこの 2 つの代わりにならない |
 | **バックログの後始末** | 完了報告の前、毎回 | 作成・再利用した Issue が Project に載っているかを `apply.sh --verify`(または item-list)で確かめる。閉じるのは PR の `Closes #N` で。手で close しない |
 
 モデル階層が選べる環境では、上の探索は安い層・裁定は高い層に振る。
