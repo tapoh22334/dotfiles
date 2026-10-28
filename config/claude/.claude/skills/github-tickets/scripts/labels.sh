@@ -9,20 +9,35 @@
 set -uo pipefail
 
 DRY=0
-[ "${1:-}" = --dry-run ] && { DRY=1; shift; }
-[ $# -gt 0 ] || { sed -n '2,8p' "$0"; exit 2; }
+REPOS=()
+for a in "$@"; do
+  case "$a" in
+    --dry-run) DRY=1 ;;
+    -*) echo "unknown option: $a" >&2; exit 2 ;;
+    *) REPOS+=("$a") ;;
+  esac
+done
+[ ${#REPOS[@]} -gt 0 ] || { sed -n '2,8p' "$0"; exit 2; }
 
-TSV="$(dirname "$0")/labels.tsv"
-run() { if [ "$DRY" -eq 1 ]; then echo "    (dry) $*"; else "$@" >/dev/null; fi; }
+TSV="$(cd "$(dirname "$0")" && pwd)/labels.tsv"
+# </dev/null: gh must never read the TSV that feeds the loop below.
+run() { if [ "$DRY" -eq 1 ]; then echo "    (dry) $*"; else "$@" >/dev/null </dev/null; fi; }
 
 FAIL=0
-for repo in "$@"; do
+for repo in "${REPOS[@]}"; do
   echo "$repo:"
-  have="$(gh label list --repo "$repo" --limit 200 --json name -q '.[].name')" || {
+  have="$(gh label list --repo "$repo" --limit 200 --json name -q '.[].name' </dev/null)" || {
     echo "  ✗ cannot list labels"; FAIL=1; continue; }
 
-  if grep -qxF bug <<<"$have" && ! grep -qxF 'kind::bug' <<<"$have"; then
-    run gh label edit bug --repo "$repo" --name 'kind::bug' && echo "  ~ bug → kind::bug"
+  if grep -qxF bug <<<"$have"; then
+    if grep -qxF 'kind::bug' <<<"$have"; then
+      # Both exist: renaming would collide, and merging means relabeling issues.
+      echo "  ✗ both bug and kind::bug exist — move issues to kind::bug, then delete bug"; FAIL=1
+    elif run gh label edit bug --repo "$repo" --name 'kind::bug'; then
+      echo "  ~ bug → kind::bug"
+    else
+      echo "  ✗ rename bug → kind::bug failed"; FAIL=1
+    fi
   fi
 
   while IFS=$'\t' read -r name color desc; do

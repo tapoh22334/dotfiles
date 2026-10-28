@@ -12,6 +12,26 @@ the class of failure this whole script exists to prevent.
 import re
 
 
+def _split_flow(inner: str):
+    # Split on commas outside quotes, so `[a, "b, c"]` yields two items.
+    parts, cur, quote = [], [], None
+    for ch in inner:
+        if quote:
+            cur.append(ch)
+            if ch == quote:
+                quote = None
+        elif ch in "\"'":
+            quote = ch
+            cur.append(ch)
+        elif ch == ",":
+            parts.append("".join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+    parts.append("".join(cur))
+    return parts
+
+
 def _scalar(tok: str):
     tok = tok.strip()
     if not tok:
@@ -24,7 +44,7 @@ def _scalar(tok: str):
         inner = tok[1:-1]
         if any(c in inner for c in "[]{}"):
             raise ValueError(f"nested flow collection not supported: {tok!r}")
-        return [_scalar(x) for x in inner.split(",") if x.strip()]
+        return [_scalar(x) for x in _split_flow(inner) if x.strip()]
     if tok in ("true", "True"):
         return True
     if tok in ("false", "False"):
@@ -154,7 +174,15 @@ def load(text: str):
                 node[key] = _scalar(val)
             else:
                 nxt = lines[pos[0]][0] if pos[0] < len(lines) else indent
-                node[key] = parse_block(nxt) if nxt > ind else None
+                if nxt > ind:
+                    node[key] = parse_block(nxt)
+                elif (nxt == ind and pos[0] < len(lines)
+                      and lines[pos[0]][1].startswith("- ")):
+                    # `key:` with its list at the same indent (common style).
+                    # Falling through here used to loop forever.
+                    node[key] = parse_list(ind)
+                else:
+                    node[key] = None
         return node
 
     return parse_block(lines[0][0]) if lines else {}

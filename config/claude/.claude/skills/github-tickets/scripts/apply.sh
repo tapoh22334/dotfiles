@@ -51,20 +51,30 @@ rows, seen, violations = [], set(), []
 def as_list(n, field):
     v = n.get(field) or []
     # A string here is iterated character by character, which once created
-    # thirteen one-letter labels on a real repo. Refuse rather than guess.
-    if not isinstance(v, list):
-        sys.exit(f"{field} must be a list, got {v!r} (near {n.get('title')!r})")
+    # twelve one-letter labels on a real repo. Refuse rather than guess.
+    if not isinstance(v, list) or any(isinstance(x, (list, dict)) for x in v):
+        sys.exit(f"{field} must be a list of names, got {v!r} (near {n.get('title')!r})")
     return [str(x) for x in v]
 
 def walk(nodes, parent_key, level, depth):
     for i, n in enumerate(nodes or []):
         if not isinstance(n, dict) or "title" not in n:
             sys.exit(f"every node needs a title (near parent {parent_key or 'root'})")
+        if not isinstance(n["title"], str):
+            # YAML reads `title: [RFC] x` as a list. Quote such titles.
+            sys.exit(f"title must be a string; quote it: {n['title']!r}")
         kids = n.get("children") or []
         # Under an Epic, a node that splits further is a Story; one that does
         # not is a Task, the Story's peer. Under a Story, it is a Subtask.
+        # An adopted node may be listed without its children, so nesting
+        # cannot tell its level; `level:` says it, or no type label is checked.
         if level == "child-of-epic":
-            level_here = "story" if kids else "task"
+            if n.get("level") in ("story", "task"):
+                level_here = n["level"]
+            elif n.get("issue") and not kids:
+                level_here = "adopted"
+            else:
+                level_here = "story" if kids else "task"
         else:
             level_here = level
         # Top-level nodes of different sections (epics/stories/tasks) must not
@@ -85,7 +95,8 @@ def walk(nodes, parent_key, level, depth):
         typed = [l for l in labels if l.startswith("type::")]
         if typed:
             sys.exit(f"type:: is set from the manifest's nesting; remove {typed} from {n['title']!r}")
-        labels.append(f"type::{level_here}")
+        if level_here != "adopted":
+            labels.append(f"type::{level_here}")
         rows.append({
             "key": key, "parent": parent_key or "", "level": level_here,
             "title": n["title"], "body": n.get("body", "") or "",
@@ -224,7 +235,7 @@ show_plan
 if [ "$MODE" = apply ]; then
   # Canonical labels get their color and description from labels.tsv, so a
   # repo's first ticket leaves the same labels every other repo has.
-  LABELS_TSV="$(dirname "$0")/labels.tsv"
+  LABELS_TSV="$GT_SCRIPTS/labels.tsv"
   while read -r l; do
     [ -z "$l" ] && continue
     spec="$(awk -F'\t' -v n="$l" '$1==n' "$LABELS_TSV")"
