@@ -26,9 +26,21 @@ epics:
           - title: 全モードをリリース基準で評価し公開/据え置きを判定する
 ```
 
-Nesting sets the level: `epics:` → epic, its children → story, theirs → task.
-`type::epic` / `type::story` labels are added automatically; tasks get none, which
-is the convention (absence of a type label *is* the signal).
+Nesting sets the level, and the matching `type::` label is added automatically:
+
+| Where the node sits | Level |
+|---|---|
+| under `epics:` | epic |
+| child of an epic, **with** children | story |
+| child of an epic, **without** children | task |
+| child of a story | subtask |
+| under `stories:` / `tasks:` | story / task |
+
+Do not put `type::` in `labels:` — it is refused, since nesting already decides
+it. Preflight also refuses a new Epic or Story with fewer than two children (a
+one-child Story is a Task) and a Task or Subtask that has children. Adopted nodes
+(`issue:`) skip the child-count check, because a manifest may list only the
+children being added.
 
 ## Fields
 
@@ -38,14 +50,27 @@ is the convention (absence of a type label *is* the signal).
 | `body` | all | Markdown. Use `\|` block scalars. Follow the level's template. |
 | `children` | all | Nested nodes, one level down. |
 | `key` | all | Stable id for cross-references. Auto-generated if omitted. |
+| `level` | child of an epic | `story` or `task`. Needed only for an adopted node listed without its children, whose level nesting cannot tell; without it, no type label is checked for that node. |
 | `issue` | all | An **existing** issue number. That node is not re-created — it is adopted and verified. This is how you retrofit a manifest onto tickets that already exist. |
-| `labels` | all | Extra labels beyond the automatic type label. |
+| `labels` | all | A **list** (`[kind::bug]` or one `- item` per line), never a bare string. `kind::bug` / `kind::chore` / `idea` go here. |
 | `assignees` | all | GitHub logins. |
 | `milestone` | all | Milestone title. |
 
-Top-level `stories:` and `tasks:` also exist, for work that genuinely has no
-parent. Prefer `epics:` with nesting — a task with no story usually means the
-*why* was never articulated.
+Top-level `stories:` and `tasks:` are for work with no Epic. A single issue —
+one bug, one chore, one idea — is a one-node `tasks:` manifest:
+
+```yaml
+repo: owner/name
+project:
+  number: 4
+  owner: tapoh22334
+tasks:
+  - title: Navigator 起動時に古いプロセスを掃除する
+    labels: [kind::bug]
+    body: |
+      ## やること
+      ...
+```
 
 ## Project block
 

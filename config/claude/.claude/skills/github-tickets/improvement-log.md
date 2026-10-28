@@ -177,3 +177,23 @@
   一覧から漏れていたので type ラベル無しの全件を照合して拾った)の Priority をクリアした。
   Story #3/#6/#8 と Epic #2 の値は据え置き(利用者の指摘は Task のみ。Epic は規則上は空欄が
   既定だが、既存の値を消すかは利用者判断)。
+
+## 2026-10-28 ラベル体系を 3 軸に分け、単発と 1 子 Story を規則にした(dotfiles #28)
+
+- **実物**: All Work 288 件の棚卸し。proactive-work の Story 10 件が Subtask 1 件ずつで、
+  子が全部閉じても Story が OPEN のまま残っていた(Epic #3 は 1/12)。ma-splitflap #222〜#243 では、
+  確約したリファクタと「いつか」の機能案が同じラベルなし Task として並んでいた。
+  Story の子の Task、単発の作業、付け忘れが、どれも「ラベルなし」で区別できなかった。
+- **分類**: 内容欠陥。「Task はラベルなし=信号」という規則が 3 つの意味を 1 つの不在に詰めていた。
+  type が階層と性質を兼ねる案も議論で出たが、bug は Story 規模にも Task 規模にもなるため 1 軸に収まらない。
+- **修正**: 階層 `type::`(epic / story / task / subtask、必須で 1 つ)、性質 `kind::`(bug / chore、任意)、
+  確約 `idea`(任意)。Task は Story と同じ段の単発で、Story の子は Subtask。正本は `scripts/labels.tsv`、
+  一括配備は `scripts/labels.sh`。apply.sh は入れ子から type を決め、1 子の Epic/Story と
+  子を持つ Task/Subtask を preflight で拒否する。1 件の起票もスキル経由にした。
+  Priority は Story と Task に置き、Subtask は空欄(親子でずれる理由は Subtask にだけ当てはまる)。
+- **併記(#33)**: miniyaml が `labels: [type::story]` を文字列で返し、`list()` が 1 文字ずつに分けて
+  craft-lab に 1 文字のラベルを 12 個作っていた。さらに `- kind::bug` は `{'kind': ':bug'}` と読まれていた。
+  どちらも `::` を含むラベルで壊れる。flow リストを読めるようにし、`key:` の判定を
+  「コロンの直後が空白か行末」に絞った。apply.sh は labels が文字列なら拒否する。
+- **回帰**: `--plan` で regression-184-188.yml(Story 1 + Subtask 3)・新形式の例・
+  1 子 Story(拒否)・文字列 labels(拒否)・adopt 済み Story への 1 件追加(通る)を確認。shellcheck 通過。
