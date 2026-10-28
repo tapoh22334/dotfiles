@@ -1,0 +1,53 @@
+# 公開 repo のため、gitleaks の標準ルールに加えて「値ではないが公開したくない情報」も止める。
+# pre-commit / pre-push フックと CI が共通で読む。
+title = "dotfiles"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "sensitive-file"
+description = "秘密を入れる慣習のファイル(.env、鍵、認証情報)"
+path = '''(^|/)(\.env(\.[^/]+)?|\.env_file|\.envrc|\.credentials(\.json)?|\.credentials_rsaparams|credentials|\.git-credentials|id_(rsa|ed25519|ecdsa|dsa)[^/]*|[^/]+\.(pem|key|p12|pfx|p8|ppk|kdbx|tfvars)|cloudflare\.ini|\.netrc|\.pgpass)$|(^|/)\.secrets/'''
+[[rules.allowlists]]
+paths = ['''\.example$''', '''\.pub$''']
+
+[[rules]]
+id = "claude-automode-environment"
+description = "Claude Code の autoMode.environment(秘密の置き場所・本番名の一覧)。clean フィルタが外れているときの保険"
+path = '''(^|/)settings(\.local)?\.json$'''
+regex = '''"environment"\s*:\s*\['''
+keywords = ["environment"]
+
+[[rules]]
+id = "private-ip"
+description = "LAN・Tailscale(IPv4/IPv6)のアドレス(内部構成の露出)"
+regex = '''(\bfd7a:115c:a1e0:[0-9a-f:]*|\b(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3})\b)'''
+
+[[rules]]
+id = "tailnet-hostname"
+description = "Tailscale の MagicDNS 名(tailnet 名を含む)"
+regex = '''\b[a-z0-9-]+\.[a-z0-9-]+\.ts\.net\b'''
+keywords = [".ts.net"]
+
+[[rules]]
+id = "email-address"
+description = "個人のメールアドレス"
+regex = '''\b[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b'''
+keywords = ["@"]
+[[rules.allowlists]]
+regexTarget = "match"
+regexes = ['''@example\.(com|org|net)$''', '''^git@github\.com$''', '''^noreply@''', '''@users\.noreply\.github\.com$''', '''^x@y\.com$''', '''@\d+x\.(png|jpe?g|webp|gif|svg)$''']
+
+# 既に公開済みの履歴(履歴の書き換えはしない判断)。新しいコミットには効かない。
+#   c168bd6 dot/.zshrc の DOCKER_HOST(LAN の IP)
+#   8f95d4b setting_files/.gitconfig の本人メール(コミットの author にも出ている)
+#   8ab9775, 15ba579 solarized.vim の作者メール(第三者の公開情報)
+[[allowlists]]
+description = "公開済みの履歴"
+commits = [
+  "15ba5793f67cea4c8d50f49cdc21bc886629951d",
+  "8ab9775e1d0bb20c1b934d6f1ca7f797e7c7ff78",
+  "8f95d4b849c7afe203b26ffa053aa9d76830a6d9",
+  "c168bd617586a357f6547af799676de267480b44",
+]
