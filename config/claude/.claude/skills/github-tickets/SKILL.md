@@ -1,9 +1,9 @@
 ---
 name: github-tickets
-description: Register and organize work as a three-level Epic/Story/Task hierarchy of GitHub Issues, linked with native sub-issues and tracked on a GitHub Project. Use whenever the user wants to file, plan, or restructure work in GitHub — チケット登録 / チケット切って / Epic に分解して / Story 起こして / issue 立てて / GitHub Projects に積んで / 親子つけて / 階層整理して / チケット一覧 / file tickets / break this into epics and stories / create issues for this / put it on the project board / re-parent these issues. Also use when a plan, design doc, or brainstorm needs to become tracked work, when existing issues are orphaned or wrongly nested, or when someone asks about ticket granularity. Prefer this over ad-hoc `gh issue create` any time more than one issue is involved or hierarchy matters.
+description: Register and organize work as a three-level Epic/Story/Task hierarchy of GitHub Issues, linked with native sub-issues and tracked on a GitHub Project. Use whenever the user wants to file, plan, or restructure work in GitHub — チケット登録 / チケット切って / Epic に分解して / Story 起こして / issue 立てて / GitHub Projects に積んで / 親子つけて / 階層整理して / チケット一覧 / file tickets / break this into epics and stories / create issues for this / put it on the project board / re-parent these issues. Also use when a plan, design doc, or brainstorm needs to become tracked work, when existing issues are orphaned or wrongly nested, or when someone asks about ticket granularity. Use it for a single issue too (a lone bug, a chore, an idea): it is the only path that labels the issue and puts it on the board, so never fall back to ad-hoc `gh issue create`.
 ---
 
-# GitHub Tickets — Epic / Story / Task
+# GitHub Tickets — Epic / Story / Task / Subtask
 
 Turn work into a three-level hierarchy of GitHub Issues that a future reader can act on without asking anyone what was meant.
 
@@ -17,9 +17,18 @@ Two commitments shape everything here:
 
 Level decisions (Epic / Story / Task, the Story test, what is not a ticket) live in
 the structuring-work skill. This skill assumes the tree already passed its 検査表.
-The one-line reminder: Epic = why invest (≥2 Stories, outcome outside the repo);
-Story = what someone can now do end to end; Task = a mergeable change with a
-完了条件 you can write today.
+The one-line reminder:
+
+```
+Epic                     why invest. Outcome outside the repo. 2+ Stories/Tasks
+├─ Story ─┬─ Subtask     what someone can now do end to end. 2+ Subtasks
+│         └─ Subtask     a change that is one part of a Story
+└─ Task                  a self-contained change. Never has children
+Task                     may stand alone with no parent at all
+```
+
+Story and Task sit on the same tier: both deliver on their own. A Story is big
+enough to split; a Task is not. A Story that would have one Subtask is a Task.
 
 ## Body templates
 
@@ -50,7 +59,7 @@ Use the level's template. Headings are fixed so tickets are scannable in bulk; c
 - [ ] <Include the notable failure/edge path, not just the happy one>
 ```
 
-**Task**
+**Task / Subtask**
 ```markdown
 ## やること
 <The change, in one or two sentences. The outcome — not the procedure.>
@@ -58,6 +67,20 @@ Use the level's template. Headings are fixed so tickets are scannable in bulk; c
 ## 完了条件
 - [ ] <What must be true when this is merged>
 ```
+
+**Idea** (any level carrying the `idea` label — not committed yet)
+```markdown
+## 何を
+<What might be done, as an outcome.>
+
+## なぜ
+<What it would change, for whom.>
+
+## 発動条件
+<Only for a deferred decision: the observable condition that means
+ "now decide". Omit for a plain idea.>
+```
+When it is committed, remove `idea` and rewrite the body to the level's template.
 
 Write bodies in the language the user is using (default 日本語 here). Keep the headings as written above so tooling and skimming stay consistent.
 
@@ -70,18 +93,25 @@ A title is read in a list of eighty. Make it stand alone: `<動詞で終わる�
 
 ## Labels
 
-- Epic → `type::epic`
-- Story → `type::story`
-- Task → **no type label**
+Three independent axes. Each answers one question; do not use one to answer another.
 
-Task is the default level, so labeling it adds noise to every issue in the repo without distinguishing anything — the absence of a type label *is* the signal. Create the two labels if missing (see reference).
+| Axis | Labels | Rule |
+|---|---|---|
+| Level — how big | `type::epic` `type::story` `type::task` `type::subtask` | **Exactly one, always.** An issue with no `type::` label is unclassified, and that is detectable |
+| Kind — what sort of work | `kind::bug` (doesn't work as expected) `kind::chore` (works, needs upkeep: refactor, CI, deps, tests, docs) | Optional. No `kind::` means a feature |
+| Commitment — decided yet? | `idea` | Optional. Present means not committed, including a decision deferred until a condition holds |
+
+`apply.sh` sets `type::` from the manifest's nesting — never write it by hand.
+`kind::` and `idea` go in `labels:`. Colors and descriptions come from
+`scripts/labels.tsv`; to bring a whole repo in line (including renaming the
+default `bug` to `kind::bug`), run `scripts/labels.sh owner/repo`.
 
 ### Project fields
 
-Priority lives on the Story. Set it per Task and the board holds two answers that drift apart the first time one is edited.
+Priority lives on the deliverable tier — Story and Task. Set it on a Subtask and the board holds two answers that drift apart the first time one is edited.
 
-- Story → set Priority (when the board has the field)
-- Task → leave Priority blank, even though the board offers it. This includes a Task with no parent Story: if it seems to need its own priority, that is a sign it belongs under a Story, not a reason to fill the field
+- Story, Task → set Priority (when the board has the field)
+- Subtask → leave Priority blank, even though the board offers it
 - Epic → leave blank unless the user asks
 
 "The board has a Priority field" is not an instruction to fill it at every level. Size and other fields are not covered by this rule.
@@ -119,7 +149,7 @@ Approval is per-batch, not standing. A new request means a new tree and a new ap
 
 ### 3. Write a manifest, then apply it
 
-Write the approved tree as a YAML manifest and hand it to `scripts/apply.sh`. Do not issue `gh issue create` calls by hand for a tree.
+Write the approved tree as a YAML manifest and hand it to `scripts/apply.sh`. This holds for a single issue too — a one-node `tasks:` manifest. Do not issue `gh issue create` by hand: it skips the type label, the board, and verify.
 
 ```bash
 export GT_SCRIPTS=~/.claude/skills/github-tickets/scripts
@@ -134,7 +164,7 @@ The manifest is worth the extra file because it states the **intended end state*
 
 Two properties of the script address that directly:
 
-- **Preflight refuses to write.** Auth, scopes, board reachability and labels are checked before the first `gh issue create`. A missing `project` scope stops the run *before* anything is created, rather than after. A half-built tree cannot be cleanly undone — closing an issue leaves it visible forever.
+- **Preflight refuses to write.** Auth, scopes, board reachability, labels and structure (an Epic or Story with fewer than two children) are checked before the first `gh issue create`. A missing `project` scope stops the run *before* anything is created, rather than after. A half-built tree cannot be cleanly undone — closing an issue leaves it visible forever.
 - **Verify diffs the result.** After creating, every node is re-read from GitHub and compared to the manifest: issue exists, labels present, linked under the right parent, on the board if one was requested. Mismatches print as `✗` lines.
 
 If preflight reports a missing `project` scope, you have two honest options — ask the user to run `gh auth refresh -s project` themselves (interactive browser flow, you cannot do it for them), or drop the `project:` block and file issues only. **Do not create issues while intending to add the board "after"**; that is precisely the sequence that failed.
@@ -156,8 +186,10 @@ To adopt tickets that predate the manifest, list their real numbers under `issue
 **Re-parent.** `addSubIssue` with `replaceParent:true` moves a child that already has a parent — you don't remove first. Use `removeSubIssue` only to make an issue top-level. Confirm before re-parenting issues you didn't just create; someone may have nested them deliberately.
 
 **Fix granularity.** When asked to review structure, look for the failure modes that actually recur:
-- A Story that isn't independently valuable → it's a Task; find or create its real Story
-- A Task hanging directly off an Epic → the Story between them is missing and unnamed, which usually means the *why* was never articulated
+- A Story that isn't independently valuable → its parts are Subtasks of some real Story
+- A Story with a single Subtask → it's a Task; fold the two into one issue
+- An issue with no `type::` label → unclassified; propose its level
+- An idea filed as a Task or Story without `idea` → it reads as committed work
 - A Story with a dozen Tasks, or whose acceptance criteria describe several unrelated behaviors → it's really multiple Stories
 - Orphan issues that belong under an existing Epic
 

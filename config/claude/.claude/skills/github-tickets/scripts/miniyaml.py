@@ -9,6 +9,8 @@ manifest silently misread would create wrong issues on GitHub, which is exactly
 the class of failure this whole script exists to prevent.
 """
 
+import re
+
 
 def _scalar(tok: str):
     tok = tok.strip()
@@ -16,6 +18,13 @@ def _scalar(tok: str):
         return ""
     if len(tok) >= 2 and tok[0] == tok[-1] and tok[0] in "\"'":
         return tok[1:-1]
+    # Flow list of scalars (`labels: [a, b]`). Nested flow collections are
+    # not part of the schema, so they are rejected rather than half-parsed.
+    if tok.startswith("[") and tok.endswith("]"):
+        inner = tok[1:-1]
+        if any(c in inner for c in "[]{}"):
+            raise ValueError(f"nested flow collection not supported: {tok!r}")
+        return [_scalar(x) for x in inner.split(",") if x.strip()]
     if tok in ("true", "True"):
         return True
     if tok in ("false", "False"):
@@ -104,7 +113,9 @@ def load(text: str):
                 break
             rest = content[2:].strip()
             pos[0] += 1
-            if ":" in rest and not rest.startswith(("\"", "'")):
+            # Only `key:` followed by space or end of line opens a mapping;
+            # `kind::bug` is a plain scalar, not {"kind": ":bug"}.
+            if re.match(r"[^\"'\s][^:]*:(\s|$)", rest):
                 k, _, v = rest.partition(":")
                 item = {}
                 if v.strip():

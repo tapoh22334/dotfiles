@@ -46,3 +46,11 @@
 - 実験(構造スロット系につき検収): 本シナリオ(sonnet)→ 投資の問いが立ち、Epic 候補 + 3 項の
   草案を出して確認待ちで停止(合格)。否定側: 単発バグ 1 件 →「該当なし」で Task 1 件(合格)
 - 回帰: ma-splitflap は既存 Epic あり(その下に付ける)で判定不変(机上)
+
+## 2026-10-28 単発の Task を Story と同じ段に置き、Subtask を分けた(dotfiles #28)
+- 実物: All Work の棚卸しで、Subtask 1 件だけの Story が proactive-work に 10 件あった。
+  子が閉じても親が開いたまま残る。旧規則「Story の下に Task が 1 つも要らないなら Task」は
+  1 つだけの場合を許していた。
+- 修正: Story は Subtask を 2 つ以上持つ。単発は Task として Story と同じ段に置く(Jira の
+  Story / Task / Sub-task に倣った)。性質 `kind::` と確約 `idea` を階層と別の軸として判定する節を足し、
+  保留のうち記録に残すものは `idea` で起票するとした。github-tickets の apply.sh が 1 子の Story を拒否する。

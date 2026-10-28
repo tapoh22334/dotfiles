@@ -27,6 +27,10 @@ MANIFEST="${1:?usage: apply.sh [--check|--plan|--verify] <manifest.yml>}"
 
 # ---- parse manifest into a flat TSV the shell can loop over -------------------
 # python3 is used only as a YAML reader; all GitHub work stays in gh.
+# miniyaml.py sits next to this script; without this, running apply.sh from
+# anywhere but its own directory fails to import it when PyYAML is absent.
+export GT_SCRIPTS="${GT_SCRIPTS:-$(cd "$(dirname "$0")" && pwd)}"
+
 read_manifest() {
   python3 - "$MANIFEST" <<'PY'
 import sys, json, os
@@ -42,37 +46,62 @@ except ImportError:
     doc = load(open(sys.argv[1], encoding="utf-8").read())
 repo    = doc.get("repo", "")
 project = doc.get("project") or {}
-rows, seen = [], set()
+rows, seen, violations = [], set(), []
 
-def walk(nodes, parent_key, level):
+def as_list(n, field):
+    v = n.get(field) or []
+    # A string here is iterated character by character, which once created
+    # thirteen one-letter labels on a real repo. Refuse rather than guess.
+    if not isinstance(v, list):
+        sys.exit(f"{field} must be a list, got {v!r} (near {n.get('title')!r})")
+    return [str(x) for x in v]
+
+def walk(nodes, parent_key, level, depth):
     for i, n in enumerate(nodes or []):
         if not isinstance(n, dict) or "title" not in n:
             sys.exit(f"every node needs a title (near parent {parent_key or 'root'})")
+        kids = n.get("children") or []
+        # Under an Epic, a node that splits further is a Story; one that does
+        # not is a Task, the Story's peer. Under a Story, it is a Subtask.
+        if level == "child-of-epic":
+            level_here = "story" if kids else "task"
+        else:
+            level_here = level
         # Top-level nodes of different sections (epics/stories/tasks) must not
         # share a prefix, or a manifest with two sections dies on "duplicate key".
-        key = n.get("key") or f"{parent_key or level[0]}.{i}"
+        key = n.get("key") or f"{parent_key or level_here[0]}.{i}"
         if key in seen:
             sys.exit(f"duplicate key: {key}")
         seen.add(key)
-        labels = list(n.get("labels") or [])
-        default = {"epic": "type::epic", "story": "type::story"}.get(level)
-        if default and default not in labels:
-            labels.append(default)
+        # Count rules apply to new nodes only: an adopted parent may list just
+        # the children being added now.
+        if not n.get("issue"):
+            if level_here in ("epic", "story") and len(kids) < 2:
+                fix = "make it a Task" if level_here == "story" else "drop the Epic"
+                violations.append(f"{level_here} {n['title']!r} has {len(kids)} child(ren); needs 2+ ({fix})")
+            if level_here in ("task", "subtask") and kids:
+                violations.append(f"{level_here} {n['title']!r} has children; only Epic and Story split")
+        labels = as_list(n, "labels")
+        typed = [l for l in labels if l.startswith("type::")]
+        if typed:
+            sys.exit(f"type:: is set from the manifest's nesting; remove {typed} from {n['title']!r}")
+        labels.append(f"type::{level_here}")
         rows.append({
-            "key": key, "parent": parent_key or "", "level": level,
+            "key": key, "parent": parent_key or "", "level": level_here,
             "title": n["title"], "body": n.get("body", "") or "",
             "labels": ",".join(labels),
-            "assignees": ",".join(n.get("assignees") or []),
+            "assignees": ",".join(as_list(n, "assignees")),
             "milestone": n.get("milestone", "") or "",
             "issue": str(n.get("issue", "") or ""),
             "fields": json.dumps(n.get("fields") or {}, ensure_ascii=False),
+            "depth": depth,
         })
-        child_level = {"epic": "story", "story": "task"}.get(level, "task")
-        walk(n.get("children"), key, child_level)
+        child_level = {"epic": "child-of-epic", "story": "subtask"}.get(level_here, "subtask")
+        walk(kids, key, child_level, depth + 1)
 
-walk(doc.get("epics"),   None, "epic")
-walk(doc.get("stories"), None, "story")
-walk(doc.get("tasks"),   None, "task")
+walk(doc.get("epics"),   None, "epic",  0)
+walk(doc.get("stories"), None, "story", 0)
+walk(doc.get("tasks"),   None, "task",  0)
 if not rows:
     sys.exit("manifest has no epics/stories/tasks")
 
@@ -81,6 +110,7 @@ print(json.dumps({
     "project_number": str(project.get("number", "") or ""),
     "project_owner": project.get("owner", "") or "",
     "rows": rows,
+    "violations": violations,
 }, ensure_ascii=False))
 PY
 }
@@ -103,7 +133,7 @@ import json,sys
 d=json.load(sys.stdin)
 for r in d["rows"]:
     vals=[]
-    for k in ("key","parent","level","title","labels","assignees","milestone","issue","fields"):
+    for k in ("key","parent","level","title","labels","assignees","milestone","issue","fields","depth"):
         v=str(r[k]).replace("\t"," ").replace("\n"," ").strip()
         vals.append(v if v else "-")
     print("\t".join(vals))
@@ -147,6 +177,12 @@ preflight() {
     note_ok "no project requested (issues only)"
   fi
 
+  # A one-child Story is a Task with extra ceremony, and its parent stays open
+  # after the only child closes. Refuse before anything exists.
+  while read -r v; do
+    [ -n "$v" ] && note_fail "structure: $v"
+  done < <(printf '%s' "$PARSED" | python3 -c 'import json,sys;print("\n".join(json.load(sys.stdin)["violations"]))')
+
   # grep -vx '-' strips the placeholder; without it a label named "-" gets created.
   local want; want="$(cut -f5 <<<"$ROWS_TSV" | tr ',' '\n' | sort -u | grep -v '^$' | grep -vx -- '-' || true)"
   local have; have="$(gh label list --repo "$REPO" --limit 200 --json name -q '.[].name' 2>/dev/null || true)"
@@ -174,11 +210,11 @@ fi
 # ---- plan --------------------------------------------------------------------
 show_plan() {
   echo; echo "plan ($REPO${PROJ_NUM:+, project #$PROJ_NUM}):"
-  while IFS=$'\t' read -r key parent level title labels _a _m issue _f; do
-    parent="$(unblank "$parent")"; labels="$(unblank "$labels")"; issue="$(unblank "$issue")"
-    local indent="" ; case "$level" in story) indent="  ";; task) indent="    ";; esac
-    printf '%s%s %s%s%s\n' "$indent" "$([ -n "$issue" ] && echo "#$issue" || echo "+")" \
-      "$title" "${labels:+  [$labels]}" ""
+  while IFS=$'\t' read -r _k _p _lv title labels _a _m issue _f depth; do
+    labels="$(unblank "$labels")"; issue="$(unblank "$issue")"
+    local indent; indent="$(printf '%*s' $((depth * 2 + 2)) '')"
+    printf '%s%s %s%s\n' "$indent" "$([ -n "$issue" ] && echo "#$issue" || echo "+")" \
+      "$title" "${labels:+  [$labels]}"
   done <<<"$ROWS_TSV"
 }
 show_plan
@@ -186,9 +222,18 @@ show_plan
 
 # ---- ensure labels -----------------------------------------------------------
 if [ "$MODE" = apply ]; then
+  # Canonical labels get their color and description from labels.tsv, so a
+  # repo's first ticket leaves the same labels every other repo has.
+  LABELS_TSV="$(dirname "$0")/labels.tsv"
   while read -r l; do
     [ -z "$l" ] && continue
-    gh label create "$l" --repo "$REPO" --color ededed >/dev/null 2>&1 || true
+    spec="$(awk -F'\t' -v n="$l" '$1==n' "$LABELS_TSV")"
+    if [ -n "$spec" ]; then
+      gh label create "$l" --repo "$REPO" --color "$(cut -f2 <<<"$spec")" \
+        --description "$(cut -f3 <<<"$spec")" >/dev/null 2>&1 || true
+    else
+      gh label create "$l" --repo "$REPO" --color ededed >/dev/null 2>&1 || true
+    fi
   done < <(cut -f5 <<<"$ROWS_TSV" | tr ',' '\n' | sort -u | grep -v '^$' | grep -vx -- '-')
 fi
 
@@ -198,7 +243,7 @@ node_id() { gh api "repos/$REPO/issues/$1" -q .node_id; }
 
 if [ "$MODE" = apply ]; then
   echo; echo "creating:"
-  while IFS=$'\t' read -r key parent level title labels assignees milestone issue _; do
+  while IFS=$'\t' read -r key parent _lv title labels assignees milestone issue _; do
     parent="$(unblank "$parent")"; labels="$(unblank "$labels")"; issue="$(unblank "$issue")"
     assignees="$(unblank "$assignees")"; milestone="$(unblank "$milestone")"
     if [ -n "$issue" ]; then
@@ -220,7 +265,7 @@ print(next(r['body'] for r in d['rows'] if r['key']=='$key'))")"
   done <<<"$ROWS_TSV"
 
   # link children (needs both node IDs, so it runs after all issues exist)
-  while IFS=$'\t' read -r key parent level title _l _a _m _i _f; do
+  while IFS=$'\t' read -r key parent _lv title _l _a _m _i _f; do
     parent="$(unblank "$parent")"
     [ -z "$parent" ] && continue
     cnum="$(grep -P "^\Q$key\E\t" "$STATE" | cut -f2)"
@@ -256,7 +301,7 @@ fi
 # This is the step whose absence let a whole tree sit off the board for a month.
 echo; echo "verify:"
 FAIL=0
-while IFS=$'\t' read -r key parent level title labels _a _m issue _f; do
+while IFS=$'\t' read -r key parent _lv title labels _a _m issue _f; do
   parent="$(unblank "$parent")"; labels="$(unblank "$labels")"; issue="$(unblank "$issue")"
   num="$issue"
   [ -z "$num" ] && [ -f "$STATE" ] && num="$(grep -P "^\Q$key\E\t" "$STATE" 2>/dev/null | cut -f2 || true)"

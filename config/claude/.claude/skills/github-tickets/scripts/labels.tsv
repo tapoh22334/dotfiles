@@ -1,0 +1,7 @@
+type::epic	6F42C1	階層: リポジトリの外に成果が出る投資単位。Story か Task を 2 つ以上持つ
+type::story	0E8A16	階層: 誰かが新たにできること。Subtask を 2 つ以上持つ
+type::task	1D76DB	階層: 単発。1 件で完結し、子を持たない
+type::subtask	BFD4F2	階層: Story を構成する作業。親は必ず Story
+kind::bug	D73A4A	性質: 期待どおりに動かない
+kind::chore	C5DEF5	性質: 動いているが手入れが要る(リファクタ・CI・依存・テスト・文書)
+idea	FBCA04	確約: まだやると決めていない。発動条件つきの保留判断も含む

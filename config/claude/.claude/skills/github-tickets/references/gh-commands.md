@@ -32,11 +32,11 @@ Scopes:
 
 ## Labels
 
-Create once per repo; harmless to re-run with `|| true`.
+The canonical set (names, colors, descriptions) is `scripts/labels.tsv`. Bring a repo in line — safe to re-run, and renames the default `bug` to `kind::bug` so issues keep it:
 
 ```bash
-gh label create "type::epic"  --color 6F42C1 --description "Epic: 事業/プロダクト上の成果単位" 2>/dev/null || true
-gh label create "type::story" --color 0E8A16 --description "Story: 独立して価値のある振る舞い" 2>/dev/null || true
+$GT_SCRIPTS/labels.sh --dry-run owner/repo   # show what would change
+$GT_SCRIPTS/labels.sh owner/repo
 ```
 
 Check what exists: `gh label list --search "type::"`
@@ -157,11 +157,18 @@ Cheap parent check: `gh issue view N --json parent`
 
 Find Epics: `gh issue list --label "type::epic" --state all --json number,title,state`
 
-Find orphan issues (no parent, not an Epic):
+Find unclassified issues (no `type::` label):
 
 ```bash
-gh issue list --state open --json number,title,parent,labels \
-  -q '.[] | select(.parent == null) | select([.labels[].name] | index("type::epic") | not) | "\(.number)\t\(.title)"'
+gh issue list --state open --json number,title,labels \
+  -q '.[] | select([.labels[].name | startswith("type::")] | any | not) | "\(.number)\t\(.title)"'
+```
+
+Find Subtasks that lost their Story (a parentless Subtask is really a Task):
+
+```bash
+gh issue list --state open --label "type::subtask" --json number,title,parent \
+  -q '.[] | select(.parent == null) | "\(.number)\t\(.title)"'
 ```
 
 ## Projects
@@ -245,7 +252,7 @@ add_sub(){ gh api graphql -f query='mutation($p:ID!,$c:ID!){addSubIssue(input:{i
 mkissue(){ # mkissue <title> <label-or-empty> <body>
   local args=(--repo "$REPO" --title "$1" --body "$3")
   # `if`, not `[ ] &&` — a bare test that fails is a nonzero return under
-  # `set -e`, which would abort on every unlabeled Task.
+  # `set -e`, which would abort the run on an empty label.
   if [ -n "$2" ]; then args+=(--label "$2"); fi
   gh issue create "${args[@]}" | sed 's#.*/##'
 }
@@ -269,7 +276,8 @@ EOF
 )")
 add_sub "$EPIC" "$S1"
 
-T1=$(mkissue "キャンセルAPIエンドポイントを追加する" "" "$(cat <<'EOF'
+# A real Story has 2+ Subtasks; one is shown to keep the example short.
+T1=$(mkissue "キャンセルAPIエンドポイントを追加する" "type::subtask" "$(cat <<'EOF'
 ## やること
 予約をキャンセルし在庫を解放するエンドポイントを追加する。
 ## 完了条件
