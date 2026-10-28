@@ -164,10 +164,12 @@ The manifest is worth the extra file because it states the **intended end state*
 
 Two properties of the script address that directly:
 
-- **Preflight refuses to write.** Auth, scopes, board reachability, labels and structure (an Epic or Story with fewer than two children) are checked before the first `gh issue create`. A missing `project` scope stops the run *before* anything is created, rather than after. A half-built tree cannot be cleanly undone — closing an issue leaves it visible forever.
+- **Preflight refuses to write.** Auth, scopes, board reachability, labels and structure (an Epic or Story with fewer than two children) are checked before the first `gh issue create`, along with a missing `project:` block and an open issue that already has a node's title (a rerun would file the tree twice). A missing `project` scope stops the run *before* anything is created, rather than after. A half-built tree cannot be cleanly undone — closing an issue leaves it visible forever.
 - **Verify diffs the result.** After creating, every node is re-read from GitHub and compared to the manifest: issue exists, labels present, linked under the right parent, on the board if one was requested. Mismatches print as `✗` lines.
 
-If preflight reports a missing `project` scope, you have two honest options — ask the user to run `gh auth refresh -s project` themselves (interactive browser flow, you cannot do it for them), or drop the `project:` block and file issues only. **Do not create issues while intending to add the board "after"**; that is precisely the sequence that failed.
+Every manifest names its board. If preflight reports a missing `project` scope, stop and ask the user to run `gh auth refresh -s project` themselves (interactive browser flow, you cannot do it for them). Do not swap the block for `project: none` to get past it: `none` is for when the user has said they want issues without a board, not a way around a missing scope. **Do not create issues while intending to add the board "after"**; that is precisely the sequence that failed.
+
+When a run fails partway, pin each issue it already created with `issue: N` before running again. Preflight refuses titles that are already open, but only for open issues.
 
 ### 4. Report
 

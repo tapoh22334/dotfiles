@@ -14,15 +14,23 @@
 # Requires: gh, python3. Manifest schema: see references/manifest.md
 set -uo pipefail
 
+# Options are accepted anywhere: `apply.sh tickets.yml --plan` once ran as a
+# full apply, because only the first argument was checked for a mode.
 MODE=apply
-case "${1:-}" in
-  --check)  MODE=check;  shift ;;
-  --plan)   MODE=plan;   shift ;;
-  --verify) MODE=verify; shift ;;
-  -h|--help) sed -n '2,14p' "$0"; exit 0 ;;
-esac
+MANIFEST=
+for a in "$@"; do
+  case "$a" in
+    --check)  MODE=check ;;
+    --plan)   MODE=plan ;;
+    --verify) MODE=verify ;;
+    -h|--help) sed -n '2,14p' "$0"; exit 0 ;;
+    -*) echo "unknown option: $a" >&2; exit 2 ;;
+    *) [ -z "$MANIFEST" ] || { echo "only one manifest, got: $MANIFEST $a" >&2; exit 2; }
+       MANIFEST="$a" ;;
+  esac
+done
 
-MANIFEST="${1:?usage: apply.sh [--check|--plan|--verify] <manifest.yml>}"
+[ -n "$MANIFEST" ] || { echo "usage: apply.sh [--check|--plan|--verify] <manifest.yml>" >&2; exit 2; }
 [ -f "$MANIFEST" ] || { echo "manifest not found: $MANIFEST" >&2; exit 2; }
 
 # ---- parse manifest into a flat TSV the shell can loop over -------------------
@@ -45,7 +53,17 @@ except ImportError:
     from miniyaml import load
     doc = load(open(sys.argv[1], encoding="utf-8").read())
 repo    = doc.get("repo", "")
-project = doc.get("project") or {}
+# A missing block used to mean "issues only", so forgetting it filed issues
+# that never reached the board. Opting out now has to be written: `project: none`.
+project = doc.get("project", "missing")
+if project == "none":
+    project_state, project = "none", {}
+elif project == "missing":
+    project_state, project = "missing", {}
+elif isinstance(project, dict) and project.get("number"):
+    project_state = "set"
+else:
+    sys.exit(f"project must be a block with number (and owner), or 'none'; got {project!r}")
 rows, seen, violations = [], set(), []
 
 def as_list(n, field):
@@ -120,6 +138,7 @@ print(json.dumps({
     "repo": repo,
     "project_number": str(project.get("number", "") or ""),
     "project_owner": project.get("owner", "") or "",
+    "project_state": project_state,
     "rows": rows,
     "violations": violations,
 }, ensure_ascii=False))
@@ -132,6 +151,7 @@ jqp() { printf '%s' "$PARSED" | python3 -c "import json,sys;d=json.load(sys.stdi
 REPO="$(jqp 'd["repo"]')"
 PROJ_NUM="$(jqp 'd["project_number"]')"
 PROJ_OWNER="$(jqp 'd["project_owner"]')"
+PROJ_STATE="$(jqp 'd["project_state"]')"
 [ -n "$REPO" ] || REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || true)"
 [ -n "$REPO" ] || { echo "repo not set in manifest and not inside a gh repo" >&2; exit 2; }
 
@@ -181,11 +201,14 @@ preflight() {
     else
       # This is the exact gap that let a tree land with zero project items.
       note_fail "scope: project missing — the board step WILL fail.
-       Run this yourself (interactive browser flow):  gh auth refresh -s project
-       Or drop the 'project:' block from the manifest to file issues only."
+       Run this yourself (interactive browser flow):  gh auth refresh -s project"
     fi
+  elif [ "$PROJ_STATE" = none ]; then
+    note_ok "project: none (issues only, opted out explicitly)"
   else
-    note_ok "no project requested (issues only)"
+    note_fail "no project: block — the issues would never reach a board.
+       Add a project: block with number: and owner: under it, or write  project: none
+       only when the user asked for issues without a board."
   fi
 
   # A one-child Story is a Task with extra ceremony, and its parent stays open
@@ -193,6 +216,26 @@ preflight() {
   while read -r v; do
     [ -n "$v" ] && note_fail "structure: $v"
   done < <(printf '%s' "$PARSED" | python3 -c 'import json,sys;print("\n".join(json.load(sys.stdin)["violations"]))')
+
+  # Created numbers live only for one run, so a rerun would file the whole tree
+  # again. An open issue with the same title means this node already exists.
+  # Compared as plain strings in bash: awk -v rewrites backslashes and compares
+  # number-like titles numerically. A failed listing must not pass as "no dups".
+  local open_titles
+  if open_titles="$(gh issue list --repo "$REPO" --state open --limit 1000 \
+       --json number,title -q '.[]|"\(.number)\t\(.title)"' 2>/dev/null)"; then
+    [ "$(grep -c . <<<"$open_titles")" -ge 1000 ] &&
+      echo "  · 1000+ open issues: duplicate-title check saw only the first 1000"
+    while IFS=$'\t' read -r _k _p _lv title _l _a _m issue _f; do
+      [ "$issue" = "-" ] || continue
+      while IFS=$'\t' read -r onum otitle; do
+        [ "$otitle" = "$title" ] && {
+          note_fail "already open as #$onum: $title — put  issue: $onum  on that node"; break; }
+      done <<<"$open_titles"
+    done <<<"$ROWS_TSV"
+  else
+    note_fail "cannot list open issues in $REPO — duplicate-title check did not run"
+  fi
 
   # grep -vx '-' strips the placeholder; without it a label named "-" gets created.
   local want; want="$(cut -f5 <<<"$ROWS_TSV" | tr ',' '\n' | sort -u | grep -v '^$' | grep -vx -- '-' || true)"
