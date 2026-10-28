@@ -41,6 +41,11 @@ done
 echo "🧩 Syncing Claude skill sources..."
 ./scripts/sync-skill-sources.sh || true
 
+# Secret leak guard: hooks, settings.json clean filter, and permissions of
+# secret files outside the repo. See README "秘密情報の流出防止".
+echo "🔒 Setting up secret leak guard..."
+./scripts/setup-secret-guard.sh
+
 # Setup git local configuration (user email and name)
 setup_git_local_config() {
   local gitconfig_local="$HOME/.gitconfig.local"

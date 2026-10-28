@@ -13,3 +13,31 @@ config/claude/.claude/skills/**/.cache.json
 config/claude/.claude/skills/**/__pycache__/
 config/claude/.claude/skills/**/*.pyc
 config/claude/.claude/skills/*-workspace/
+
+# 秘密を入れる慣習のファイル。追跡すべきテンプレートは *.example にする。
+# .gitleaks.toml の sensitive-file ルールと同じ対象を並べる(片方を直したら他方も直す)。
+.env
+.env.*
+!*.example
+.env_file
+.envrc
+.secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.p8
+*.ppk
+*.kdbx
+*.tfvars
+id_rsa*
+id_ed25519*
+id_ecdsa*
+id_dsa*
+!*.pub
+.credentials*
+credentials
+.git-credentials
+cloudflare.ini
+.netrc
+.pgpass
