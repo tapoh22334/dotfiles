@@ -50,6 +50,7 @@ children being added.
 | `body` | all | Markdown. Use `\|` block scalars. Follow the level's template. |
 | `children` | all | Nested nodes, one level down. |
 | `key` | all | Stable id for cross-references. Auto-generated if omitted. |
+| `level` | child of an epic | `story` or `task`. Needed only for an adopted node listed without its children, whose level nesting cannot tell; without it, no type label is checked for that node. |
 | `issue` | all | An **existing** issue number. That node is not re-created — it is adopted and verified. This is how you retrofit a manifest onto tickets that already exist. |
 | `labels` | all | A **list** (`[kind::bug]` or one `- item` per line), never a bare string. `kind::bug` / `kind::chore` / `idea` go here. |
 | `assignees` | all | GitHub logins. |
