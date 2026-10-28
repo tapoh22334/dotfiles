@@ -197,3 +197,17 @@
   「コロンの直後が空白か行末」に絞った。apply.sh は labels が文字列なら拒否する。
 - **回帰**: `--plan` で regression-184-188.yml(Story 1 + Subtask 3)・新形式の例・
   1 子 Story(拒否)・文字列 labels(拒否)・adopt 済み Story への 1 件追加(通る)を確認。shellcheck 通過。
+
+## 2026-10-28 — project: の書き忘れで黙ってボード外に起票できた・再実行で二重起票した(dotfiles#38)
+
+- **症状 1**: `project:` ブロックが無い manifest は「issue だけ」と解釈され、ボードに載らない
+  issue が正規の手順でできた。SKILL.md にも、scope が無ければブロックを外せという逃げ道があった。
+  ブロックを必須にし、外すには `project: none` と書くことにした。逃げ道は削った。
+  GitHub 側の auto-add は採らない。All Work に auto-add ワークフローは無く、API では作れず、
+  1 本が見るのは 1 リポジトリだけなので、12 リポジトリでは無料プランの上限を超える。
+- **症状 2**: `apply.sh tickets.yml --plan` が apply として走り、proactive-work #45 を二重に作った。
+  モードを第 1 引数でしか見ていなかった。さらに作成済みの番号は一時ファイルにしか残らないので、
+  再実行すると木を丸ごと作り直す。オプションを位置に関係なく解釈し、未知のものは拒否する。
+  preflight は、同じ題名の open issue があれば書き込みを拒否する。
+- **回帰**: `--plan` で、ブロック無し(拒否)・`none`(通る)・ブロックあり(通る)・既存の題名(拒否)・
+  `project: 4`(拒否)・未知のオプション・manifest 2 つ(拒否)を確認。shellcheck 通過。

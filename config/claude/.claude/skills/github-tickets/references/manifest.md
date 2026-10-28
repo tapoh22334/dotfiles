@@ -8,6 +8,9 @@ earlier steps succeed is caught rather than assumed.
 
 ```yaml
 repo: owner/name          # optional inside a gh repo
+project:                  # required; `project: none` to opt out
+  number: 4
+  owner: tapoh22334
 
 epics:
   - title: iPad版をApp Storeで公開リリースする
@@ -80,11 +83,16 @@ project:
   owner: tapoh22334      # defaults to @me
 ```
 
-Omit this block entirely to file issues without touching a board. That is the
-right choice when the `project` scope is unavailable — issues still land, and the
-manifest records that no board was intended, so verify won't report a false gap.
+The block is required. Without it, preflight refuses to write: a forgotten block
+used to file issues that never reached the board, and nothing reported it.
+
+To file issues without a board, write `project: none`. Use it only when the user
+asked for that. It is not the fix for a missing `project` scope; for that, the user
+runs `gh auth refresh -s project`.
 
 ## Running it
+
+Options may come before or after the manifest; an unknown option is refused.
 
 ```bash
 export GT_SCRIPTS=~/.claude/skills/github-tickets/scripts
