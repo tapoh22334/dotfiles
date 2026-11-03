@@ -67,8 +67,13 @@ def scan(path, entries):
             continue
         text = re.sub(r"`[^`]*`", lambda m: " " * len(m.group()), line)
         text = re.sub(r"\]\([^)]*\)", lambda m: " " * len(m.group()), text)
+        # Mask every defined term first, so 按分 inside the term 按分率 is not
+        # reported as an avoided name for 家事按分
+        base = text
+        for t in sorted((t for t, _ in entries), key=len, reverse=True):
+            base = base.replace(t, "\0" * len(t))
         for term, avoided in entries:
-            masked = text.replace(term, "\0" * len(term))
+            masked = base
             # Longest first, and mask each hit, so 経費按分 is not also reported as 按分
             for a in sorted(avoided, key=len, reverse=True):
                 if a in masked:

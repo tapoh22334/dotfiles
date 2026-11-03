@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: user-level-ticket-terms
+expected_outcome: |
+  The four ticket levels are recorded once in the user-level glossary (~/.claude/glossary.md), the user's global CLAUDE.md links to it, and the current project is not given a copy of the same terms.

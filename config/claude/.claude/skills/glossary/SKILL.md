@@ -105,8 +105,9 @@ rest.
 
 - **避ける表現**: the other names actually seen for this concept, separated by
   「、」. These are what the check script looks for, so list only expressions
-  that should never mean this concept. A substring of the term is fine (「按分」
-  above): occurrences inside the term itself are not reported.
+  that should never mean this concept. A substring of a term is fine (「按分」
+  above): occurrences inside any defined term (家事按分, 按分率) are not
+  reported.
 - A source goes at the end of the definition as `根拠:...` when the term was
   taken from a primary source.
 - Keep rows in 五十音順 / alphabetical order so a reader can scan.
