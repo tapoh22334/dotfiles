@@ -42,6 +42,13 @@ fix in real Claude-written texts:
 Words that only look technical are not exempt: 峠・壁・道 used for a saddle
 point, a limit and a path are images, not names.
 
+Strict does not reach the established terms of the text's own field. In a
+marketing note, 流入・オーガニック投稿・ネットショップ・ニッチ are the field's
+names for things, and replacing them (流入 → 訪問, オーガニック投稿 → 広告でない
+通常の投稿) was judged wrong. The test: would the word head a section in that
+field's guides or reference material? If so, keep it. Counters such as
+「スキル6本」 also stay.
+
 ## Name the thing, don't shrink it
 
 Rewrite to what the word actually points at. A shorter, vaguer word that
