@@ -151,6 +151,8 @@ Approval is per-batch, not standing. A new request means a new tree and a new ap
 
 Write the approved tree as a YAML manifest and hand it to `scripts/apply.sh`. This holds for a single issue too — a one-node `tasks:` manifest. Do not issue `gh issue create` by hand: it skips the type label, the board, and verify.
 
+Before `apply.sh`, run the `ja-review` skill on the manifest's Japanese titles and bodies, and fix the manifest to reflect its findings. The rule itself lives in `~/CLAUDE.md`; it is repeated here because a run that follows only these steps reaches `apply.sh` without it. craft-lab#425 was filed that way, and its title carried wording the later PR review had to correct.
+
 ```bash
 export GT_SCRIPTS=~/.claude/skills/github-tickets/scripts
 
