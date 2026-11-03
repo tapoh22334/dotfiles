@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: business-expense-terms
+expected_outcome: |
+  In the business repository, a project glossary is created and linked from the project's CLAUDE.md, 家事按分 is defined with the expressions to avoid, documents that may be rewritten use the defined terms, and append-only places (decisions/, records/, frozen fy/) are left untouched.
