@@ -124,7 +124,6 @@ setup_wsl() {
     setup_x11_server
   else
     log_info "Non-WSL environment"
-    export BROWSER=''
   fi
 }
 setup_wsl
