@@ -1,22 +1,20 @@
----
-name: register-check
-description: Find words in a Japanese technical text that belong somewhere else — chat, sales copy, trade talk, net slang, figurative images — and rewrite them in plain written Japanese, changing nothing else. Catches 「設計に効く」「ユーザーに刺さる」「解像度が上がる」「うっかり」「逃げ道」「sudo を打つ」「サーバーが落ちる」「4K に縛られる」. Use when the user says 位相 / レジスター / 言葉の場違い / 広告っぽい / 雑談っぽい / 話し言葉を直して / 書き言葉にして / 「〜に効く」みたいな言い回しを直して / register check, or when an Issue, PR body, README, design doc or Notion memo reads as if someone said it aloud. Not for structure, parentheses or list nesting (doc-style), and not for writing from scratch.
----
+# 言葉の観点:場違いな言葉
 
-# register-check
+Applies to every kind of text: repository documents, Issue and PR bodies,
+notes. Used by the `ja-word-reviewer` agent through the `ja-review` skill, and
+read before writing.
 
 A word carries the impression of the place where it is usually used. 「知見が
 設計に効いた」 reads as an ad, 「sudo を打つ」 as talk, 「司令塔」 as an image,
 even when the meaning is clear. In a technical document each of these costs the
-reader a small translation step. This skill finds such words and rewrites them
-in written Japanese.
+reader a small translation step. Find such words and rewrite them in written Japanese.
 
-## What to do
+## What counts
 
-Read the text and find the words that are out of place in a technical document:
+Find the words that are out of place in a technical document:
 spoken words, ad-like phrases, words only used when people in a trade talk to
 each other, and figurative images. Rewrite each in plain written Japanese.
-Change nothing else — structure, parentheses, facts, numbers and degree of
+The rewrite touches only that word or phrase — structure, parentheses, facts, numbers and degree of
 certainty stay as they are.
 
 ## How strict
@@ -63,11 +61,5 @@ Rewrite to what the word actually points at. A shorter, vaguer word that
 | 規則の取りこぼし | 規則の検出漏れ | 規則の違反を見落とすこと |
 
 When the specific word rests on a reading the text does not state (峠 → 鞍点
-assumes the memo means a saddle point), make the change and say so in the
-report, so the user can check it.
-
-## Output
-
-1. The revised text. Apply it to a file, issue or page only on the user's say-so.
-2. Each change as 「原文」→「直し」.
-3. The changes that rest on an assumed meaning, with the assumption.
+assumes the memo means a saddle point), propose the change and mark it as
+resting on an assumed meaning, so the user can check it.
