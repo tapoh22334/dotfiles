@@ -1,5 +1,5 @@
 ---
-name: session-close-safe
+name: safe-close
 description: >-
   Close the CURRENT session safely when several sessions may be running at once
   on the same machine — persist only what would be lost, without clobbering work
@@ -10,13 +10,13 @@ description: >-
   sessions open. The defining concern is CONCURRENCY: before committing,
   pushing, or recording anything, verify each change / branch / record target is
   actually THIS session's — never sweep up another worktree's files, never force
-  a shared branch, never overwrite another session's notes. Differs from
-  backlog-suspend (single-session wind-down, assumes it owns the tree) and
-  summarize (screen-only recap): this one treats the machine as shared and
-  proves ownership before changing the world.
+  a shared branch, never overwrite another session's notes. Records go to git,
+  repository docs, and GitHub Issues. Differs from summarize (screen-only
+  recap): this one treats the machine as shared and proves ownership before
+  changing the world.
 ---
 
-# Session Close (Safe) — 他のセッションを壊さずに畳む
+# Safe Close — 他のセッションを壊さずに畳む
 
 散らかってきたセッションを閉じたい。だがこの機械では、いま**他のセッションも
 同時に動いている**かもしれない。別のワークツリーで誰か(未来/並行の自分)が
@@ -29,10 +29,8 @@ description: >-
 ブランチ・記録先は、本当に"このセッションのもの"か?」**。所有が確かめられた
 ものだけを畳み、確かめられないものには手を出さない。
 
-記録の中身(何を残し何を捨てるか)と畳み方の作法は `backlog-suspend` と同じ
-思想に立つ — このスキルはその手前に**並行性の関門**を足したものだ。純粋に
-1セッションしか無いと分かっているなら `backlog-suspend` で足りる。他が動いて
-いる**かもしれない**なら、こちらを使う。
+1セッションしか無いと分かっているときも、このスキルで閉じる。関門は読み取り
+だけなので、他が無ければすぐ通過する。
 
 ## なぜ「所有の確認」が先に来るのか
 
@@ -41,7 +39,7 @@ description: >-
 
 - **コミット**が、他セッションの未コミット変更や無関係なゴミまで巻き込む。
 - **push/rebase/force** が、他セッションが積んだ共有ブランチのコミットを飛ばす。
-- **記録の書き込み**が、他セッションが同じ Backlog タスク/issue に書いた文脈を
+- **記録の書き込み**が、他セッションが同じ issue・PR に書いた文脈を
   上書きする。
 
 だから三段の**前に関門を置く**。関門を通ったものだけが、以降の操作の対象になる。
@@ -94,8 +92,8 @@ git status --short
 
 ### G3. ブランチ・記録先が競合しないか確かめる
 
-コミット先のブランチと、文脈の記録先(Backlog タスク/issue)が、他セッションと
-ぶつからないか。
+コミット先のブランチと、文脈の記録先(issue・PR・リポジトリの文書)が、他セッションと
+競合しないかを確かめる。
 
 - **ブランチ**: 自分のワークツリーが専有するブランチ(`git worktree list` で
   他に同名が出ない)なら、コミット/push は安全。**detached HEAD** なら、
@@ -105,13 +103,12 @@ git status --short
   あるか(fast-forward で押せるか)を見る。上流が進んでいたら、他セッション
   (か CI)が動かした可能性 → **force で潰さない**。追いつけないなら push は
   保留し、そのことを記録に残して離脱する(競合解決は畳む作業ではない)。
-- **記録先**: Backlog タスク/issue に書く前に、他セッションが直近で同じ場所を
-  更新していないか一瞥する(`backlog task <id> --plain` / issue の最終更新)。
-  上書きではなく**追記**する。同じタスクに複数セッションが書くなら、自分の
-  セッションが分かる一行(何のワークツリー/ブランチか)を添えて混線を防ぐ。
+- **記録先**: issue・PR に書く前に、他セッションが直近で同じ場所を
+  更新していないか確認する(`gh issue view <n> --comments` の末尾)。
+  本文の書き換えではなく**コメントで追記**する。同じ issue に複数セッションが書くなら、自分の
+  セッションが分かる一行(何のワークツリー/ブランチか)を添えて記録の取り違えを防ぐ。
 
-関門を通過したら、以下の三段に進む。中身の判断基準は `backlog-suspend` と共通
-なので要点だけ示す。
+関門を通過したら、以下の三段に進む。
 
 ## 畳む三段(関門を通ったものだけ)
 
@@ -125,8 +122,7 @@ G3 の fast-forward 確認を経て push。レビューに値する差分なら 
 
 ### 2. 失うと痛い文脈だけ記録する
 
-原則は `backlog-suspend` と同じ:**再現困難なものだけ残し、容易に再現できる
-ものは捨てる**。残すのは頭の中にしかないもの — レビュー/デバッグの現在地
+原則:**再現困難なものだけ残し、容易に再現できるものは捨てる**。残すのは頭の中にしかないもの — レビュー/デバッグの現在地
 (立てた仮説と根拠、次に疑う場所)、方針を選んだ理由、次の一手とその狙い。
 捨てるのは git log で辿れる履歴、コマンド一つで再現する手順、一般論。
 
@@ -143,12 +139,21 @@ G3 の fast-forward 確認を経て push。レビューに値する差分なら 
 「触らなかったもの」の明示が、このスキルでは特に重要 — それが「他を壊して
 いない」ことの証明になる。
 
-## Backlog 連携(この環境)
+## 記録先
 
-このプロジェクトは Backlog.md(`backlog` CLI)でタスクを管理する。記録は必ず
-`backlog` CLI 経由(task md の直接編集はメタデータ整合を壊す)。記録の直前に
-`backlog instructions task-execution` を読む。Backlog が無いプロジェクトでは、
-記録先をコミットメッセージ/PR 本文に厚めに書き、新規ファイルは作らない。
+残す内容の種類で置き場を決める。Backlog.md は使わない(タスク管理の正本は
+GitHub Issues、`~/CLAUDE.md` のタスク管理節)。
+
+| 残す内容 | 置き場 |
+|---|---|
+| 差分の理由 | コミットメッセージ |
+| 途中経過・仮説・次の一手・判断の記録 | 対象 issue へのコメント(無ければ github-tickets で作る) |
+| 続けて使う知識・判断 | リポジトリの文書(置き場はプロジェクトの CLAUDE.md に従う。例: `decisions/`) |
+
+会話の未加工のログは SessionEnd hook(`~/.claude/hooks/archive-transcripts.sh`)が
+`~/.claude/transcript-archive/<project>/<YYYY-MM>/<session-id>.tar.zst` に
+自動で圧縮保存する。このスキルで保存の操作はしない。後から未加工のログを参照できるように、
+issue コメントにはセッション id を一行添える。
 
 ## やってはいけないこと
 
@@ -157,7 +162,7 @@ G3 の fast-forward 確認を経て push。レビューに値する差分なら 
 - **上流を見ずに push / force push**:他セッションや CI が積んだコミットを飛ばす。
   fetch して fast-forward を確かめる。追いつけないなら push を保留して記録する。
 - **帰属不明ファイルの削除/コミット**:他セッションのものかもしれない。残す。
-- **記録先の上書き**:同じタスク/issue を他セッションが更新済みかも。追記し、
+- **記録先の上書き**:同じ issue を他セッションが更新済みの可能性がある。追記し、
   自分のセッションが分かる一行を添える。
 - **自分のワークツリー root の外に出る操作**:他のワークツリーのパスに触る、
   他ブランチを載せ替える。それは他人の机。
