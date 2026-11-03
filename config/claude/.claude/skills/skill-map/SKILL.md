@@ -92,11 +92,10 @@ python3 ~/.claude/skills/skill-map/scripts/collect_skills.py --summary
 **該当する群を特定して、そこだけ見せる**。全体の木は文脈として1行に圧縮する。
 
 ```
-仕事を切る・追う (7件) — やることをチケットの形にして追う
+仕事を切る・追う (2件) — やることをチケットの形にして追う
 
   起票の前に        structuring-work   何をどの階層で切るかを決める
   GitHub へ載せる   github-tickets     Epic/Story/Task と Project
-  腐りの点検        backlog-steward    削除候補を洗い出す
 ```
 
 順序は群内の依存で並べる(前工程が先)。アルファベット順にしない —
@@ -153,7 +152,7 @@ python3 ~/.claude/skills/skill-map/scripts/collect_skills.py --summary
 持ち主にしか判断できない。地図が「この道は通るな」と言い始めたら、
 地図として信用できなくなる。
 
-整理の提案が要るなら、それは `skill-improver` か `backlog-steward` の仕事。
+整理の提案が要るなら、それは `skill-improver` か `github-tickets`(既存チケットの整理)の仕事。
 
 ## 参照
 

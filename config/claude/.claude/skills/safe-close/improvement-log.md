@@ -22,3 +22,15 @@
 - 回帰: 関門 G1〜G3 と三段の手順、やってはいけないことは記録先の語以外を変えていない
 - 残件: backlog-create / backlog-list / backlog-suspend / backlog-resume / backlog-steward は
   まだ Backlog.md 前提のまま(本エントリの対象外)
+
+## 2026-11-04 改名後も skill-map に旧名が残っていた(前エントリの検収の訂正)
+- 実物: 前エントリは「dotfiles 全体を grep して残存はこのスキル内の 1 行のみ」と書いたが、
+  `skill-map/references/groups.json` に `session-close-safe` が残っていた。
+  Backlog 系スキルの削除(issue tapoh22334/dotfiles#61)で grep し直して見つかった
+- 分類: 矛盾欠陥の検収漏れ
+- 5-why の終点: 検収の grep を別コマンドと連結して実行し、出力が空であることを
+  「残存なし」と読んだ。grep が実際に dotfiles 全体を走査したかを確かめていなかった
+- 修正: groups.json の旧名を `safe-close` に直した(#61 の PR に同梱)
+- 実験: 単独の `grep -rn "session-close-safe" --exclude-dir=.git .` を dotfiles の root で実行し、
+  improvement-log 以外の該当が 0 件であることを確認した
+- 回帰: groups.json の他の群は変更していない

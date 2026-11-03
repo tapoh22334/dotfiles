@@ -115,6 +115,6 @@ Epic 候補は出さず、Story と Task だけでよい(単発のバグ 1 件�
 ## 受け渡し
 
 - 登録: **REQUIRED NEXT:** github-tickets(manifest にそのまま写る形で木を渡す)
-- 本文の書き方(意味で書く、手順を書かない): backlog-create の規律と同じ
+- 本文の書き方(意味で書く、手順を書かない): github-tickets の「意味論で書く」に従う
 - 木が要らない単発(バグ 1 件、タイポ)は検査表 1 行だけで Task にする。Epic を立てない。
   1 件でも github-tickets を通す(ラベルとボード登録はそこでしか付かない)
