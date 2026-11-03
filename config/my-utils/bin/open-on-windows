@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Used as $BROWSER on remote Linux hosts (nuc11). Hands the URL to the
+# browser-relay listener on WSL through the ssh RemoteForward, so it opens in
+# the Windows browser. Never falls back to a local browser: with X11
+# forwarding that would pop up Firefox through the tunnel.
+#
+# WSL side ~/.ssh/config:  Host nuc11
+#                            RemoteForward 47123 127.0.0.1:47123
+
+port=${BROWSER_RELAY_PORT:-47123}
+url=$1
+
+if [[ ! $url =~ ^https?:// ]]; then
+  echo "open-on-windows: not an http(s) URL: $url" >&2
+  exit 1
+fi
+
+# The forwarded port accepts connections even when the WSL listener is down,
+# so wait for its "ok" instead of trusting the connect.
+if { exec 3<>"/dev/tcp/127.0.0.1/$port"; } 2>/dev/null; then
+  printf '%s\n' "$url" >&3
+  read -r -t 3 reply <&3
+  exec 3<&-
+  [[ $reply == ok ]] && exit 0
+fi
+
+echo "open-on-windows: relay not reachable, open manually: $url" >&2
+exit 1
