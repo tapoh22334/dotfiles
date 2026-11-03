@@ -11,8 +11,9 @@ git clone https://github.com/iwase22334/dotfiles .dotfiles
 Claude skills
 -------------
 
-`config/claude` パッケージが `~/.claude/` へ `settings.json` / `agents` /
-`commands` / `skills` を配置する。`setup.sh` が自動で stow するので追加操作は不要。
+`config/claude` パッケージが `~/.claude/` へ `CLAUDE.md` / `settings.json` /
+`agents` / `commands` / `skills` を配置する。`CLAUDE.md` には PC に依存しない
+共通の指示だけを書き、その PC に固有の指示は `~/CLAUDE.md` に置く。`setup.sh` が自動で stow するので追加操作は不要。
 
 **他のリポジトリが所有するスキル**(value-forge の `vf-*`、claude-tower の
 `tower`、proactive-work)は `config/claude/.claude/skill-sources.yml` が台帳で、
