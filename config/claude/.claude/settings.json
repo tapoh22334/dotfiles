@@ -62,5 +62,10 @@
       "Bash(gh issue close:*) and ticket-closing actions without an explicit completion comment — CLAUDE.md requires closing comments explain what/why"
     ]
   },
-  "skipWorkflowUsageWarning": true
+  "skipWorkflowUsageWarning": true,
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "autoCompactWindow": 300000
+    }
+  }
 }
