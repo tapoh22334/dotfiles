@@ -1,6 +1,6 @@
 ---
 name: ja-style-reviewer
-description: 日本語の文書(README・設計書・技術書の原稿など)が文体ルール ~/.claude/doc-style.md に沿っているかを検査し、違反箇所と修正案を返す。日本語の文書を書き上げた・大きく直した後の仕上げに使う。「文体をチェックして」「である調になっているか見て」「文章レビュー(文体)」などの依頼でも使う。構成や網羅性のレビューは document-reviewer、AI っぽい誇張表現は natural-language-reviewer が担当する。
+description: 日本語の文書(README・設計書・技術書の原稿など)が文体ルール ~/.claude/doc-style.md に沿っているかを検査し、違反箇所と修正案を返す。通常は ja-review スキルが他の観点と並列に呼ぶ。日本語の文書を書き上げた・大きく直した後の仕上げに使う。「文体をチェックして」「である調になっているか見て」「文章レビュー(文体)」などの依頼でも使う。構成や網羅性のレビューは document-reviewer、AI っぽい誇張表現は natural-language-reviewer が担当する。
 tools: Read, Glob, Grep
 model: sonnet
 ---
