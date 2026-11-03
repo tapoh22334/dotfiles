@@ -32,18 +32,13 @@
       "intent": "やることをチケットの形にして、腐らせずに追う",
       "skills": {
         "structuring-work": "起票前に、何をどの階層で切るかを決める",
-        "github-tickets": "Epic/Story/Task を GitHub Issues と Project に載せる",
-        "backlog-create": "追うべき仕事を意味(成果と理由)で書き起こす",
-        "backlog-list": "いま追っているものを状態別に見せる",
-        "backlog-steward": "腐ったチケットを見つけて削除案を出す",
-        "backlog-suspend": "作業を畳み、再開に足る記録を残して離れる",
-        "backlog-resume": "記憶ではなく記録から作業を拾い直す"
+        "github-tickets": "Epic/Story/Task を GitHub Issues と Project に載せる"
       }
     },
     "セッションを畳む・戻る": {
       "intent": "複数セッションが走る環境で、安全に止めて安全に戻る",
       "skills": {
-        "session-close-safe": "他セッションを壊さないことを確かめて閉じる"
+        "safe-close": "他セッションを壊さないことを確かめて閉じる"
       }
     },
     "設計する・批評する": {
@@ -164,8 +159,7 @@
   },
   "prefix_fallback": {
     "vf-": "パイプラインを回す",
-    "speckit-": "パイプラインを回す",
-    "backlog-": "仕事を切る・追う"
+    "speckit-": "パイプラインを回す"
   },
   "unclassified_group": "未分類"
 }
