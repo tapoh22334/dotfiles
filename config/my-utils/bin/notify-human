@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# 人の対応が要る issue を Slack に通知する。
+#
+#   notify-human <issue-url> [補足]
+#
+# Webhook URL は ~/.config/notify-human/slack-webhook-url(または
+# NOTIFY_HUMAN_WEBHOOK)から読む。dotfiles は公開 repo なので URL を置かない。
+# 送れなかったときは 0 以外で終わる。呼び出し側が失敗を報告できるようにするため。
+set -euo pipefail
+
+url="${1:-}"
+note="${2:-}"
+[ -n "$url" ] || { sed -n '2,8p' "$0" >&2; exit 2; }
+
+conf="${XDG_CONFIG_HOME:-$HOME/.config}/notify-human/slack-webhook-url"
+hook="${NOTIFY_HUMAN_WEBHOOK:-}"
+if [ -z "$hook" ] && [ -r "$conf" ]; then hook="$(head -n1 "$conf")"; fi
+[ -n "$hook" ] || { echo "notify-human: webhook 未設定 ($conf)" >&2; exit 1; }
+
+# タイトルが取れなくても通知自体は送る。URL があれば辿れるため。
+title="$(gh issue view "$url" --json title -q .title 2>/dev/null || true)"
+
+text=":raising_hand: 人の対応が要る issue があります"$'\n'"<${url}|${title:-$url}>"
+[ -z "$note" ] || text+=$'\n'"$note"
+
+payload="$(jq -n --arg t "$text" '{text: $t}')"
+code="$(curl -sS -o /dev/null -w '%{http_code}' -X POST \
+  -H 'Content-Type: application/json' --data "$payload" "$hook")"
+[ "$code" = 200 ] || { echo "notify-human: Slack が HTTP $code を返した" >&2; exit 1; }
