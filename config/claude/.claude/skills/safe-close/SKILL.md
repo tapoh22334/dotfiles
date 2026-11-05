@@ -7,7 +7,9 @@ description: >-
   says セッション閉じたい / 安全に閉じる / 散らかってきたので畳みたい / 他のセッションも
   動いてるので気をつけて閉じて / 作業止めるけど他を壊さないで / close this session
   safely / wrap up without breaking the others / shut down but I've got other
-  sessions open. The defining concern is CONCURRENCY: before committing,
+  sessions open. Also use to close a ticket-scoped session (このチケットで閉じたい /
+  チケット単位で畳む / 主題終わった?): it first checks the session's ticket for
+  completion and drift before tidying anything. The defining concern is CONCURRENCY: before committing,
   pushing, or recording anything, verify each change / branch / record target is
   actually THIS session's — never sweep up another worktree's files, never force
   a shared branch, never overwrite another session's notes. Records go to git,
@@ -43,6 +45,55 @@ description: >-
   上書きする。
 
 だから三段の**前に関門を置く**。関門を通ったものだけが、以降の操作の対象になる。
+
+## 閉じる前に — 主題に照らして、閉じるか続けるかを決める
+
+safe-close はチケット単位で作業を閉じるために使う。片付けに入る前に、このセッションの
+主題と実際に行った作業を照合する。ここも読み取りだけで、まだ何も変更しない。
+
+**主題**は、このセッションが着手したチケット(冒頭で確認した、または作った issue)である。
+チケットが無ければ、利用者の最初の依頼を主題とし、S1 の前に github-tickets で issue にする。
+
+### S1. 主題が完了したかを判定する
+
+主題 issue の完了条件(受入条件)を 1 つずつ、証拠(マージ済みの PR、テストの出力、
+実機での確認)と照合する。「区切りがいい」「散らかってきた」は完了の証拠ではない。
+
+| 観測 | 推奨 |
+|---|---|
+| 完了条件がすべて証拠で満たされている | 閉じる。S2 へ進む |
+| 未達の条件があり、利用者・CI・外部の対応を待たずに進められる | **閉じずに続けることを推奨する。** 未達の条件と次の一手を示し、続けるか閉じるかは利用者が決める。閉じると決まったら、未達の条件と次の一手を主題 issue にコメントしてから S2 へ進む |
+| 未達の条件があり、利用者・CI・外部の対応待ちで進められない | 閉じてよい。何を待っているかを主題 issue に記録する。利用者の対応待ちなら `needs-human` の issue にする |
+
+### S2. 主題から離れた作業を別の issue に切り出す
+
+このセッションで行った作業(コミット、編集したファイル、調べたこと)のうち、主題 issue の
+「やること」で説明できないものを挙げる。
+
+- 離れた作業があれば、その作業の issue を github-tickets で作る(既存の issue があれば
+  それを使う)。その作業の途中経過と次の一手はその issue に記録し、主題 issue には混ぜない。
+  主題のブランチに入ったコミットや未コミットの変更があれば、どれがその issue に属するかを書く。
+- 途中で主題そのものが入れ替わった(利用者が別の依頼に移った)ときも同じく扱う。新しい作業の
+  issue を作り、旧主題の issue には中断した地点を記録する。
+- 離れた作業は、未完でもこのセッションで続けることを推奨しない。切り出した issue に記録して
+  閉じることを推奨し、続きはその issue から新しいセッションで始める。S1 の続行推奨は主題にだけ
+  当てはまる。
+
+### S3. 調べないと対応要否が決まらない懸念は triage の issue にする
+
+作業中に気づいたが、対応が要るかどうかまだ分からない事項(まれにしか起きない失敗、
+仕様か不具合か判断できない挙動、影響を調べていない警告など)を、コメントやメモに書いて
+終わらせない。github-tickets で `labels: [triage]` の Task を 1 件ずつ作る。本文は github-tickets の Triage の形で、
+観測したこと(出力とその所在)と、何を調べれば対応要否が決まるかを書く。
+
+| 事項 | 置き場 |
+|---|---|
+| 対応すると決まっている | 通常の Task |
+| 対応が要るかを調べて決める | `triage` の Task |
+| 実施するかどうか決めていない案 | `idea` の Task |
+| 利用者にしか決められない | `needs-human` の Task |
+
+S2・S3 で作った issue の番号は、主題 issue へのコメントと最後の報告に載せる。
 
 ## 関門 — 畳む前に所有を確かめる
 
@@ -132,9 +183,9 @@ G3 の fast-forward 確認を経て push。レビューに値する差分なら 
 
 ### 3. 閉じられる状態を報告する
 
-短く:何をキリのいい地点まで運んだか(push URL / PR)、どの記録先に何を
-書いたか、**あえて触らなかったもの**(「`dist-windows/` は帰属不明のため
-残置」「上流が進んでいたため push 保留」)、次に開くとき最初に見る場所。
+短く:主題の判定(S1 の結果。未完なら続行を推奨したこと)、何をキリのいい地点まで運んだか(push URL / PR)、どの記録先に何を
+書いたか、S2・S3 で作った issue、**あえて触らなかったもの**(「`dist-windows/` は帰属不明のため
+残置」「上流が進んでいたため push 保留」)、次に開くとき最初に見る場所を報告する。
 
 「触らなかったもの」の明示が、このスキルでは特に重要 — それが「他を壊して
 いない」ことの証明になる。
@@ -148,6 +199,8 @@ GitHub Issues、`~/CLAUDE.md` のタスク管理節)。
 |---|---|
 | 差分の理由 | コミットメッセージ |
 | 途中経過・仮説・次の一手・判断の記録 | 対象 issue へのコメント(無ければ github-tickets で作る) |
+| 主題から離れた作業の途中経過 | その作業の issue(S2) |
+| 対応要否を調べる必要がある懸念 | `triage` の issue(S3)。メモやコメントにしない |
 | 続けて使う知識・判断 | リポジトリの文書(置き場はプロジェクトの CLAUDE.md に従う。例: `decisions/`) |
 
 会話の未加工のログは SessionEnd hook(`~/.claude/hooks/archive-transcripts.sh`)が
