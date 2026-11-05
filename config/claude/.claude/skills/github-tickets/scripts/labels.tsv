@@ -5,3 +5,4 @@ type::subtask	BFD4F2	階層: Story を構成する作業。親は必ず Story
 kind::bug	D73A4A	性質: 期待どおりに動かない
 kind::chore	C5DEF5	性質: 動いているが手入れが要る(リファクタ・CI・依存・テスト・文書)
 idea	FBCA04	確約: まだやると決めていない。発動条件つきの保留判断も含む
+needs-human	E99695	待ち: AI では解決できず、利用者の対応を待っている

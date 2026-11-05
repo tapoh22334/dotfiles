@@ -93,13 +93,14 @@ A title is read in a list of eighty. Make it stand alone: `<動詞で終わる�
 
 ## Labels
 
-Three independent axes. Each answers one question; do not use one to answer another.
+Four independent axes. Each answers one question; do not use one to answer another.
 
 | Axis | Labels | Rule |
 |---|---|---|
 | Level — how big | `type::epic` `type::story` `type::task` `type::subtask` | **Exactly one, always.** An issue with no `type::` label is unclassified, and that is detectable |
 | Kind — what sort of work | `kind::bug` (doesn't work as expected) `kind::chore` (works, needs upkeep: refactor, CI, deps, tests, docs) | Optional. No `kind::` means a feature |
 | Commitment — decided yet? | `idea` | Optional. Present means not committed, including a decision deferred until a condition holds |
+| Waiting — on whom? | `needs-human` | Optional. AI cannot resolve it; assigned to the user and announced with `notify-human`. Remove when the user has acted |
 
 `apply.sh` sets `type::` from the manifest's nesting — never write it by hand.
 `kind::` and `idea` go in `labels:`. Colors and descriptions come from
