@@ -100,7 +100,7 @@ Four independent axes. Each answers one question; do not use one to answer anoth
 | Level — how big | `type::epic` `type::story` `type::task` `type::subtask` | **Exactly one, always.** An issue with no `type::` label is unclassified, and that is detectable |
 | Kind — what sort of work | `kind::bug` (doesn't work as expected) `kind::chore` (works, needs upkeep: refactor, CI, deps, tests, docs) | Optional. No `kind::` means a feature |
 | Commitment — decided yet? | `idea` | Optional. Present means not committed, including a decision deferred until a condition holds |
-| Waiting — on whom? | `needs-human` | Optional. AI cannot resolve it; assigned to the user and announced with `notify-human`. Remove when the user has acted |
+| Waiting — on whom? | `needs-human` | Optional. AI cannot resolve it; assigned to the user. Announced on Slack only when it blocks the work or is urgent and important (see "Handing an item to the user"). Remove when the user has acted |
 
 `apply.sh` sets `type::` from the manifest's nesting — never write it by hand.
 `kind::` and `idea` go in `labels:`. Colors and descriptions come from
@@ -116,6 +116,35 @@ Priority lives on the deliverable tier — Story and Task. Set it on a Subtask a
 - Epic → leave blank unless the user asks
 
 "The board has a Priority field" is not an instruction to fill it at every level. Size and other fields are not covered by this rule.
+
+## Handing an item to the user (needs-human)
+
+When something only the user can resolve comes up (`~/.claude/CLAUDE.md` lists
+the kinds), file it as a one-node manifest with `labels: [needs-human]` and
+`assignees: [<the user>]`. The body says what is missing, what the user should
+do, and what you will resume once they have. Quote a title that contains
+` #` (`"... PR #8 ..."`): unquoted, YAML reads the rest as a comment.
+
+Then decide whether to announce it with `notify-human <issue URL> [note]`.
+A Slack ping interrupts the user wherever they are, so it is for items that
+cannot wait. Notify only when one of these holds:
+
+- **It blocks the work.** What you were asked to do cannot move forward until
+  the user acts, and nothing else in the request can proceed meanwhile — an
+  expired login in the middle of a deploy, a merge or approval the next step
+  depends on.
+- **It is urgent and important.** Waiting costs something real soon: data
+  loss, an outage, money, a security exposure, a deadline within the day.
+
+Everything else goes on the board without a ping: the issue, plus one line
+in your reply, is enough for the user to pick it up at their own pace. For
+example, whether to close a PR whose content was already merged elsewhere, a
+permission that would only save time, or a policy question whose answer
+affects later work. When unsure, ask: if the user first saw this tomorrow,
+would anything be lost or stuck? If not, do not notify.
+
+In your reply, say in one line whether you notified and why, so the user can
+correct the call. If `notify-human` fails, report it as failed.
 
 ## Doing the work
 

@@ -41,8 +41,11 @@ github-tickets スキルに従う。Backlog.md(`backlog/` ディレクトリ)は
    `labels: [needs-human]` と `assignees: [tapoh22334]` を入れる。本文には、
    何が足りないか・利用者に何をしてほしいか・それが済んだら AI が何を再開するかを書く。
    repo にラベルがなければ、先に github-tickets の `scripts/labels.sh owner/repo` で作成する。
-2. `notify-human <issue の URL> [補足]` で Slack に通知する。
-3. 失敗したら、その旨を返答で報告する。成功として報告しない。
+2. 通知が必要かを判定する。必要なのは、すぐに対応してもらわなければ次の作業に進めない
+   事項と、緊急かつ重要な事項だけである。判定の基準は github-tickets スキルの
+   「Handing an item to the user (needs-human)」節にある。必要なときは `notify-human <issue の URL> [補足]` で
+   Slack に通知する。不要なときは通知せず、返答で issue を示す。
+3. 通知に失敗したら、その旨を返答で報告する。成功として報告しない。
 
 待っている間は、その事項に依存しない作業を続ける。利用者が対応したら
 `needs-human` ラベルを外す。
