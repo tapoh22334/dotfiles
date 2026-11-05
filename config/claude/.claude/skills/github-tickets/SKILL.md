@@ -82,6 +82,17 @@ Use the level's template. Headings are fixed so tickets are scannable in bulk; c
 ```
 When it is committed, remove `idea` and rewrite the body to the level's template.
 
+**Triage** (a Task carrying the `triage` label — may need action, not yet investigated)
+```markdown
+## 観測したこと
+<What was seen, with where: output, log line, file, how often.>
+
+## 調べること
+<What would settle whether action is needed.>
+```
+When investigated, either remove `triage` and rewrite the body to the Task
+template, or close it with a comment saying why no action is needed.
+
 Write bodies in the language the user is using (default 日本語 here). Keep the headings as written above so tooling and skimming stay consistent.
 
 ### Titles
@@ -99,11 +110,11 @@ Four independent axes. Each answers one question; do not use one to answer anoth
 |---|---|---|
 | Level — how big | `type::epic` `type::story` `type::task` `type::subtask` | **Exactly one, always.** An issue with no `type::` label is unclassified, and that is detectable |
 | Kind — what sort of work | `kind::bug` (doesn't work as expected) `kind::chore` (works, needs upkeep: refactor, CI, deps, tests, docs) | Optional. No `kind::` means a feature |
-| Commitment — decided yet? | `idea` | Optional. Present means not committed, including a decision deferred until a condition holds |
+| Commitment — decided yet? | `idea` `triage` | Optional, at most one. `idea`: not committed, including a decision deferred until a condition holds. `triage`: something noticed that may need action, but whether it does is not yet investigated; the body says what was observed and what to check. Investigate, then drop the label (it becomes normal work) or close it |
 | Waiting — on whom? | `needs-human` | Optional. AI cannot resolve it; assigned to the user. Announced on Slack only when it blocks the work or is urgent and important (see "Handing an item to the user"). Remove when the user has acted |
 
 `apply.sh` sets `type::` from the manifest's nesting — never write it by hand.
-`kind::` and `idea` go in `labels:`. Colors and descriptions come from
+`kind::`, `idea` and `triage` go in `labels:`. Colors and descriptions come from
 `scripts/labels.tsv`; to bring a whole repo in line (including renaming the
 default `bug` to `kind::bug`), run `scripts/labels.sh owner/repo`.
 
