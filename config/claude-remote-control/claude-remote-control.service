@@ -6,7 +6,8 @@ After=network-online.target
 
 [Service]
 WorkingDirectory=%h/working
-Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+# routine が gh(linuxbrew)と notify-human(~/bin)を使うので、対話シェルと同じ場所を通す
+Environment=PATH=%h/bin:%h/.local/bin:/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=%h/.local/bin/claude remote-control --name nuc11 --permission-mode auto
 # TUI の再描画が毎秒ジャーナルに流れ込むので捨てる。エラーは stderr に残る
 StandardOutput=null
