@@ -1,0 +1,3 @@
+# reap-routine-sessions.sh が片付ける routine の、最初のプロンプトの SHA-256。
+# routine のプロンプトを変えたら、reap-routine-sessions.sh --dry-run で新しい値を確かめて足す。
+3138ac4ee6cc1926993ca7e190348fb4dd10e76f3c63a475b87678f3a50605bf Issue受け箱を Issue にする (trig_01BETJkYD63o79iPeeGMybmY)
