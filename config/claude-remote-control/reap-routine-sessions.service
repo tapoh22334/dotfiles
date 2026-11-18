@@ -6,5 +6,5 @@ Description=Reap finished routine sessions left by claude remote-control
 
 [Service]
 Type=oneshot
-Environment=PATH=%h/bin:%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PATH=%h/bin:%h/.local/bin:/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=%h/.dotfiles/config/claude-remote-control/reap-routine-sessions.sh
