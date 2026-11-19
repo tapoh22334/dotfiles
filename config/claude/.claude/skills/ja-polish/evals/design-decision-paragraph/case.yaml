@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: design-decision-paragraph
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  設計レビューの読者に向けて、結論(更新があれば一覧のキャッシュを全部消す)が先に来て、理由(キーの特定が難しく、消し漏れで古い価格が出る)と代償(キャッシュ効率が落ちる)が読み取れる段落になっている。である体にそろっている。

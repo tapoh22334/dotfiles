@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: readme-config-paragraph
+context:
+  scaffold_script: place-files.sh
+expected_outcome: |
+  README の設定節の冒頭段落が、README の文体(である体)にそろい、設定ファイルの既定の場所・環境変数による上書き・ファイルがなくても動くこと、の 3 点を保ったまま短く読みやすくなっている。推定した目的とその根拠、原文との差分、方向の違う次点案が示されている。
