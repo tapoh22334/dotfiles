@@ -79,5 +79,6 @@
     "claude-opus-5-5": {
       "autoCompactWindow": 300000
     }
-  }
+  },
+  "remoteControlAtStartup": true
 }
